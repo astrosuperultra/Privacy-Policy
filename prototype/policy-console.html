@@ -1,0 +1,934 @@
+<title>방침 관리 콘솔</title>
+<style>
+:root{
+  --paper:#F5F7F9; --surface:#FFFFFF; --surface-2:#EDF1F4; --surface-3:#E4EAEF;
+  --ink:#16202B; --ink-2:#3D4C5A; --ink-3:#6B7A88;
+  --rule:#DCE3E9; --rule-2:#C3CDD6;
+  --accent:#2B3A67; --accent-ink:#FFFFFF; --accent-soft:#E6EAF3; --accent-line:#C4CDE4;
+  --active:#1F6F63; --active-soft:#DEF0EC; --active-line:#A9D6CD;
+  --archived:#8A6212; --archived-soft:#F6EEDC; --archived-line:#E2CDA0;
+  --draft:#5A4B8A; --draft-soft:#EBE7F5; --draft-line:#C9BFE4;
+  --add:#2F7A5A; --add-soft:#DCF0E5;
+  --del:#A33B4E; --del-soft:#F7E1E6;
+  --warn:#8A6212; --warn-soft:#F6EEDC;
+  --shadow:0 1px 2px rgba(22,32,43,.06), 0 6px 18px -10px rgba(22,32,43,.18);
+  --sans:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Malgun Gothic",Roboto,"Segoe UI",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E141A; --surface:#161E26; --surface-2:#1D2730; --surface-3:#25313B;
+    --ink:#E7EEF4; --ink-2:#B5C3CF; --ink-3:#8496A6;
+    --rule:#2A363F; --rule-2:#3A4854;
+    --accent:#94A7DC; --accent-ink:#0E141A; --accent-soft:#1D2740; --accent-line:#3A466B;
+    --active:#63C7B2; --active-soft:#12302B; --active-line:#2A5C53;
+    --archived:#DCAC52; --archived-soft:#332711; --archived-line:#5C4820;
+    --draft:#AC9BE0; --draft-soft:#221D38; --draft-line:#453A66;
+    --add:#62C08F; --add-soft:#122E22; --del:#E37E90; --del-soft:#33161E;
+    --warn:#DCAC52; --warn-soft:#332711;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 22px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E141A; --surface:#161E26; --surface-2:#1D2730; --surface-3:#25313B;
+  --ink:#E7EEF4; --ink-2:#B5C3CF; --ink-3:#8496A6;
+  --rule:#2A363F; --rule-2:#3A4854;
+  --accent:#94A7DC; --accent-ink:#0E141A; --accent-soft:#1D2740; --accent-line:#3A466B;
+  --active:#63C7B2; --active-soft:#12302B; --active-line:#2A5C53;
+  --archived:#DCAC52; --archived-soft:#332711; --archived-line:#5C4820;
+  --draft:#AC9BE0; --draft-soft:#221D38; --draft-line:#453A66;
+  --add:#62C08F; --add-soft:#122E22; --del:#E37E90; --del-soft:#33161E;
+  --warn:#DCAC52; --warn-soft:#332711;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 22px -12px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.68;
+  -webkit-font-smoothing:antialiased; word-break:keep-all; overflow-wrap:break-word;
+}
+h1,h2,h3,h4{margin:0; text-wrap:balance; font-weight:650; letter-spacing:-.018em; line-height:1.3}
+p{margin:0}
+a{color:var(--accent); text-underline-offset:3px}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* ── app shell ── */
+.wrap{max-width:1240px; margin:0 auto; padding:0 20px}
+.topbar{
+  position:sticky; top:0; z-index:40; background:var(--surface);
+  border-bottom:1px solid var(--rule);
+}
+.topbar-in{display:flex; align-items:center; gap:20px; min-height:60px; flex-wrap:wrap; padding:10px 0}
+.brand{display:flex; align-items:baseline; gap:10px; margin-right:auto}
+.brand b{font-size:15px; font-weight:680; letter-spacing:-.02em}
+.brand span{font-size:11.5px; color:var(--ink-3); letter-spacing:.06em}
+
+.seg{display:flex; gap:2px; background:var(--surface-2); padding:3px; border-radius:8px; border:1px solid var(--rule)}
+.seg button{
+  border:0; background:transparent; padding:5px 11px; border-radius:6px; cursor:pointer;
+  font-size:12.5px; color:var(--ink-2); white-space:nowrap;
+}
+.seg button[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:var(--shadow); font-weight:620}
+.seg-lab{font-size:11px; color:var(--ink-3); letter-spacing:.05em; margin-right:2px; align-self:center}
+
+.notice{
+  background:var(--warn-soft); border-bottom:1px solid var(--archived-line);
+  color:var(--archived); font-size:12.5px;
+}
+.notice .wrap{padding-top:9px; padding-bottom:9px; display:flex; gap:8px; align-items:flex-start}
+.notice b{font-weight:680}
+
+.shell{display:grid; grid-template-columns:212px minmax(0,1fr); gap:34px; padding:26px 0 80px}
+.rail{min-width:0; position:sticky; top:82px; align-self:start; display:flex; flex-direction:column; gap:3px}
+.rail button{
+  display:flex; align-items:center; gap:9px; width:100%; text-align:left;
+  border:0; background:transparent; cursor:pointer; padding:9px 11px; border-radius:7px;
+  font-size:13.5px; color:var(--ink-2);
+}
+.rail button:hover{background:var(--surface-2)}
+.rail button[aria-current="true"]{background:var(--accent); color:var(--accent-ink); font-weight:620}
+.rail .n{font-family:var(--mono); font-size:11px; opacity:.6}
+.rail-note{margin-top:14px; padding:11px; border:1px dashed var(--rule-2); border-radius:8px; font-size:11.5px; color:var(--ink-3); line-height:1.6}
+
+.view-host{min-width:0}
+.view{min-width:0}
+.view[hidden]{display:none}
+
+/* ── generic pieces ── */
+.card{background:var(--surface); border:1px solid var(--rule); border-radius:12px}
+.pagehead{margin-bottom:20px}
+.eyebrow{font-size:11px; letter-spacing:.14em; color:var(--ink-3); margin-bottom:7px}
+.pagehead h2{font-size:23px}
+.pagehead .sub{margin-top:7px; color:var(--ink-2); font-size:13.5px; max-width:70ch}
+.proof{
+  display:flex; gap:9px; align-items:flex-start; margin:16px 0 22px; padding:11px 13px;
+  background:var(--accent-soft); border:1px solid var(--accent-line); border-radius:9px;
+  font-size:12.5px; color:var(--ink-2); line-height:1.6;
+}
+.proof b{color:var(--accent); font-weight:680}
+.proof .k{
+  flex:none; font-family:var(--mono); font-size:10.5px; padding:2px 6px; border-radius:4px;
+  background:var(--accent); color:var(--accent-ink); letter-spacing:.03em; margin-top:1px;
+}
+
+.chip{
+  display:inline-flex; align-items:center; gap:5px; padding:2px 9px; border-radius:100px;
+  font-size:11.5px; font-weight:620; border:1px solid transparent; white-space:nowrap;
+}
+.chip.active{background:var(--active-soft); color:var(--active); border-color:var(--active-line)}
+.chip.archived{background:var(--archived-soft); color:var(--archived); border-color:var(--archived-line)}
+.chip.draft{background:var(--draft-soft); color:var(--draft); border-color:var(--draft-line)}
+.chip.gap{background:var(--del-soft); color:var(--del); border-color:var(--del)}
+.dot{width:6px; height:6px; border-radius:50%; background:currentColor}
+
+table{width:100%; border-collapse:collapse; font-size:13px}
+.tscroll{overflow-x:auto; max-width:100%; border:1px solid var(--rule); border-radius:10px; background:var(--surface)}
+.sec>*, .sec .body>*, .dbody>*, .view>*{min-width:0}
+.tscroll table{min-width:520px}
+th,td{padding:9px 12px; text-align:left; vertical-align:top; border-bottom:1px solid var(--rule)}
+th{background:var(--surface-2); font-weight:620; font-size:11.5px; letter-spacing:.03em; color:var(--ink-2); white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.num{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+/* ── label chips (design spine) ── */
+.labelboard{padding:16px 18px; margin-bottom:20px}
+.labelboard h3{font-size:12px; letter-spacing:.1em; color:var(--ink-3); margin-bottom:11px}
+.labels{display:flex; flex-wrap:wrap; gap:6px; min-width:0}
+.lab{
+  border:1px solid var(--rule-2); background:var(--surface); border-radius:7px; cursor:pointer;
+  padding:5px 10px; font-size:12px; color:var(--ink-2); display:inline-flex; align-items:center; gap:6px;
+}
+.lab:hover{border-color:var(--accent); color:var(--accent); background:var(--accent-soft)}
+.lab .ln{font-family:var(--mono); font-size:10px; color:var(--ink-3)}
+.lab.sub{font-size:11px; padding:3px 8px; border-style:dashed; cursor:default}
+.lab.sub:hover{border-color:var(--rule-2); color:var(--ink-2); background:var(--surface)}
+.subgroup{display:inline-flex; flex-wrap:wrap; gap:5px; padding:3px 5px 3px 3px; border:1px solid var(--rule); border-radius:9px; background:var(--surface-2); align-items:center}
+
+/* ── policy sections ── */
+.polhead{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; justify-content:space-between; margin-bottom:4px}
+.vermeta{display:flex; gap:18px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-2); margin-top:10px}
+.vermeta div span{display:block; font-size:10.5px; letter-spacing:.08em; color:var(--ink-3); margin-bottom:1px}
+select{
+  font:inherit; font-size:13px; padding:7px 10px; border-radius:8px; border:1px solid var(--rule-2);
+  background:var(--surface); color:var(--ink); max-width:100%;
+}
+.toc{padding:14px 18px; margin:18px 0}
+.toc h3{font-size:12px; letter-spacing:.1em; color:var(--ink-3); margin-bottom:9px}
+.toc ol{margin:0; padding:0; list-style:none; columns:2; column-gap:26px}
+.toc li{break-inside:avoid; margin-bottom:3px}
+.toc a{font-size:13px; color:var(--ink-2); text-decoration:none; display:flex; gap:8px}
+.toc a:hover{color:var(--accent); text-decoration:underline}
+.toc .tn{font-family:var(--mono); font-size:11px; color:var(--ink-3); flex:none; width:3.6em; white-space:nowrap}
+
+.sec{
+  display:grid; grid-template-columns:56px minmax(0,1fr); gap:0 16px;
+  padding:20px 0; border-top:1px solid var(--rule); scroll-margin-top:96px;
+}
+.sec:first-of-type{border-top:0}
+.sec .gutter{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); padding-top:3px}
+.sec .gutter b{display:block; font-size:15px; color:var(--accent); font-weight:600; letter-spacing:-.02em}
+.sec h3{font-size:16.5px; margin-bottom:9px}
+.sec .seclabels{display:flex; gap:5px; flex-wrap:wrap; margin-bottom:11px}
+.sec .seclabels .tag{font-size:10.5px; padding:2px 7px; border-radius:5px; background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent-line); font-weight:620}
+.sec .body{display:flex; flex-direction:column; gap:11px; font-size:13.8px; color:var(--ink-2); line-height:1.72}
+.sec .body ul,.sec .body ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:5px}
+.seckey{font-size:10.5px; color:var(--ink-3); margin-top:2px; word-break:break-all}
+.bound{
+  border-left:3px solid var(--active); background:var(--active-soft); padding:11px 13px; border-radius:0 8px 8px 0;
+}
+.bound .bl{font-size:10.5px; letter-spacing:.07em; color:var(--active); font-weight:680; margin-bottom:7px; display:flex; gap:7px; align-items:center}
+.reflink{
+  display:flex; gap:11px; align-items:center; padding:11px 13px; border:1px solid var(--accent-line);
+  background:var(--accent-soft); border-radius:9px; cursor:pointer; text-align:left; width:100%;
+}
+.reflink:hover{border-color:var(--accent)}
+.reflink .arrow{color:var(--accent); font-family:var(--mono); flex:none}
+.reflink .rt{font-size:13px; color:var(--accent); font-weight:620}
+.reflink .rs{font-size:11.5px; color:var(--ink-3)}
+.condensed{font-size:11.5px; color:var(--ink-3); font-style:normal; border-left:2px solid var(--rule-2); padding-left:9px}
+
+/* ── history ── */
+.vrow{display:grid; grid-template-columns:74px 1fr auto; gap:14px; align-items:start; padding:14px 16px; border-bottom:1px solid var(--rule)}
+.vrow:last-child{border-bottom:0}
+.vrow .vid{font-family:var(--mono); font-size:13px; font-weight:620; color:var(--accent)}
+.vrow .vspan{font-family:var(--mono); font-size:12px; color:var(--ink-2); font-variant-numeric:tabular-nums}
+.vrow .vreason{font-size:12.5px; color:var(--ink-3); margin-top:3px}
+.vrow .vhash{font-family:var(--mono); font-size:10.5px; color:var(--ink-3); margin-top:5px}
+.vrow.isgap{background:var(--del-soft)}
+.vacts{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end}
+.mini{border:1px solid var(--rule-2); background:var(--surface); border-radius:7px; padding:4px 10px; font-size:11.5px; cursor:pointer; color:var(--ink-2); white-space:nowrap}
+.mini:hover{border-color:var(--accent); color:var(--accent)}
+.audit{grid-column:1/-1; margin-top:12px; padding-top:12px; border-top:1px dashed var(--rule-2); display:flex; flex-direction:column; gap:0}
+.audit[hidden]{display:none}
+.astep{display:grid; grid-template-columns:132px 116px 1fr; gap:12px; font-size:12px; padding:5px 0; align-items:baseline}
+.astep .at{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.astep .aw{color:var(--ink-2)}
+.astep .aa{color:var(--ink); font-weight:600}
+.astep .ad{color:var(--ink-3); font-weight:400}
+.integrity{display:flex; flex-direction:column; gap:8px; padding:14px 16px; margin-bottom:18px}
+.ichk{display:flex; gap:10px; align-items:flex-start; font-size:12.5px}
+.ichk .ibadge{flex:none; font-size:10.5px; font-family:var(--mono); padding:2px 7px; border-radius:5px; background:var(--del-soft); color:var(--del); border:1px solid var(--del); font-weight:620}
+
+/* ── diff ── */
+.diffbar{display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; margin-bottom:18px}
+.field{display:flex; flex-direction:column; gap:5px}
+.field label{font-size:11px; letter-spacing:.08em; color:var(--ink-3)}
+.dsec{margin-bottom:14px; overflow:hidden}
+.dsec-h{display:flex; gap:11px; align-items:center; padding:11px 15px; background:var(--surface-2); border-bottom:1px solid var(--rule); flex-wrap:wrap}
+.dsec-h .dt{font-size:13.5px; font-weight:620}
+.dsec-h .dk{font-family:var(--mono); font-size:10.5px; color:var(--ink-3); margin-left:auto}
+.dtype{font-size:10.5px; font-family:var(--mono); padding:2px 8px; border-radius:5px; font-weight:620; letter-spacing:.03em}
+.dtype.ADDED{background:var(--add-soft); color:var(--add); border:1px solid var(--add)}
+.dtype.MODIFIED{background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent-line)}
+.dtype.REMOVED{background:var(--del-soft); color:var(--del); border:1px solid var(--del)}
+.dbody{padding:14px 15px; display:flex; flex-direction:column; gap:11px}
+.dreason{font-size:12px; color:var(--ink-3)}
+.dreason b{color:var(--ink-2); font-weight:620}
+.dtext{font-size:13.2px; line-height:1.8; color:var(--ink-2); padding:11px 13px; border-radius:8px; background:var(--surface-2); border:1px solid var(--rule)}
+.dtext .dlab{display:block; font-size:10.5px; letter-spacing:.08em; color:var(--ink-3); margin-bottom:6px}
+ins{background:var(--add-soft); color:var(--add); text-decoration:none; padding:1px 3px; border-radius:3px; font-weight:600}
+del{background:var(--del-soft); color:var(--del); padding:1px 3px; border-radius:3px}
+
+/* ── admin data ── */
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(268px,1fr)); gap:16px}
+.fset{padding:16px 18px}
+.fset h3{font-size:13.5px; margin-bottom:3px}
+.fset .fh{font-size:11.5px; color:var(--ink-3); margin-bottom:14px}
+.frow{display:flex; flex-direction:column; gap:5px; margin-bottom:11px}
+.frow label{font-size:11px; letter-spacing:.06em; color:var(--ink-3)}
+input[type=text]{
+  font:inherit; font-size:13.2px; padding:7px 10px; border-radius:7px;
+  border:1px solid var(--rule-2); background:var(--paper); color:var(--ink); width:100%;
+}
+input[type=text]:focus{background:var(--surface)}
+.savebar{display:flex; gap:11px; align-items:center; flex-wrap:wrap; margin-top:18px; padding:14px 16px}
+.btn{border:1px solid var(--accent); background:var(--accent); color:var(--accent-ink); border-radius:8px; padding:8px 16px; font-size:13px; font-weight:620; cursor:pointer}
+.btn.ghost{background:transparent; color:var(--accent)}
+.toast{
+  font-size:12.5px; color:var(--active); background:var(--active-soft); border:1px solid var(--active-line);
+  padding:8px 12px; border-radius:8px; display:none;
+}
+.toast.on{display:block}
+.toast b{font-weight:680}
+
+/* ── portal skins (requirement 5 demo) ── */
+.skinchrome{display:none}
+[data-skin="a"] .skin-a, [data-skin="b"] .skin-b{display:block}
+.skin-a .gnb{background:#1B3A6B; color:#fff; padding:13px 0}
+.skin-a .gnb .wrap{display:flex; align-items:center; gap:24px}
+.skin-a .gnb .wm{font-weight:700; letter-spacing:-.02em; font-size:15px}
+.skin-a .gnb nav{display:flex; gap:18px; font-size:13px; opacity:.86; flex-wrap:wrap}
+.skin-a .crumb{background:#F0F3F7; color:#4A5A6B; font-size:11.5px; border-bottom:1px solid #DDE4EC}
+.skin-a .crumb .wrap{padding:9px 20px; display:flex; justify-content:flex-end}
+.skin-b .gnb{background:#101418; color:#E8EDF2; padding:16px 0; border-bottom:2px solid #C8A24A}
+.skin-b .gnb .wrap{display:flex; align-items:center; gap:22px}
+.skin-b .gnb .wm{font-weight:300; letter-spacing:.32em; font-size:14px; text-transform:uppercase}
+.skin-b .gnb nav{display:flex; gap:20px; font-size:12px; letter-spacing:.08em; margin-left:auto; opacity:.7; flex-wrap:wrap}
+.skinfoot{padding:22px 0; font-size:11.5px; text-align:center}
+.skin-a .skinfoot{background:#F0F3F7; color:#7A8896; border-top:1px solid #DDE4EC}
+.skin-b .skinfoot{background:#101418; color:#7C8794}
+.skinbadge{
+  font-size:11px; padding:6px 0; text-align:center; background:var(--surface-3); color:var(--ink-3);
+  border-bottom:1px solid var(--rule);
+}
+[data-skin="none"] .skinbadge{display:none}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr; gap:18px}
+  .rail{position:static; flex-direction:row; overflow-x:auto; padding-bottom:6px; gap:6px}
+  .rail button{width:auto; white-space:nowrap}
+  .rail-note{display:none}
+  .toc ol{columns:1}
+  .sec{grid-template-columns:1fr; gap:8px}
+  .sec .gutter{display:flex; gap:9px; align-items:baseline}
+  .sec .gutter b{display:inline}
+  .seckey{display:none}
+  .astep{grid-template-columns:1fr; gap:2px; padding:8px 0; border-bottom:1px dotted var(--rule)}
+  .vrow{grid-template-columns:1fr; }
+  .vacts{justify-content:flex-start}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+</style>
+
+<div class="notice">
+  <div class="wrap">
+    <span>⚠</span>
+    <div><b>프로토타입입니다.</b> 실제 게시본이 아니며 대외 공개용이 아닙니다. 조문·라벨·개정이력은 2026-03-12 시행 공개본을 기준으로 재구성했고, <b>위·수탁 현황과 감사 로그는 샘플 데이터</b>입니다(실제 현황 문서 미수집).</div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="wrap topbar-in">
+    <div class="brand"><b>개인정보처리방침 관리 콘솔</b><span class="mono">PROTOTYPE</span></div>
+    <div class="seg" role="group" aria-label="홈페이지 스킨 전환">
+      <span class="seg-lab">게시 껍데기</span>
+      <button data-skin-btn="none" aria-pressed="true">단독</button>
+      <button data-skin-btn="a" aria-pressed="false">홈페이지 A</button>
+      <button data-skin-btn="b" aria-pressed="false">홈페이지 B</button>
+    </div>
+  </div>
+</div>
+
+<div id="shellroot" data-skin="none">
+
+  <div class="skinchrome skin-a">
+    <div class="gnb"><div class="wrap"><span class="wm">○○금융투자</span>
+      <nav><span>상품</span><span>투자정보</span><span>고객센터</span><span>회사소개</span></nav></div></div>
+    <div class="crumb"><div class="wrap">홈 &nbsp;›&nbsp; 고객센터 &nbsp;›&nbsp; 약관 및 유의사항</div></div>
+  </div>
+  <div class="skinchrome skin-b">
+    <div class="gnb"><div class="wrap"><span class="wm">Securities</span>
+      <nav><span>INVEST</span><span>RESEARCH</span><span>SUPPORT</span><span>ABOUT</span></nav></div></div>
+  </div>
+
+  <div class="skinbadge">↑ 예시 껍데기입니다. 아래 콘텐츠 영역은 껍데기와 무관하게 <b>동일한 데이터</b>로 렌더링됩니다.</div>
+
+  <div class="wrap shell">
+    <nav class="rail" aria-label="화면 전환">
+      <button data-view="policy" aria-current="true"><span class="n">01</span>방침 본문</button>
+      <button data-view="registry"><span class="n">02</span>위·수탁 현황</button>
+      <button data-view="history"><span class="n">03</span>버전 이력</button>
+      <button data-view="diff"><span class="n">04</span>신구대조</button>
+      <button data-view="admin"><span class="n">05</span>관리 데이터</button>
+      <div class="rail-note">이 콘솔은 홈페이지와 별도로 배포되며, 홈페이지는 게시 시점에 만들어진 정적 스냅샷만 읽습니다.</div>
+    </nav>
+
+    <main class="view-host">
+
+      <!-- 01 방침 본문 -->
+      <section class="view" id="v-policy">
+        <div class="pagehead">
+          <div class="eyebrow">01 · 대고객 뷰</div>
+          <div class="polhead">
+            <h2>개인정보처리방침</h2>
+            <div class="field">
+              <label for="verpick">열람 버전</label>
+              <select id="verpick"></select>
+            </div>
+          </div>
+          <div class="vermeta" id="vermeta"></div>
+        </div>
+
+        <div class="proof"><span class="k">요구 2</span><div><b>스냅샷 버전관리.</b> 버전을 바꾸면 본문·조직정보·조문 구성이 그 시점 상태로 바뀝니다. 과거본은 게시 당시 값이 동결되어 있어, 지금 조직 마스터를 수정해도 변하지 않습니다.</div></div>
+
+        <div class="card labelboard">
+          <h3>주요 개인정보 표시 (라벨링)</h3>
+          <div class="labels" id="labels"></div>
+        </div>
+
+        <div class="card toc">
+          <h3>목차 — 조항 데이터에서 자동 생성</h3>
+          <ol id="toc"></ol>
+        </div>
+
+        <div id="sections"></div>
+      </section>
+
+      <!-- 02 위·수탁 현황 -->
+      <section class="view" id="v-registry" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">02 · 현황 레지스트리</div>
+          <h2>개인정보 처리업무 위·수탁 현황</h2>
+          <p class="sub">방침 본문에서 분리된 독립 개체입니다. 자체 기준일을 가지며, 갱신해도 방침 버전은 올라가지 않습니다.</p>
+        </div>
+        <div class="proof"><span class="k">요구 4</span><div><b>별도 표 + 링크 관리.</b> 수탁사 한 곳이 바뀔 때마다 방침 전체를 개정할 수는 없습니다. 3사 모두 이 표를 본문에서 분리해 두었고, 당사만 링크가 아닌 텍스트 경로 안내(“홈페이지 &gt; … 참고”)로 되어 있으며 기준일 표기도 없습니다.</div></div>
+        <div class="vermeta" style="margin-bottom:16px" id="regmeta"></div>
+        <div class="tscroll"><table>
+          <thead><tr><th>수탁사</th><th>위탁 업무</th><th>제공 항목</th><th>국외</th><th>등재일</th></tr></thead>
+          <tbody id="regbody"></tbody>
+        </table></div>
+        <p class="condensed" style="margin-top:14px">샘플 데이터입니다. 실제 구축 시 제3자 제공 현황·국외 이전 현황·제휴업체 현황도 동일한 구조의 독립 레지스트리로 관리합니다.</p>
+      </section>
+
+      <!-- 03 버전 이력 -->
+      <section class="view" id="v-history" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">03 · 이력관리</div>
+          <h2>버전 이력 및 감사 기록</h2>
+          <p class="sub">공개된 개정 이력을 스냅샷 모델로 재구성했습니다. 행을 열면 작성 → 검토 → 승인 → 게시 기록이 표시됩니다.</p>
+        </div>
+        <div class="proof"><span class="k">요구 1·2</span><div><b>이력관리와 스냅샷.</b> 각 버전은 시행기간·상태·해시를 가지며 삭제되지 않습니다. 아래 정합성 점검은 <b>현재 공개된 이력에서 실제로 발견된 문제</b>입니다 — 시스템이 있으면 등록 단계에서 걸러집니다.</div></div>
+
+        <div class="card integrity" id="integrity"></div>
+        <div class="card" id="vlist"></div>
+      </section>
+
+      <!-- 04 신구대조 -->
+      <section class="view" id="v-diff" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">04 · 자동 신구대조표</div>
+          <h2>변경 전·후 비교</h2>
+          <p class="sub">조항 단위로 저장되어 있으므로 비교표는 사람이 만들지 않고 계산됩니다. 현행 제17조가 명문화한 “변경 전·후를 비교하여 공개” 의무의 이행 수단입니다.</p>
+        </div>
+        <div class="proof"><span class="k">요구 1</span><div><b>조항 불변키가 전제입니다.</b> 조항이 신설되면 “제7조”가 “제8조”로 밀립니다. 표시번호를 키로 쓰면 이 비교가 전부 깨지므로, 조항마다 표시번호와 별개의 불변키를 둡니다.</div></div>
+        <div class="diffbar">
+          <div class="field"><label for="dfrom">이전 버전</label><select id="dfrom"></select></div>
+          <div class="field"><label for="dto">이후 버전</label><select id="dto"></select></div>
+        </div>
+        <div id="diffout"></div>
+      </section>
+
+      <!-- 05 관리 데이터 -->
+      <section class="view" id="v-admin" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">05 · 조직 마스터</div>
+          <h2>조직 정보 관리</h2>
+          <p class="sub">현행 방침 제14조·제16조에는 CPO 성명, 부서명, CCTV 접근권한자 2인의 실명과 직통번호가 본문에 직접 기재되어 있습니다. 인사이동마다 개정 절차 전체를 다시 밟아야 하는 구조입니다.</p>
+        </div>
+        <div class="proof"><span class="k">요구 3</span><div><b>조직개편은 개정이 아니라 데이터 수정입니다.</b> 아래 값을 바꾸고 저장한 뒤 <b>01 방침 본문</b>으로 이동해 보세요. 제14·16조가 즉시 반영되지만 <b>버전은 그대로</b>이고 개정 절차는 발생하지 않습니다. 반대로 과거 버전을 열면 게시 당시 값이 그대로 남아 있습니다.</div></div>
+
+        <div class="grid2">
+          <div class="card fset">
+            <h3>개인정보 보호책임자</h3>
+            <div class="fh">제14조에 바인딩</div>
+            <div class="frow"><label for="f-cpoRank">직위</label><input type="text" id="f-cpoRank" data-org="cpoRank"></div>
+            <div class="frow"><label for="f-cpoName">성명</label><input type="text" id="f-cpoName" data-org="cpoName"></div>
+            <div class="frow"><label for="f-deptPrivacy">개인정보 보호업무 부서</label><input type="text" id="f-deptPrivacy" data-org="deptPrivacy"></div>
+            <div class="frow"><label for="f-deptGrievance">고충처리 부서</label><input type="text" id="f-deptGrievance" data-org="deptGrievance"></div>
+            <div class="frow"><label for="f-tel">대표번호</label><input type="text" id="f-tel" data-org="tel"></div>
+            <div class="frow"><label for="f-email">이메일</label><input type="text" id="f-email" data-org="email"></div>
+          </div>
+          <div class="card fset">
+            <h3>고정형 영상정보처리기기</h3>
+            <div class="fh">제16조에 바인딩</div>
+            <div class="frow"><label for="f-cctvManager">관리책임자</label><input type="text" id="f-cctvManager" data-org="cctvManager"></div>
+            <div class="frow"><label for="f-cctvCount">설치 대수</label><input type="text" id="f-cctvCount" data-org="cctvCount"></div>
+            <div class="frow"><label for="f-cctvSites">설치 지점</label><input type="text" id="f-cctvSites" data-org="cctvSites"></div>
+            <div class="frow"><label for="f-acc1">접근권한자 1 (부서·성명·연락처)</label><input type="text" id="f-acc1" data-org="acc1"></div>
+            <div class="frow"><label for="f-acc2">접근권한자 2 (부서·성명·연락처)</label><input type="text" id="f-acc2" data-org="acc2"></div>
+          </div>
+        </div>
+
+        <div class="card savebar">
+          <button class="btn" id="orgsave">조직 마스터 저장</button>
+          <button class="btn ghost" id="orgreset">공개본 값으로 되돌리기</button>
+          <div class="toast" id="orgtoast"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="skinchrome skin-a"><div class="skinfoot">○○금융투자 — 예시 푸터</div></div>
+  <div class="skinchrome skin-b"><div class="skinfoot">SECURITIES — 예시 푸터</div></div>
+</div>
+
+<script>
+"use strict";
+
+/* ═══════════ 조직 마스터 (요구 3) — 버전과 독립 ═══════════ */
+const ORG_PUBLISHED = {
+  cpoRank:"상무", cpoName:"황돈구",
+  deptPrivacy:"정보보호부", deptGrievance:"금융소비자보호부",
+  tel:"1588-1000", email:"privacy@wooriib.com",
+  cctvManager:"HR지원부장", cctvCount:"65", cctvSites:"본점 / 강남금융센터 / 광주금융센터",
+  acc1:"HR지원부 유희곤 02-6390-3604", acc2:"HR지원부 김지수 02-6390-3620"
+};
+let ORG = Object.assign({}, ORG_PUBLISHED);
+
+/* 과거 버전에 동결된 조직 스냅샷 (요구 2 — P4 원칙) */
+const ORG_SNAPSHOT = {
+  v7:{ cpoRank:"상무", cpoName:"황돈구", deptPrivacy:"정보보호부", deptGrievance:"금융소비자보호부",
+       tel:"1588-1000", email:"privacy@wooriib.com",
+       cctvManager:"—", cctvCount:"—", cctvSites:"—", acc1:"—", acc2:"—" },
+  v6:{ cpoRank:"상무", cpoName:"황돈구", deptPrivacy:"정보보호부", deptGrievance:"금융소비자보호부",
+       tel:"1588-1000", email:"privacy@wooriib.com",
+       cctvManager:"—", cctvCount:"—", cctvSites:"—", acc1:"—", acc2:"—" }
+};
+
+/* ═══════════ 라벨링 20종 — 조항 앵커 (17 주라벨 + 3 세부) ═══════════ */
+const LABELS = [
+  {n:"개인정보 처리목적", sec:"S01"}, {n:"개인정보 보유기간", sec:"S04"},
+  {n:"처리항목", sec:"S02", subs:["개인정보","민감정보","고유식별정보"]},
+  {n:"제3자 제공", sec:"S06"}, {n:"처리위탁", sec:"S08"}, {n:"파기", sec:"S05"},
+  {n:"개인정보의 국외 이전", sec:"S09"}, {n:"정보주체의 권리의무", sec:"S13"},
+  {n:"안전성 확보조치", sec:"S10"}, {n:"자동화 수집", sec:"S11"},
+  {n:"행태정보 수집", sec:"S12"}, {n:"추가적 이용", sec:"S07"},
+  {n:"개인정보 보호책임자", sec:"S14"}, {n:"권익침해 구제", sec:"S15"},
+  {n:"처리방침 변경", sec:"S17"}, {n:"법정대리인", sec:"S03"},
+  {n:"고정형 영상정보처리기기", sec:"S16"}
+];
+
+/* ═══════════ 조항 (요구 1 — 불변키 + 자동 채번) ═══════════ */
+const P = t => ({t:"p", v:t});
+const UL = a => ({t:"ul", v:a});
+const NOTE = t => ({t:"note", v:t});
+
+const SECTIONS = [
+ {key:"S01", uuid:"9f2c-4a11", tags:["개인정보 처리목적"], title:"개인정보의 처리 목적", body:[
+   P("당사는 다음의 목적으로 개인정보를 처리합니다. 처리한 개인정보는 목적 외의 용도로는 사용되지 않으며 처리 목적이 변경될 시에는 사전동의를 구할 예정입니다."),
+   {t:"table", head:["구분","처리목적"], rows:[
+     ["회원가입 및 관리","홈페이지 회원가입, 회원제 서비스 이용, 본인확인, 개인식별, 부정이용방지, 가입의사 확인"],
+     ["금융거래 관련","(금융)계약의 체결·유지·이행·관리·개선, 법령상 의무이행, 금융사고 방지, 통계 및 분석, 리스크 관리"],
+     ["전문투자자 지정심사","전문투자자 지정심사 및 지정확인·말소 업무 처리"],
+     ["고객 편의 서비스 제공","상품·서비스 홍보 및 판매 권유, 경품 지급, 투자 포트폴리오 설계 및 자문, 세무신고대행"],
+     ["통계작성·과학적 연구·공익적 기록보존","개인정보보호법 제28조의2에 의해 개인정보를 가명처리하여 활용할 수 있음"]
+   ]},
+   NOTE("프로토타입에서는 5개 구분만 표시했습니다. 실제 구축 시 표는 행 단위 구조화 데이터로 저장됩니다.")
+ ]},
+ {key:"S02", uuid:"3b8d-71e0", tags:["처리항목","개인정보","민감정보","고유식별정보"], title:"처리하는 개인정보의 항목", body:[
+   P("당사는 다음의 개인정보 항목을 「개인정보 보호법」 제15조제1항제1호 및 제22조제1항제7호에 따라 정보주체의 동의를 받아 처리하고 있습니다."),
+   {t:"table", head:["구분","분류","항목"], rows:[
+     ["금융거래 필수(공통)","일반개인정보","성명(국문·영문), 생년월일, 주소, 연락처, 이메일, 직업, 국적, 거주자구분, 연계정보CI 등"],
+     ["금융거래 필수(공통)","고유식별정보","주민등록번호, 외국인등록번호, 여권번호, 운전면허번호"],
+     ["대여금고 거래","민감정보","생체인식정보(지문)"],
+     ["상품서비스 안내","일반개인정보","성명, 성별, 생년월일, 주소, 연락처, 이메일, 이용 단말기정보"]
+   ]},
+   NOTE("실제 방침의 항목표는 20개 이상의 구분을 가진 대형 표입니다. 프로토타입에서는 4행만 표시했습니다.")
+ ]},
+ {key:"S03", uuid:"c410-9d33", tags:["법정대리인"], title:"만 14세 미만 아동의 개인정보 처리", body:[
+   P("당사는 만 14세 미만 아동에 대해 개인정보를 수집할 때 법정대리인의 동의를 얻어 해당 서비스 수행에 필요한 최소한의 개인정보를 수집하며, 필요시 아동에게 법정대리인의 성명, 연락처와 같이 최소한의 정보를 요구할 수 있고, 적법한 법정대리인이 동의하였는지를 확인합니다."),
+   UL(["필수항목(일반) : 법정대리인의 성명, 관계, 연락처",
+       "위임인 : 고유식별정보(주민등록번호, 외국인등록번호, 여권번호, 운전면허번호)",
+       "대리인 : 성명, 고유식별정보, 주소, 연락처, 국적, 본인과의 관계, 이메일 주소, 직장명"])
+ ]},
+ {key:"S04", uuid:"7e51-2c8a", tags:["개인정보 보유기간"], title:"개인정보의 처리 및 보유기간", body:[
+   P("당사는 수집된 개인(신용)정보를 제1조의 처리 목적을 위하여 다음과 같이 보유·이용합니다."),
+   {t:"table", head:["대상","근거","처리 및 보유기간"], rows:[
+     ["(금융)거래와 관련한 개인(신용)정보","개인정보보호법 / 신용정보법","(금융)거래 종료일 이후 5년까지"],
+     ["상품 및 서비스 홍보·판매 권유 관련","개인정보보호법 / 신용정보법","동의일로부터 동의 철회일까지"],
+     ["회원 가입 및 관리 목적","정보통신망법","회원 가입일로부터 회원 탈퇴일까지"],
+     ["금융투자상품 매매·투자자재산 운용 자료","자본시장법 및 시행령","10년 (자료 성격에 따라 상이)"],
+     ["전자금융거래에 관한 기록","전자금융거래법","5년"]
+   ]}
+ ]},
+ {key:"S05", uuid:"a1b6-5f74", tags:["파기"], title:"개인정보의 파기 절차 및 방법", body:[
+   P("당사는 개인정보의 보유기간이 경과, 처리목적 달성 등 개인정보가 불필요하게 되었을 때에는 법령상 보존 사유가 없는 한 지체없이 해당 개인정보를 파기합니다."),
+   UL(["파기 절차 : 파기 사유가 발생한 개인정보를 선정하고, 개인정보보호책임자의 관리·감독 하에 법령 및 당사 내부 지침에 따라 파기",
+       "파기 방법 : 전자적 파일은 기록을 재생할 수 없도록 파기하며, 종이 문서는 분쇄기로 분쇄하거나 소각하여 파기"])
+ ]},
+ {key:"S06", uuid:"d982-3a05", tags:["제3자 제공"], title:"개인정보의 제3자 제공", body:[
+   P("당사는 원칙적으로 고객의 개인정보를 제1조의 처리 목적에서 명시한 목적범위 내에서 처리하며, 고객의 사전동의 없이는 본래의 범위를 초과하여 처리하거나 제3자에게 제공하지 않습니다."),
+   {t:"ref", to:"registry", title:"개인(신용)정보 제3자 제공 현황", sub:"별도 레지스트리 · 기준일 보유 · 방침 개정 없이 갱신"},
+   NOTE("현행 방침에는 이 자리에 “홈페이지 > 개인정보처리방침 > ‘…현황’ 참고”라는 텍스트 경로 안내만 있고 링크가 없습니다.")
+ ]},
+ {key:"S07", uuid:"6c33-8b19", tags:["추가적 이용"], title:"추가적인 이용·제공이 지속적으로 발생 시 판단 기준", body:[
+   P("당사는 법령에 따라 정보주체의 동의 없이 개인(신용)정보를 추가적으로 이용·제공할 수 있습니다. 이에 따라 다음과 같은 사항을 고려하고 있습니다."),
+   UL(["추가적으로 이용·제공하려는 목적이 당초 수집 목적과 관련성이 있는지 여부",
+       "수집한 정황 또는 처리 관행에 비추어 볼 때 추가적인 이용·제공에 대한 예측 가능성이 있는지 여부",
+       "추가적인 이용·제공이 정보주체의 이익을 부당하게 침해하는지 여부"])
+ ]},
+ {key:"S08", uuid:"2f7a-6e42", tags:["처리위탁"], title:"개인정보 처리업무의 위탁", body:[
+   P("당사는 원활한 서비스 제공을 위해 제3자에게 개인(신용)정보의 처리 업무를 위탁하고 있으며, 이 경우 정보주체의 동의를 얻어 필요한 최소한의 범위로만 개인(신용)정보를 제공하고 있습니다."),
+   {t:"ref", to:"registry", title:"개인(신용)정보 처리 위탁 및 제휴업체 현황", sub:"별도 레지스트리 · 기준일 보유 · 방침 개정 없이 갱신"},
+   P("위탁계약 시 개인(신용)정보보호 관련 법규의 준수, 제3자 제공 금지 및 책임 부담 등을 명확히 규정하고, 당해 계약 내용을 보관하고 있습니다.")
+ ]},
+ {key:"S09", uuid:"88c1-0d57", tags:["개인정보의 국외 이전"], title:"개인정보의 국외 수집 및 이전에 관한 사항", body:[
+   P("당사는 서비스 이용자로부터 수집한 개인정보를 국외에 이전하고 있으며, 「개인정보 보호법」 제28조의8제2항에 따라 국외이전에 대해 안내합니다. (금융)거래관계의 설정 및 유지를 위한 필수적 사항이므로 동의를 거부하실 경우 (금융)거래관계의 설정 및 유지가 불가능할 수 있습니다."),
+   {t:"ref", to:"registry", title:"개인(신용)정보 국외 이전 현황", sub:"이전받는 자 · 국가 · 목적 · 보유기간 · 거부 방법"}
+ ]},
+ {key:"S10", uuid:"51e9-4772", tags:["안전성 확보조치"], title:"개인정보의 안전성 확보 조치", body:[
+   P("당사는 관련 법령에 따라 다음과 같이 안전성 확보에 필요한 기술적·관리적·물리적 보호조치를 하고 있습니다."),
+   UL(["관리적 보호조치 : 내부관리계획 수립·시행, 전담조직 운영, 정기적 직원 교육, 수탁사 점검 정기 실시",
+       "기술적 보호조치 : 접근권한 관리, 접근통제 시스템 운영, 개인(신용)정보 암호화, 정보유출방지솔루션(DLP), 24시간 365일 보안관제",
+       "물리적 조치 : 본사 및 각 영업점 출입통제, 전산실 및 문서고 등 통제구역 지정"])
+ ]},
+ {key:"S11", uuid:"b304-9a68", tags:["자동화 수집"], title:"개인정보 자동 수집 장치의 설치·운영 및 거부", body:[
+   P("당사는 홈페이지 사용 고객의 사용자 인증 및 개별적인 맞춤서비스 제공을 위해 ‘쿠키(Cookie)’를 사용하고 있습니다. 고객은 쿠키에 대한 선택권을 갖고 있으며, 웹 브라우저에서 옵션을 선택함으로써 모든 쿠키를 허용하거나 거부할 수 있습니다. 단, 쿠키의 저장을 거부하실 경우 서비스 이용에 불편이 발생할 수 있습니다.")
+ ]},
+ {key:"S12", uuid:"e7f0-1c25", tags:["행태정보 수집"], title:"행태정보의 수집·이용·제공 및 거부 등에 관한 사항", body:[
+   P("당사는 상품·서비스 개발 및 고객분석, 마케팅 등 이 사이트의 이용 분석에 활용하기 위해 온라인 행태정보를 수집·이용하고 있습니다."),
+   P("Google Analytics를 이용하여 방문 웹 페이지, 방문 빈도 등의 정보를 활용하며 이 경우 개인을 식별할 수 없도록 비식별화 처리된 정보를 이용합니다. 또한 당행 앱 이용자의 행태정보 분석을 위해 아이지에이웍스의 디파이너리에서 제공하는 광고 성과 결과를 이용합니다."),
+   NOTE("“당행”은 은행 표현입니다. 현행 공개본에 그대로 남아 있으며, 04 신구대조 화면의 v8 → v9 초안에서 정정 대상으로 잡혀 있습니다.")
+ ]},
+ {key:"S13", uuid:"4a2e-b8d1", tags:["정보주체의 권리의무","법정대리인"], title:"정보주체와 법정대리인의 권리·의무 및 행사방법", body:[
+   P("개인(신용)정보의 주체는 언제든지 개인정보 열람·정정·삭제·처리정지 요구 등의 권리를 행사할 수 있습니다."),
+   UL(["만 14세 미만 아동에 관한 열람 등 요구는 법정대리인이 직접 해야 합니다.",
+       "권리 행사는 홈페이지 고객의 소리, 민원창구, 서면, 전자우편, 모사전송(Fax) 등을 통해 하실 수 있습니다.",
+       "법령상 의무 준수를 위해 불가피한 경우 등에는 처리정지 요청을 거부할 수 있으며, 이 경우 사유를 알립니다."])
+ ]},
+ {key:"S14", uuid:"0dd7-5931", tags:["개인정보 보호책임자"], title:"개인정보 보호책임자 및 담당부서", body:[
+   P("개인(신용)정보 처리와 관련하여 관련 법령에 따라 개인(신용)정보 보호책임자 및 담당부서는 다음과 같습니다."),
+   {t:"org", kind:"cpo"}
+ ]},
+ {key:"S15", uuid:"9b16-c740", tags:["권익침해 구제"], title:"정보주체의 권익침해에 대한 구제방법", body:[
+   P("고객은 개인(신용)정보침해로 인한 구제를 받기 위하여 개인정보분쟁조정위원회, 한국인터넷진흥원 개인정보침해신고센터 등 관련 기관에 분쟁 해결이나 상담 등을 신청할 수 있습니다."),
+   UL(["개인정보분쟁조정위원회 — www.kopico.go.kr / 국번없이 1833-6972",
+       "한국인터넷진흥원 개인정보침해신고센터 — privacy.kisa.or.kr / 국번없이 118",
+       "대검찰청 사이버범죄수사단 — www.spo.go.kr / 국번없이 1301",
+       "경찰청 사이버안전국 — cyberbureau.police.go.kr / 국번없이 182"]),
+   NOTE("경찰청 링크는 구 URL 사용 가능성이 있어 확인이 필요합니다. 시스템 구축 시 외부 기관 링크 유효성 정기 점검 기능으로 관리합니다.")
+ ]},
+ {key:"S16", uuid:"f5c8-2ab3", tags:["고정형 영상정보처리기기"], title:"고정형 영상정보처리기기 운영·관리", since:"v8", body:[
+   P("당사는 고객, 시설 등의 안전 등을 위해 영업점 내 CCTV와 같은 고정형 영상정보처리기기를 다음과 같이 운영하고 있습니다."),
+   {t:"org", kind:"cctv"}
+ ]},
+ {key:"S17", uuid:"6704-de89", tags:["처리방침 변경"], title:"개인정보 처리방침의 변경", body:[
+   P("당사는 개인정보 처리방침을 변경하는 경우에는 변경 및 시행의 시기, 변경된 내용을 지속적으로 공개하며 변경된 내용은 고객이 쉽게 확인할 수 있도록 변경 전·후를 비교하여 공개합니다."),
+   {t:"vermeta"},
+   {t:"ref", to:"history", title:"개인정보처리방침 개정내역", sub:"버전별 시행기간 · 상태 · 스냅샷 해시"}
+ ]},
+ {key:"S18", uuid:"1e93-77bc", tags:["처리항목"], title:"가명정보 처리에 관한 사항", since:"v9", body:[
+   P("당사는 통계작성, 과학적 연구, 공익적 기록보존 등을 위하여 가명정보를 처리하며, 가명정보의 안전성 확보를 위해 필요한 기술적·관리적 및 물리적 조치를 하고 있습니다."),
+   UL(["가명정보 처리 목적 · 처리 항목 · 처리 및 보유기간",
+       "가명정보 제3자 제공에 관한 사항 · 처리의 위탁에 관한 사항",
+       "「개인정보 보호법」 제28조의4에 따른 안전성 확보조치"]),
+   NOTE("v9 초안에서 신설된 조항입니다. 현행 제1조·제4조가 가명처리를 명시하고 있으나 별도 조항이 없어 신설 대상으로 잡았습니다.")
+ ]}
+];
+
+/* ═══════════ 버전 (요구 2) ═══════════ */
+const VERSIONS = [
+ {id:"v9", status:"DRAFT",    from:"2026-09-01", to:null,         hash:"—",
+  reason:"가명정보 조항 신설, 타 업권 표현 및 오타 정정, 외부 기관 링크 갱신",
+  audit:[["2026-08-05 09:32","정보보호부 담당자","초안 작성","제18조 신설, 제12조·제6조 문구 정정"],
+         ["2026-08-08 11:15","정보보호부 검토자","검토 요청",""]]},
+ {id:"v8", status:"ACTIVE",   from:"2026-03-12", to:null,         hash:"3f9a1c7e",
+  reason:"고정형 영상정보처리기기 조항 신설 등",
+  audit:[["2026-03-02 09:32","정보보호부 담당자","초안 작성","제16조 신설"],
+         ["2026-03-05 11:15","정보보호부 검토자","검토 완료",""],
+         ["2026-03-06 14:20","개인정보 보호책임자","승인",""],
+         ["2026-03-12 00:00","시스템","예약 게시","스냅샷 해시 3f9a1c7e · 조직 마스터 동결"]]},
+ {id:"v7", status:"ARCHIVED", from:"2025-08-22", to:"2026-03-11", hash:"b8e4d201", reason:"개인정보 보호법 개정 반영", audit:[]},
+ {id:"v6", status:"ARCHIVED", from:"2025-03-25", to:"2025-08-21", hash:"7c05af93", reason:"위탁 현황 참조 방식 변경", audit:[]},
+ {id:"v5", status:"ARCHIVED", from:"2024-11-18", to:"2025-03-24", hash:"12da6b8f", reason:"처리 목적 정비", audit:[]},
+ {id:"v4", status:"ARCHIVED", from:"2024-08-01", to:"2024-11-17", hash:"e0417ac6", reason:"보유기간 표 정비", audit:[]},
+ {id:"v3", status:"ARCHIVED", from:"2024-02-20", to:"2024-07-31", hash:"9a3f52d0", reason:"개인정보 보호법 개정 대응", audit:[]},
+ {id:"v2", status:"ARCHIVED", from:"2019-12-02", to:"2024-02-19", hash:"44b7e1c9", reason:"—", audit:[]},
+ {id:"v1", status:"ARCHIVED", from:"2015-01-26", to:"2019-12-02", hash:"2c86904b", reason:"—", audit:[]},
+ {id:"—",  status:"GAP",      from:"2014-02-27", to:"2015-01-25", hash:"—",
+  reason:"제정본. 공개된 이전 방침 목록에 없어 열람할 수 없음", audit:[]}
+];
+const V_INDEX = {v9:9,v8:8,v7:7,v6:6,v5:5,v4:4,v3:3,v2:2,v1:1};
+const STATUS_KO = {ACTIVE:"게시중", ARCHIVED:"보존", DRAFT:"초안", GAP:"결번"};
+const STATUS_CLS = {ACTIVE:"active", ARCHIVED:"archived", DRAFT:"draft", GAP:"gap"};
+
+/* ═══════════ 위·수탁 레지스트리 (요구 4) ═══════════ */
+const REGISTRY = {
+  asOf:"2026-08-01", updatedBy:"정보보호부", policyVersion:"v8",
+  rows:[
+   ["코스콤","원장관리 시스템 운영 및 유지보수","개인식별정보, 금융거래정보","—","2024-02-20"],
+   ["한국정보인증","전자서명 인증 서비스","성명, 생년월일, 휴대전화번호","—","2024-02-20"],
+   ["○○컨택센터","고객 상담 및 아웃바운드 업무","성명, 연락처, 거래내역","—","2025-03-25"],
+   ["○○디엠","각종 보고서·안내장 인쇄 및 발송","성명, 주소, 계좌정보","—","2025-03-25"],
+   ["○○테크놀로지","전산시스템 개발 및 유지보수","시스템 운영상 접근 가능한 정보","—","2026-08-01"]
+  ]
+};
+
+/* ═══════════ 신구대조 (요구 1) ═══════════ */
+const DIFFS = {
+ "v8|v9":[
+  {sec:"S18", type:"ADDED", title:"가명정보 처리에 관한 사항",
+   reason:"제1조 및 제4조에서 가명처리를 명시하고 있으나 별도 조항이 없어 신설",
+   after:"당사는 통계작성, 과학적 연구, 공익적 기록보존 등을 위하여 가명정보를 처리하며, 가명정보의 안전성 확보를 위해 필요한 기술적·관리적 및 물리적 조치를 하고 있습니다."},
+  {sec:"S12", type:"MODIFIED", title:"행태정보의 수집·이용·제공 및 거부 등에 관한 사항",
+   reason:"타 업권(은행) 표현 정정",
+   before:"또한 당행 앱 이용자의 행태정보 분석을 위해 아이지에이웍스의 디파이너리에서 제공하는 광고 성과 결과를 이용합니다.",
+   after:"또한 당사 앱 이용자의 행태정보 분석을 위해 아이지에이웍스의 디파이너리에서 제공하는 광고 성과 결과를 이용합니다."},
+  {sec:"S06", type:"MODIFIED", title:"개인정보의 제3자 제공",
+   reason:"오타 정정 및 현황 문서 참조 방식을 텍스트 경로에서 링크로 변경",
+   before:"납치, 감긍 등 범죄 관련된 자의 개인정보 처리 / 제휴업체 상세 정보는 홈페이지 > 개인정보처리방침 > ‘개인(신용)정보처리 위탁 및 제휴업체 현황’ 참고",
+   after:"납치, 감금 등 범죄 관련된 자의 개인정보 처리 / 제휴업체 상세 정보는 개인(신용)정보 제3자 제공 현황에서 확인하실 수 있습니다."},
+  {sec:"S15", type:"MODIFIED", title:"정보주체의 권익침해에 대한 구제방법",
+   reason:"경찰청 사이버안전국 접수 창구 URL 갱신",
+   before:"경찰청 사이버안전국 — cyberbureau.police.go.kr / 국번없이 182",
+   after:"경찰청 사이버범죄 신고시스템 — ecrm.police.go.kr / 국번없이 182"}
+ ],
+ "v7|v8":[
+  {sec:"S16", type:"ADDED", title:"고정형 영상정보처리기기 운영·관리",
+   reason:"영업점 내 CCTV 운영 현황 공개 조항 신설",
+   after:"당사는 고객, 시설 등의 안전 등을 위해 영업점 내 CCTV와 같은 고정형 영상정보처리기기를 운영하고 있습니다."},
+  {sec:"S14", type:"MODIFIED", title:"개인정보 보호책임자 및 담당부서",
+   reason:"고충처리 부서 명칭 변경",
+   before:"개인정보 보호업무 정보보호부 / 고충처리부서 소비자보호부",
+   after:"개인정보 보호업무 정보보호부 / 고충처리부서 금융소비자보호부"}
+ ]
+};
+
+/* ═══════════ 렌더링 ═══════════ */
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let currentVersion = "v8";
+
+function orgFor(vid){
+  if (vid === "v8" || vid === "v9") return ORG;
+  return ORG_SNAPSHOT[vid] || ORG_SNAPSHOT.v7;
+}
+function versionsFor(vid){
+  const n = V_INDEX[vid] || 8;
+  return SECTIONS.filter(s => !s.since || (V_INDEX[s.since] || 0) <= n);
+}
+function verObj(vid){ return VERSIONS.find(v => v.id === vid) || VERSIONS[1]; }
+function spanOf(v){ return v.from + " ~ " + (v.to || (v.status === "DRAFT" ? "(시행 예정)" : "현재")); }
+
+function tableHTML(head, rows){
+  return '<div class="tscroll"><table><thead><tr>' +
+    head.map(h => "<th>" + esc(h) + "</th>").join("") +
+    '</tr></thead><tbody>' +
+    rows.map(r => "<tr>" + r.map(c => "<td>" + esc(c) + "</td>").join("") + "</tr>").join("") +
+    "</tbody></table></div>";
+}
+
+function orgBlock(kind, vid){
+  const o = orgFor(vid);
+  const frozen = !(vid === "v8" || vid === "v9");
+  const badge = frozen
+    ? '<span class="chip archived"><span class="dot"></span>게시 당시 값으로 동결</span>'
+    : '<span class="chip active"><span class="dot"></span>조직 마스터 실시간 참조</span>';
+  let inner;
+  if (kind === "cpo"){
+    inner = tableHTML(["개인정보보호 책임자","개인정보 보호업무","고충처리부서"],
+      [[o.cpoRank + " " + o.cpoName, o.deptPrivacy, o.deptGrievance],
+       [o.tel + " / " + o.email, "", ""]]);
+  } else {
+    inner = tableHTML(["구분","상세 내용"], [
+      ["설치 근거 및 목적","「개인정보보호법」 제25조제1항에 따라 고객 안전을 위한 범죄 예방, 시설안전 및 관리, 화재 예방"],
+      ["설치 현황", "설치 대수 : " + o.cctvCount + "대 · " + o.cctvSites],
+      ["관리책임자 및 접근권한자", "관리책임자 : " + o.cctvManager + " / 접근권한자 : " + o.acc1 + ", " + o.acc2],
+      ["촬영 시간·보관","촬영 24시간 · 촬영일로부터 3개월 · 서버실 내 영상정보저장장치"]
+    ]);
+  }
+  return '<div class="bound"><div class="bl">' + badge + '</div>' + inner + "</div>";
+}
+
+function verMetaBlock(vid){
+  const v = verObj(vid);
+  return tableHTML(["구분","일자"], [
+    ["개인정보 처리방침 제정일","2014. 02. 27."],
+    ["개인정보 처리방침 시행일", v.from.replace(/-/g, ". ") + "."],
+    ["개인정보 처리방침 최근 개정일", v.from.replace(/-/g, ". ") + "."]
+  ]);
+}
+
+function blockHTML(b, vid){
+  switch (b.t){
+    case "p":    return "<p>" + esc(b.v) + "</p>";
+    case "ul":   return "<ul>" + b.v.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>";
+    case "note": return '<p class="condensed">' + esc(b.v) + "</p>";
+    case "table":return tableHTML(b.head, b.rows);
+    case "org":  return orgBlock(b.kind, vid);
+    case "vermeta": return verMetaBlock(vid);
+    case "ref":  return '<button class="reflink" data-goto="' + b.to + '">' +
+                   '<span class="arrow">→</span><span><span class="rt">' + esc(b.title) +
+                   '</span><br><span class="rs">' + esc(b.sub) + "</span></span></button>";
+    default: return "";
+  }
+}
+
+function renderPolicy(){
+  const vid = currentVersion, v = verObj(vid), secs = versionsFor(vid);
+
+  $("#vermeta").innerHTML =
+    '<div><span>상태</span><span class="chip ' + STATUS_CLS[v.status] + '"><span class="dot"></span>' + STATUS_KO[v.status] + "</span></div>" +
+    '<div><span>시행기간</span><b class="mono">' + spanOf(v) + "</b></div>" +
+    '<div><span>조항 수</span><b class="mono">' + secs.length + "개조</b></div>" +
+    '<div><span>스냅샷 해시</span><b class="mono">' + esc(v.hash) + "</b></div>";
+
+  const secByKey = {};
+  secs.forEach((s, i) => { secByKey[s.key] = i + 1; });
+
+  $("#labels").innerHTML = LABELS.map(l => {
+    const no = secByKey[l.sec];
+    const main = '<button class="lab" data-anchor="' + l.sec + '"' + (no ? "" : " disabled") +
+      '><span class="ln">' + (no ? "제" + no + "조" : "—") + "</span>" + esc(l.n) + "</button>";
+    if (!l.subs) return main;
+    return '<span class="subgroup">' + main +
+      l.subs.map(s => '<span class="lab sub">' + esc(s) + "</span>").join("") + "</span>";
+  }).join("");
+
+  $("#toc").innerHTML = secs.map((s, i) =>
+    '<li><a href="#sec-' + s.key + '"><span class="tn">제' + (i + 1) + '조</span>' + esc(s.title) + "</a></li>"
+  ).join("");
+
+  $("#sections").innerHTML = secs.map((s, i) =>
+    '<article class="sec" id="sec-' + s.key + '">' +
+      '<div class="gutter"><b>제' + (i + 1) + '조</b><span class="seckey">' + esc(s.key + " · " + s.uuid) + "</span></div>" +
+      "<div><h3>" + esc(s.title) + "</h3>" +
+        '<div class="seclabels">' + s.tags.map(t => '<span class="tag">' + esc(t) + "</span>").join("") + "</div>" +
+        '<div class="body">' + s.body.map(b => blockHTML(b, vid)).join("") + "</div>" +
+      "</div>" +
+    "</article>"
+  ).join("");
+}
+
+function renderRegistry(){
+  $("#regmeta").innerHTML =
+    '<div><span>기준일 (as-of)</span><b class="mono">' + REGISTRY.asOf + "</b></div>" +
+    '<div><span>최종 갱신 주체</span><b>' + esc(REGISTRY.updatedBy) + "</b></div>" +
+    '<div><span>연동 방침 버전</span><b class="mono">' + REGISTRY.policyVersion + " (변동 없음)</b></div>" +
+    '<div><span>등재 건수</span><b class="mono">' + REGISTRY.rows.length + "건</b></div>";
+  $("#regbody").innerHTML = REGISTRY.rows.map(r =>
+    "<tr>" + r.map((c, i) => '<td' + (i >= 3 ? ' class="num"' : "") + ">" + esc(c) + "</td>").join("") + "</tr>"
+  ).join("");
+}
+
+function renderHistory(){
+  $("#integrity").innerHTML =
+    '<div class="ichk"><span class="ibadge">결번</span><div>제정일은 <b class="mono">2014-02-27</b>이나 공개된 이전 방침 목록은 <b class="mono">2015-01-26</b>부터 시작합니다. 제정본(2014-02-27 ~ 2015-01-25)을 열람할 수 없습니다.</div></div>' +
+    '<div class="ichk"><span class="ibadge">기간중복</span><div><b class="mono">2019-12-02</b>가 v1의 종료일이자 v2의 시작일로 동시에 표기되어 있습니다. 시행기간이 하루 겹칩니다.</div></div>' +
+    '<div class="ichk"><span class="ibadge">누락</span><div>각 버전의 개정 사유가 공개되어 있지 않아, 어떤 조항이 왜 바뀌었는지 외부에서 확인할 수 없습니다.</div></div>';
+
+  $("#vlist").innerHTML = VERSIONS.map(v => {
+    const hasAudit = v.audit && v.audit.length;
+    return '<div class="vrow' + (v.status === "GAP" ? " isgap" : "") + '">' +
+      '<div><div class="vid">' + esc(v.id) + '</div><span class="chip ' + STATUS_CLS[v.status] +
+        '" style="margin-top:5px"><span class="dot"></span>' + STATUS_KO[v.status] + "</span></div>" +
+      '<div><div class="vspan">' + spanOf(v) + "</div>" +
+        '<div class="vreason">' + esc(v.reason) + "</div>" +
+        '<div class="vhash">snapshot ' + esc(v.hash) + "</div></div>" +
+      '<div class="vacts">' +
+        (v.status === "GAP" ? "" :
+          '<button class="mini" data-openver="' + v.id + '">본문 열람</button>' +
+          (hasAudit ? '<button class="mini" data-audit="' + v.id + '">감사 기록</button>' : "")) +
+      "</div>" +
+      (hasAudit ? '<div class="audit" id="audit-' + v.id + '" hidden>' + v.audit.map(a =>
+        '<div class="astep"><span class="at">' + esc(a[0]) + '</span><span class="aw">' + esc(a[1]) +
+        '</span><span class="aa">' + esc(a[2]) + (a[3] ? ' <span class="ad">— ' + esc(a[3]) + "</span>" : "") + "</span></div>"
+      ).join("") + "</div>" : "") +
+    "</div>";
+  }).join("");
+}
+
+/* 단어 단위 LCS 기반 자동 신구대조 */
+function wordDiff(a, b){
+  const A = a.split(/(\s+)/), B = b.split(/(\s+)/);
+  const n = A.length, m = B.length;
+  const dp = Array.from({length:n + 1}, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--)
+    for (let j = m - 1; j >= 0; j--)
+      dp[i][j] = A[i] === B[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  let i = 0, j = 0, oldH = "", newH = "";
+  while (i < n && j < m){
+    if (A[i] === B[j]){ oldH += esc(A[i]); newH += esc(B[j]); i++; j++; }
+    else if (dp[i + 1][j] >= dp[i][j + 1]){ if (A[i].trim()) oldH += "<del>" + esc(A[i]) + "</del>"; else oldH += esc(A[i]); i++; }
+    else { if (B[j].trim()) newH += "<ins>" + esc(B[j]) + "</ins>"; else newH += esc(B[j]); j++; }
+  }
+  while (i < n){ oldH += A[i].trim() ? "<del>" + esc(A[i]) + "</del>" : esc(A[i]); i++; }
+  while (j < m){ newH += B[j].trim() ? "<ins>" + esc(B[j]) + "</ins>" : esc(B[j]); j++; }
+  return [oldH, newH];
+}
+
+function renderDiff(){
+  const key = $("#dfrom").value + "|" + $("#dto").value;
+  const set = DIFFS[key];
+  const out = $("#diffout");
+  if (!set){
+    out.innerHTML = '<div class="card" style="padding:22px; color:var(--ink-3); font-size:13px">' +
+      '이 조합의 비교 데이터는 프로토타입에 포함되어 있지 않습니다. <b>v8 → v9</b> 또는 <b>v7 → v8</b>을 선택해 보세요.</div>';
+    return;
+  }
+  out.innerHTML = set.map(d => {
+    let bodyHTML = '<div class="dreason"><b>변경 사유</b> · ' + esc(d.reason) + "</div>";
+    if (d.type === "MODIFIED"){
+      const [o, nw] = wordDiff(d.before, d.after);
+      bodyHTML += '<div class="dtext"><span class="dlab">변경 전</span>' + o + "</div>" +
+                  '<div class="dtext"><span class="dlab">변경 후</span>' + nw + "</div>";
+    } else if (d.type === "ADDED"){
+      bodyHTML += '<div class="dtext"><span class="dlab">신설 내용</span><ins>' + esc(d.after) + "</ins></div>";
+    }
+    return '<div class="card dsec"><div class="dsec-h">' +
+      '<span class="dtype ' + d.type + '">' + d.type + "</span>" +
+      '<span class="dt">' + esc(d.title) + "</span>" +
+      '<span class="dk">' + esc(d.sec) + "</span></div>" +
+      '<div class="dbody">' + bodyHTML + "</div></div>";
+  }).join("");
+}
+
+function fillOrgForm(){
+  $$("[data-org]").forEach(el => { el.value = ORG[el.dataset.org]; });
+}
+
+/* ═══════════ 이벤트 ═══════════ */
+function showView(name){
+  $$(".view").forEach(v => { v.hidden = v.id !== "v-" + name; });
+  $$(".rail button").forEach(b => b.setAttribute("aria-current", String(b.dataset.view === name)));
+  window.scrollTo({top:0, behavior:"instant"});
+}
+
+$$(".rail button").forEach(b => b.addEventListener("click", () => showView(b.dataset.view)));
+
+$$("[data-skin-btn]").forEach(b => b.addEventListener("click", () => {
+  $("#shellroot").dataset.skin = b.dataset.skinBtn;
+  $$("[data-skin-btn]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+}));
+
+$("#verpick").innerHTML = VERSIONS.filter(v => v.status !== "GAP").map(v =>
+  '<option value="' + v.id + '"' + (v.id === "v8" ? " selected" : "") + ">" +
+  v.id + " · " + spanOf(v) + " · " + STATUS_KO[v.status] + "</option>"
+).join("");
+$("#verpick").addEventListener("change", e => { currentVersion = e.target.value; renderPolicy(); });
+
+const dOpts = VERSIONS.filter(v => v.status !== "GAP").map(v =>
+  '<option value="' + v.id + '">' + v.id + " (" + v.from + ")</option>").join("");
+$("#dfrom").innerHTML = dOpts; $("#dto").innerHTML = dOpts;
+$("#dfrom").value = "v8"; $("#dto").value = "v9";
+$("#dfrom").addEventListener("change", renderDiff);
+$("#dto").addEventListener("change", renderDiff);
+
+document.addEventListener("click", e => {
+  const anchor = e.target.closest("[data-anchor]");
+  if (anchor && !anchor.disabled){
+    const el = document.getElementById("sec-" + anchor.dataset.anchor);
+    if (el) el.scrollIntoView({behavior:"smooth", block:"start"});
+    return;
+  }
+  const goto = e.target.closest("[data-goto]");
+  if (goto){ showView(goto.dataset.goto); return; }
+  const open = e.target.closest("[data-openver]");
+  if (open){ currentVersion = open.dataset.openver; $("#verpick").value = currentVersion; renderPolicy(); showView("policy"); return; }
+  const aud = e.target.closest("[data-audit]");
+  if (aud){ const p = document.getElementById("audit-" + aud.dataset.audit); if (p) p.hidden = !p.hidden; }
+});
+
+$("#orgsave").addEventListener("click", () => {
+  $$("[data-org]").forEach(el => { ORG[el.dataset.org] = el.value.trim() || "—"; });
+  renderPolicy();
+  const t = $("#orgtoast");
+  t.innerHTML = "저장했습니다. 제14·16조에 즉시 반영되었습니다 — <b>방침 버전은 v8 그대로이고 개정 절차는 발생하지 않았습니다.</b>";
+  t.classList.add("on");
+});
+$("#orgreset").addEventListener("click", () => {
+  ORG = Object.assign({}, ORG_PUBLISHED);
+  fillOrgForm(); renderPolicy();
+  const t = $("#orgtoast");
+  t.textContent = "2026-03-12 공개본 값으로 되돌렸습니다.";
+  t.classList.add("on");
+});
+
+renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); fillOrgForm();
+</script>
