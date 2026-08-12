@@ -108,6 +108,13 @@ button{font:inherit; color:inherit}
 .seg button{border:0; background:transparent; padding:5px 12px; border-radius:6px; cursor:pointer; font-size:12.5px; color:rgba(255,255,255,.82); white-space:nowrap}
 .seg button:hover{color:#fff}
 .seg button[aria-pressed="true"]{background:#fff; color:var(--woori); font-weight:700}
+.docpick{margin-left:4px}
+.docpick label{font-size:10px; letter-spacing:.07em; color:rgba(255,255,255,.62); margin-bottom:3px}
+.docpick select{font-size:12.5px; padding:6px 9px; border-radius:6px; border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.12); color:#fff; max-width:280px}
+.docpick select option{color:var(--ink); background:var(--surface)}
+.groupbanner{display:flex; gap:12px; align-items:flex-start; padding:14px 16px; margin-bottom:20px; background:var(--archived-soft); border:1px solid var(--archived-line); border-left:4px solid var(--archived); border-radius:0 10px 10px 0; font-size:12.5px; color:var(--ink-2); line-height:1.65}
+.groupbanner .gk{flex:none; font-family:var(--mono); font-size:10.5px; padding:2px 7px; border-radius:4px; background:var(--archived); color:#fff; font-weight:700; margin-top:1px}
+.groupbanner b{color:var(--archived)}
 .seg-lab{font-size:10.5px; color:rgba(255,255,255,.62); letter-spacing:.06em; margin:0 4px 0 6px; align-self:center}
 
 /* 스킨 적용 시 전체를 미리보기 프레임으로 감싼다 */
@@ -320,6 +327,71 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
 .toast.on{display:block}
 .toast b{font-weight:700}
 
+/* ── 조항 편집 ── */
+.editwrap{display:grid; grid-template-columns:238px minmax(0,1fr); gap:20px}
+.seclist{align-self:start; position:sticky; top:88px; max-height:calc(100vh - 120px); overflow:auto; padding:8px}
+.seclist button{display:block; width:100%; text-align:left; border:0; background:transparent; cursor:pointer; padding:8px 10px; border-radius:6px; font-size:12.5px; color:var(--ink-2); border-left:3px solid transparent}
+.seclist button:hover{background:var(--surface-2)}
+.seclist button[aria-current="true"]{background:var(--woori-soft); color:var(--woori); font-weight:700; border-left-color:var(--woori)}
+.seclist .sn{font-family:var(--mono); font-size:10px; color:var(--ink-3); display:block}
+.seclist button[aria-current="true"] .sn{color:var(--woori)}
+.seclist .chg{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--add); margin-left:5px; vertical-align:1px}
+.edithead{padding:15px 17px; margin-bottom:14px}
+.edithead h3{font-size:15px; margin-bottom:10px}
+.blk{margin-bottom:14px}
+.blk label{display:flex; gap:8px; align-items:center; font-size:11px; letter-spacing:.05em; color:var(--ink-3); margin-bottom:5px}
+.blk .bt{font-family:var(--mono); font-size:9.5px; padding:1px 6px; border-radius:3px; background:var(--surface-3); color:var(--ink-2)}
+textarea{font:inherit; font-size:13.4px; line-height:1.75; width:100%; padding:10px 12px; border-radius:7px; border:1px solid var(--rule-2); background:var(--paper); color:var(--ink); resize:vertical; min-height:64px; font-family:var(--sans)}
+textarea:focus{background:var(--surface); border-color:var(--sky-deep); outline:none}
+textarea.edited{border-color:var(--add); background:var(--add-soft)}
+.rdonly{padding:11px 13px; border:1px dashed var(--rule-2); border-radius:7px; font-size:12px; color:var(--ink-3); background:var(--surface-2)}
+.reasonbox{padding:15px 17px; margin-top:16px; border-top:2px solid var(--sky); border-radius:2px 2px 11px 11px}
+.reasonbox h4{font-size:13px; margin-bottom:4px}
+.reasonbox .rh{font-size:11.5px; color:var(--ink-3); margin-bottom:11px}
+.reasonrow{display:flex; gap:8px; flex-wrap:wrap}
+.reasonrow input{flex:1; min-width:220px}
+.editbar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:13px 16px; margin-top:16px}
+.pill{font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:100px; border:1px solid}
+.pill.on{background:var(--add-soft); color:var(--add); border-color:var(--add)}
+.pill.off{background:var(--surface-2); color:var(--ink-3); border-color:var(--rule-2)}
+
+/* ── 결재 · 데이터 ── */
+.flow{display:flex; gap:0; flex-wrap:wrap; margin-bottom:18px}
+.step{flex:1; min-width:132px; padding:13px 14px; border:1px solid var(--rule); background:var(--surface); position:relative}
+.step:first-child{border-radius:10px 0 0 10px}
+.step:last-child{border-radius:0 10px 10px 0}
+.step + .step{border-left:0}
+.step.done{background:var(--add-soft); border-color:var(--add)}
+.step.now{background:var(--woori); border-color:var(--woori)}
+.step.now .st,.step.now .sd{color:var(--woori-ink)}
+.step .st{font-size:12.5px; font-weight:700; color:var(--ink)}
+.step .sd{font-size:11px; color:var(--ink-3); margin-top:3px; font-family:var(--mono)}
+.step.done .st{color:var(--add)}
+.dataline{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:14px 17px; border-bottom:1px solid var(--rule)}
+.dataline:last-child{border-bottom:0}
+.dataline .dt{font-size:13px; font-weight:700}
+.dataline .dd{font-size:12px; color:var(--ink-3); margin-top:3px}
+.fileinput{display:none}
+
+/* ── 인계 파일 내보내기 ── */
+.optrow{display:flex; gap:22px; flex-wrap:wrap; margin-bottom:20px}
+.filecard{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:14px 17px; border-bottom:1px solid var(--rule)}
+.filecard:last-child{border-bottom:0}
+.fname{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--woori)}
+.fdesc{font-size:12.5px; color:var(--ink-3); margin-top:3px}
+.fsize{font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-top:4px}
+.facts{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end}
+.codebox{margin-top:18px; border-top:2px solid var(--woori); background:var(--surface); border:1px solid var(--rule); border-radius:2px 2px 11px 11px; overflow:hidden}
+.codebox-h{display:flex; gap:12px; align-items:center; padding:11px 15px; background:var(--surface-2); border-bottom:1px solid var(--rule); flex-wrap:wrap}
+.codebox-h .cn{font-family:var(--mono); font-size:12.5px; font-weight:700; color:var(--woori); margin-right:auto}
+.codebox pre{margin:0; padding:15px; overflow:auto; max-height:440px; font-family:var(--mono); font-size:11.5px; line-height:1.65; color:var(--ink-2); background:var(--surface); white-space:pre; word-break:normal}
+.rulecard{padding:15px 17px; margin-top:18px; border-top:2px solid var(--sky); border-radius:2px 2px 11px 11px}
+.rulecard h3{font-size:13px; margin-bottom:11px}
+.ckrow{display:grid; grid-template-columns:26px minmax(0,1fr); gap:10px; font-size:12.5px; padding:6px 0; border-bottom:1px dotted var(--rule); align-items:start}
+.ckrow:last-child{border-bottom:0}
+.ckrow .cknum{font-family:var(--mono); font-size:11px; color:var(--woori); font-weight:700; padding-top:2px}
+.ckrow b{color:var(--ink)}
+
 /* ── 게시 껍데기 예시 (요구 5) ── */
 .skinchrome{display:none}
 [data-skin="a"] .skin-a, [data-skin="b"] .skin-b{display:block}
@@ -364,6 +436,15 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
   .sec .gutter{display:flex; gap:10px; align-items:center}
   .seckey{display:none}
   .astep{grid-template-columns:1fr; gap:2px; padding:8px 0; border-bottom:1px dotted var(--rule)}
+  .editwrap{grid-template-columns:1fr}
+  .seclist{position:static; max-height:220px; display:flex; gap:6px; overflow-x:auto; padding:6px}
+  .seclist button{width:auto; white-space:nowrap; border-left:0; border-bottom:3px solid transparent; border-radius:6px}
+  .seclist button[aria-current="true"]{border-left:0; border-bottom-color:var(--woori)}
+  .flow{flex-direction:column}
+  .step{border-radius:0 !important} .step:first-child{border-radius:10px 10px 0 0 !important}
+  .step:last-child{border-radius:0 0 10px 10px !important}
+  .step + .step{border-left:1px solid var(--rule); border-top:0}
+  .dataline{grid-template-columns:1fr}
   .vrow{grid-template-columns:1fr}
   .vacts{justify-content:flex-start}
 }
@@ -373,7 +454,7 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
 <div class="notice">
   <div class="wrap">
     <span>⚠</span>
-    <div><b>프로토타입입니다.</b> 실제 게시본이 아니며 대외 공개용이 아닙니다. 조문·라벨·개정이력은 2026-03-12 시행 공개본을 기준으로 재구성했고, <b>위·수탁 현황과 감사 로그는 샘플 데이터</b>입니다(실제 현황 문서 미수집).</div>
+    <div><b>프로토타입입니다.</b> 실제 게시본이 아니며 대외 공개용이 아닙니다. 개인정보처리방침은 2026-03-12 시행 공개본, 고객정보취급방침은 현재 게시본을 기준으로 재구성했으며 <b>위·수탁 현황과 감사 로그는 샘플 데이터</b>입니다.</div>
   </div>
 </div>
 
@@ -381,8 +462,15 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
   <div class="wrap topbar-in">
     <div class="brand">
       <span class="mark" aria-hidden="true"></span>
-      <span class="bn"><b>개인정보처리방침 관리 콘솔</b><span>우리투자증권 · 정보보호부</span></span>
+      <span class="bn"><b>정책 문서 관리 콘솔</b><span>우리투자증권 · 정보보호부</span></span>
       <span class="pbadge mono">PROTOTYPE</span>
+    </div>
+    <div class="field docpick"><label for="docpick">관리 문서</label>
+      <select id="docpick">
+        <option value="privacy-policy">개인정보처리방침 · 개인정보 보호법 §30</option>
+        <option value="credit-info">신용정보활용체제 · 신용정보법 §31</option>
+        <option value="customer-info">고객정보취급방침 · 금융지주회사법 §48-2</option>
+      </select>
     </div>
     <div class="seg" role="group" aria-label="게시 껍데기 전환">
       <span class="seg-lab">게시 껍데기</span>
@@ -416,6 +504,9 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
       <button data-view="diff"><span class="n">04</span>신구대조</button>
       <button data-view="admin"><span class="n">05</span>관리 데이터</button>
       <button data-view="changes"><span class="n">06</span>변경내역 (대고객)</button>
+      <button data-view="edit"><span class="n">08</span>조항 편집</button>
+      <button data-view="approve"><span class="n">09</span>결재 · 데이터</button>
+      <button data-view="export"><span class="n">07</span>인계 파일 내보내기</button>
       <div class="rail-note">이 콘솔은 홈페이지와 별도로 배포되며, 홈페이지는 게시 시점에 만들어진 정적 스냅샷만 읽습니다.</div>
     </nav>
 
@@ -426,7 +517,7 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
         <div class="pagehead">
           <div class="eyebrow">01 · 대고객 뷰</div>
           <div class="polhead">
-            <h2>개인정보처리방침</h2>
+            <h2 id="polTitle">개인정보처리방침</h2>
             <div class="field">
               <label for="verpick">열람 버전</label>
               <select id="verpick"></select>
@@ -437,7 +528,9 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
 
         <div class="proof"><span class="k">요구 2</span><div><b>스냅샷 버전관리.</b> 버전을 바꾸면 본문·조직정보·조문 구성이 그 시점 상태로 바뀝니다. 과거본은 게시 당시 값이 동결되어 있어, 지금 조직 마스터를 수정해도 변하지 않습니다.</div></div>
 
-        <div class="card labelboard">
+        <div id="docbanner"></div>
+
+        <div class="card labelboard" id="labelboard">
           <h3>주요 개인정보 표시 (라벨링)</h3>
           <div class="labels" id="labels"></div>
         </div>
@@ -539,6 +632,106 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
         </div>
       </section>
 
+      <!-- 08 조항 편집 -->
+      <section class="view" id="v-edit" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">08 · 실무 작업</div>
+          <h2>조항 편집</h2>
+          <p class="sub">현행본을 복사한 <b>작업본</b>을 편집합니다. 워드를 열어 한 줄씩 고칠 필요가 없고, 무엇이 어떻게 바뀌었는지는 저장하는 순간 자동으로 정리됩니다.</p>
+        </div>
+        <div class="proof"><span class="k">목표 1</span><div><b>수기 작업을 없애는 것이 첫 번째 목표입니다.</b> 여기서 문단을 고치면 <b>04 신구대조</b>와 <b>06 변경내역</b>이 자동으로 채워지고, 승인 후 <b>07 내보내기</b>에서 개발팀에 넘길 HTML이 생성됩니다. 사람이 신구비교표를 만들 일이 없습니다.</div></div>
+        <div id="editnotice"></div>
+        <div class="editwrap">
+          <nav class="card seclist" id="seclist" aria-label="조항 목록"></nav>
+          <div>
+            <div class="card edithead" id="edithead"></div>
+            <div id="editblocks"></div>
+            <div class="card reasonbox" id="reasonbox"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09 결재 · 데이터 -->
+      <section class="view" id="v-approve" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">09 · 정보보호부 내부</div>
+          <h2>결재 · 데이터 관리</h2>
+          <p class="sub">작업자를 등록하고, 편집·상태 변경 이력을 남기며, 전체 데이터를 파일로 주고받습니다. <b>서버가 없으므로 본인 확인과 권한 통제는 불가능하며</b>, 이 도구는 <b>기록</b>만 제공합니다. 아래 마지막 카드에 보장 범위를 명시했습니다.</p>
+        </div>
+        <div class="proof"><span class="k">인수인계</span><div><b>담당자가 바뀌어도 상태가 그대로 넘어갑니다.</b> 지금은 워드 파일·PDF·개인 폴더가 흩어져 있어 인수인계가 곧 파일 뭉치 전달입니다. 여기서는 <b>데이터 파일 하나와 이 콘솔 하나</b>가 전부입니다 — 조항·버전·변경 사유·승인 상태가 모두 그 안에 있습니다.</div></div>
+
+        <div id="auditbox"></div>
+
+        <div class="flow" id="flow"></div>
+        <div class="card" id="flowacts" style="padding:14px 16px; margin-bottom:20px"></div>
+
+        <div class="card">
+          <div class="dataline">
+            <div><div class="dt">데이터 파일 저장</div>
+              <div class="dd">문서 3종의 조항·버전·작업본·변경 사유·승인 상태·조직 마스터·현황 레지스트리를 하나의 JSON으로 내려받습니다. 부서 공유 폴더에 두시면 됩니다.</div></div>
+            <div class="facts"><button class="btn" id="dsave">policy-data.json 저장</button></div>
+          </div>
+          <div class="dataline">
+            <div><div class="dt">데이터 파일 불러오기</div>
+              <div class="dd">이어서 작업하거나 인수인계받은 파일을 엽니다. 현재 작업 내용은 덮어써집니다.</div></div>
+            <div class="facts"><button class="mini" id="dload">파일 선택</button>
+              <input type="file" id="dfile" class="fileinput" accept="application/json,.json"></div>
+          </div>
+          <div class="dataline">
+            <div><div class="dt">브라우저 자동 저장</div>
+              <div class="dd" id="lsinfo">작업 중 내용은 이 브라우저에 자동 저장됩니다. 다른 PC로 옮기려면 위 데이터 파일을 사용하세요.</div></div>
+            <div class="facts"><button class="mini" id="dclear">자동 저장 지우기</button></div>
+          </div>
+        </div>
+        <div class="toast" id="dtoast" style="margin-top:14px"></div>
+      </section>
+
+      <!-- 07 인계 파일 내보내기 -->
+      <section class="view" id="v-export" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">07 · 개발팀 인계</div>
+          <h2>인계 파일 내보내기</h2>
+          <p class="sub">정보보호부가 조항을 수정하면 최종 HTML을 여기서 생성합니다. 개발팀은 <b>파일을 갈아끼우기만</b> 하면 되고, 텍스트를 직접 타이핑하지 않으므로 반영 과정의 오탈자가 발생하지 않습니다.</p>
+        </div>
+        <div class="proof"><span class="k">인계</span><div><b>별도 개발 발주 없이 시작할 수 있는 구간입니다.</b> 기존 홈페이지 프레임은 그대로 두고, 본문 영역만 파일로 분리해 교체합니다. 향후 홈페이지 재구축 시에도 이 파일들은 그대로 옮겨가면 됩니다.</div></div>
+
+        <div class="optrow">
+          <div class="field"><label>파일 형태</label>
+            <div class="segl" role="group" aria-label="파일 형태">
+              <button data-opt="frag" data-val="1" aria-pressed="true">본문 조각 (include용)</button>
+              <button data-opt="frag" data-val="0" aria-pressed="false">독립 페이지 (전체 HTML)</button>
+            </div>
+          </div>
+          <div class="field"><label>스타일</label>
+            <div class="segl" role="group" aria-label="스타일 포함 여부">
+              <button data-opt="css" data-val="1" aria-pressed="true">파일에 포함 (권장)</button>
+              <button data-opt="css" data-val="0" aria-pressed="false">클래스만 (홈페이지 CSS 사용)</button>
+            </div>
+          </div>
+        </div>
+        <p class="dhint"><b>스타일을 파일에 포함</b>하면 홈페이지 CSS에 의존하지 않으므로, 재구축으로 클래스 체계가 바뀌어도 깨지지 않습니다. 모든 클래스에 <b>pp-</b> 접두사를 붙여 기존 스타일과 충돌하지 않습니다.</p>
+
+        <div id="expgate"></div>
+        <div class="card" id="filelist"></div>
+        <div class="codebox" id="codebox" hidden>
+          <div class="codebox-h"><span class="cn" id="codename"></span>
+            <button class="mini" id="copybtn">클립보드 복사</button>
+            <button class="mini" id="closebtn">닫기</button>
+          </div>
+          <pre id="codebody"></pre>
+        </div>
+
+        <div class="card rulecard">
+          <h3>인계 절차 — 개발팀과 합의할 사항</h3>
+          <div class="ckrow"><span class="cknum">1</span><div><b>파일 경로를 고정합니다.</b> 예: <span class="mono">/static/policy/</span> 아래에 파일 세트를 두고, 기존 화면은 본문 자리에서 이 파일을 include 합니다. 경로가 고정되면 이후 인계는 항상 같은 폴더 교체입니다.</div></div>
+          <div class="ckrow"><span class="cknum">2</span><div><b>스타일 소유권을 정합니다.</b> 초기에는 파일에 포함(위 기본값), 홈페이지 재구축 이후 안정화되면 홈페이지 CSS로 통합하는 순서를 권장합니다.</div></div>
+          <div class="ckrow"><span class="cknum">3</span><div><b>파일은 세트로 넘깁니다.</b> 본문만 교체하면 변경내역·이전본은 여전히 수기로 남습니다. 아래 목록 전체가 한 번에 넘어가야 합니다.</div></div>
+          <div class="ckrow"><span class="cknum">4</span><div><b>생성 파일은 직접 수정하지 않습니다.</b> 각 파일 첫 줄에 “직접 편집 금지” 주석과 생성 버전이 기록됩니다. 수정이 필요하면 이 콘솔에서 다시 생성합니다.</div></div>
+          <div class="ckrow"><span class="cknum">5</span><div><b>정적 파일 경로를 형상관리 밖으로 뺄 수 있는지 확인합니다.</b> 가능하면 빌드 없이 파일 교체만으로 반영되어 리드타임이 더 줄어듭니다. 인프라·홈페이지 담당부서 협의 사항입니다.</div></div>
+          <div class="ckrow"><span class="cknum">6</span><div><b>반영 후 확인은 시행일·버전 표기로 합니다.</b> 각 파일에 <span class="mono">data-policy-version</span> 과 <span class="mono">data-effective-from</span> 속성이 들어 있어 브라우저에서 바로 확인됩니다.</div></div>
+        </div>
+      </section>
+
       <!-- 06 변경내역 (대고객) -->
       <section class="view" id="v-changes" hidden>
         <div class="pagehead">
@@ -587,7 +780,7 @@ const ORG_SNAPSHOT = {
 };
 
 /* ═══════════ 라벨링 20종 — 조항 앵커 (17 주라벨 + 3 세부) ═══════════ */
-const LABELS = [
+const LABELS_PP = [
   {n:"개인정보 처리목적", sec:"S01"}, {n:"개인정보 보유기간", sec:"S04"},
   {n:"처리항목", sec:"S02", subs:["개인정보","민감정보","고유식별정보"]},
   {n:"제3자 제공", sec:"S06"}, {n:"처리위탁", sec:"S08"}, {n:"파기", sec:"S05"},
@@ -604,7 +797,7 @@ const P = t => ({t:"p", v:t});
 const UL = a => ({t:"ul", v:a});
 const NOTE = t => ({t:"note", v:t});
 
-const SECTIONS = [
+const SECTIONS_PP = [
  {key:"S01", uuid:"9f2c-4a11", tags:["개인정보 처리목적"], title:"개인정보의 처리 목적", body:[
    P("당사는 다음의 목적으로 개인정보를 처리합니다. 처리한 개인정보는 목적 외의 용도로는 사용되지 않으며 처리 목적이 변경될 시에는 사전동의를 구할 예정입니다."),
    {t:"table", head:["구분","처리목적"], rows:[
@@ -718,7 +911,7 @@ const SECTIONS = [
 ];
 
 /* ═══════════ 버전 (요구 2) ═══════════ */
-const VERSIONS = [
+const VERSIONS_PP = [
  {id:"v9", status:"DRAFT",    from:"2026-09-01", to:null,         hash:"—",
   reason:"가명정보 조항 신설, 타 업권 표현 및 오타 정정, 외부 기관 링크 갱신",
   audit:[["2026-08-05 09:32","정보보호부 담당자","초안 작성","제18조 신설, 제12조·제6조 문구 정정"],
@@ -760,7 +953,7 @@ const REGISTRY = {
    용어 일괄 치환처럼 변경 지점이 수십 곳인 경우 사유를 지점마다 반복하면 읽을 수 없다.
    토스증권도 이 경우 비고 셀을 rowspan 병합한다.
    ══════════════════════════════════════════ */
-const DIFFS = {
+const DIFFS_PP = {
  "v8|v9":[
   {reason:"제1조 및 제4조에서 가명처리를 명시하고 있으나 별도 조항이 없어 신설",
    changes:[
@@ -829,6 +1022,208 @@ const DIFFS = {
 };
 const flatChanges = set => set.reduce((a, g) => a.concat(g.changes), []);
 
+/* ═══════════ 고객정보취급방침 (그룹 제공 문서) ═══════════
+   우리금융지주가 제정하고 각 그룹사가 자사 홈페이지에 게시하는 공통 문서.
+   당사는 게시 주체이므로 조항을 편집하지 않는다 — 관리 초점이 '수신·게시 추적'으로 바뀐다.
+   ══════════════════════════════════════════════════════ */
+const SECTIONS_CI = [
+ {key:"C01", uuid:"a71f-0c93", noLabel:"머리말", tags:[], title:"안내", body:[
+   P("우리금융그룹을 아끼고 사랑해 주시는 고객 여러분께 깊은 감사를 드립니다."),
+   P("우리금융그룹은 금융지주회사법령에 의해 그룹사간에는 고객정보의 제공 및 이용이 가능하게 되어 있습니다. 이에 다음과 같이 안내하여 드리오니 참고하시기 바랍니다.")
+ ]},
+ {key:"C02", uuid:"5d20-b846", noLabel:"근거", tags:["금융지주회사법 제48조의2"], title:"금융지주회사법 제48조의2 (고객정보의 제공 및 관리)", body:[
+   P("① 금융지주회사등은 「금융실명거래 및 비밀보장에 관한법률」 제4조 제1항 및 「신용정보의 이용 및 보호에 관한 법률」 제32조·제33조에도 불구하고 금융거래정보 및 개인신용정보를 다음 각 호의 사항에 관하여 금융위원회가 정하는 방법과 절차에 따라 그가 속하는 금융지주회사등에게 신용위험관리 등 내부 경영관리상 이용하게 할 목적으로 제공할 수 있다."),
+   UL(["제공할 수 있는 정보의 범위", "고객정보의 암호화 등 처리방법", "고객정보의 분리 보관",
+       "고객정보의 이용기간 및 이용목적", "이용기간 경과 시 고객정보의 삭제",
+       "그 밖에 고객정보의 엄격한 관리를 위하여 대통령령으로 정하는 사항"]),
+   P("② 금융지주회사의 자회사등인 투자매매업자 또는 투자중개업자는 위탁자가 예탁한 금전 또는 증권에 관한 정보(증권총액정보등) 중 다음 각 호에 해당하는 정보를 고객정보제공절차에 따라 제공할 수 있다."),
+   UL(["예탁한 금전의 총액", "예탁한 증권의 총액", "예탁한 증권의 종류별 총액",
+       "그 밖에 제1호부터 제3호까지에 준하는 것으로서 금융위원회가 정하여 고시하는 정보"]),
+   P("이에 따라 우리금융그룹은 우리금융지주를 중심으로 고객정보를 그룹사간에 제공 및 이용하기 위하여 「고객정보 취급방침」을 제정·운영하고 있습니다."),
+   NOTE("프로토타입에서는 법령 인용문을 일부 축약했습니다. 실제 운영 시에는 그룹 제공 원문을 그대로 게시합니다.")
+ ]},
+ {key:"C03", uuid:"e402-19af", noLabel:"I", tags:["제공 정보"], title:"제공되는 고객정보의 종류", body:[
+   UL(["「금융실명거래 및 비밀보장에 관한 법률」 제4조에 따른 금융거래의 내용에 관한 정보 또는 자료",
+       "「신용정보의 이용 및 보호에 관한 법률」 제32조 제1항에 따른 개인신용정보",
+       "투자매매업자 또는 투자중개업자를 통하여 증권을 매매하거나 매매하고자 하는 위탁자가 예탁한 금전 또는 증권에 관한 정보"]),
+   UL(["가. 예탁한 금전의 총액", "나. 예탁한 증권의 총액", "다. 예탁한 증권의 종류별 총액",
+       "라. 채무증권의 종류별 총액", "마. 수익증권으로서 집합투자기구의 종류별 총액",
+       "바. 예탁한 증권의 총액을 기준으로 한 위탁자의 평균 증권보유기간 및 일정기간 동안의 평균 거래회수"])
+ ]},
+ {key:"C04", uuid:"9c88-3d61", noLabel:"II", tags:["제공처"], title:"고객정보의 제공처", body:[
+   P("우리금융그룹 중 금융지주회사법령에 의한 고객정보의 제공 및 이용이 가능한 회사는 다음과 같습니다."),
+   {t:"table", head:["구분","회사"], rows:[
+     ["지주회사","우리금융지주"],
+     ["은행·카드·캐피탈","우리은행, 우리카드, 우리금융캐피탈, 우리금융저축은행"],
+     ["보험","동양생명보험, 에이비엘생명보험"],
+     ["금융투자","우리투자증권, 우리자산운용, 우리프라이빗에퀴티자산운용, 우리벤처파트너스"],
+     ["신탁·기타","우리자산신탁, 우리금융에프앤아이, 우리신용정보, 우리에프아이에스"]
+   ]},
+   NOTE("이 목록은 계열사 편입·매각 시마다 바뀝니다. 다만 그룹이 정하는 사항이므로 당사 조직 마스터가 아니라 그룹 제공 원문의 일부로 취급합니다.")
+ ]},
+ {key:"C05", uuid:"6b17-f250", noLabel:"III", tags:["내부방침","게시 의무"], title:"고객정보의 보호에 관한 내부방침", body:[
+   P("우리금융그룹에서는 고객 여러분의 고객정보를 최대한 안전하게 관리하기 위해 그룹사간 정보 제공 및 이용이 아래와 같이 엄격한 절차와 관리·감독 하에 이루어지도록 하였습니다."),
+   UL(["① 고객정보의 제공 및 이용은 내부 경영관리 목적으로만 이용되도록 하였습니다.",
+       "② 그룹사의 임원 1인 이상을 고객정보관리인으로 선임하여 일체의 책임을 지도록 하였습니다.",
+       "③ 그룹사별로 소관부서 및 담당자를 지정하여 체계적이고 집중적인 관리를 도모하였습니다.",
+       "④ 요청 및 제공 시 서면 또는 전자결재시스템을 통하여 고객정보관리인의 결재를 받도록 하였습니다.",
+       "⑤ 금융지주회사 고객정보관리인에게 총괄관리 역할을 부여하였습니다.",
+       "⑥ 취급방침의 제·개정시 지체없이 그 내용을 기존의 고객에게 통지하거나 일간지에 공고하고, 각 영업점 및 각 그룹사 홈페이지 등에 게시하는 등 고객공지 의무에 최선을 다할 것입니다.",
+       "⑦ 고객정보조회시스템을 구축하고 관련 법령에 따라 통지하는 등 고객의 자기정보 접근권을 제공합니다.",
+       "⑧ 민원처리 관련 일체의 업무를 수행할 소관부서를 그룹사마다 두었습니다.",
+       "⑨ 권한이 부여된 자만 고객정보에 접근하고, 송·수신·보관 시 암호화하며, 보안시스템 구축 및 정기 보안 교육을 실시합니다."]),
+   NOTE("⑥항이 이 문서의 게시 의무 근거입니다. “제·개정시 지체없이 … 각 그룹사 홈페이지 등에 게시”가 문서에 명시되어 있습니다.")
+ ]},
+ {key:"C06", uuid:"c935-7e04", noLabel:"맺음말", tags:["고객정보관리인"], title:"고객정보관리인", body:[
+   P("우리금융그룹은 그룹사간 고객정보의 제공 및 이용을 허용한 것이 금융서비스의 질을 높이고, 나아가 우리나라 금융산업을 선진화시키기 위한 조치임을 명심하고, 고객 여러분의 고객정보의 보호 및 엄격한 관리를 위해 최선을 다할 것입니다."),
+   {t:"table", head:["회사","담당"], rows:[
+     ["우리금융지주","고객정보관리인"], ["우리은행","고객정보관리인"], ["동양생명보험","고객정보관리인"],
+     ["우리카드","고객정보관리인"], ["우리금융캐피탈","고객정보관리인"], ["우리투자증권","고객정보관리인"],
+     ["에이비엘생명보험","고객정보관리인"], ["우리자산신탁","고객정보관리인"], ["우리금융저축은행","고객정보관리인"],
+     ["우리자산운용","고객정보관리인"], ["우리벤처파트너스","고객정보관리인"],
+     ["우리프라이빗에퀴티자산운용","고객정보관리인"], ["우리금융에프앤아이","고객정보관리인"],
+     ["우리신용정보","고객정보관리인"], ["우리에프아이에스","고객정보관리인"]
+   ]}
+ ]}
+];
+
+const VERSIONS_CI = [
+ {id:"c1", status:"ACTIVE", from:"(미표기)", to:null, hash:"—",
+  reason:"현재 게시 중인 그룹 제공 원문. 그룹 시행일·당사 게시일이 모두 기록되어 있지 않습니다.",
+  audit:[]}
+];
+
+/* ═══════════ 신용정보활용체제 (당사 제정) ═══════════ */
+const SECTIONS_CR = [
+ {key:"R01", uuid:"2f60-a814", tags:["기본계획"], title:"개인신용정보 보호 및 관리에 관한 기본 계획", body:[
+   P("당사는 「신용정보의 이용 및 보호에 관한 법률」 등 관계 법률에 따라 개인신용정보를 안전하게 관리하고 금융거래의 설정·유지·이행·관리 등 업무 목적에 필요한 최소한의 범위에서 합리적으로 공정하게 개인신용정보를 처리할 것입니다."),
+   P("정보주체의 동의를 받거나 법령상 허용된 경우 외에는 개인신용정보를 수집·이용 및 제공하지 않으며, 정보주체의 권리를 보호하기 위해 개인신용정보의 열람 및 정정청구권 등을 보장하고 관련 정책을 홈페이지에 공시하는 등 이용자의 권익보호를 위해 최선을 다할 것입니다.")
+ ]},
+ {key:"R02", uuid:"9a13-4d72", tags:["이용목적","신용정보 종류"], title:"관리하는 신용정보의 이용목적 및 종류", body:[
+   P("가. 이용 목적"),
+   UL(["(금융)거래 관계의 설정 여부의 판단, (금융)거래 관계의 설정·유지·이행·관리, 금융사고 조사, 분쟁해결, 민원처리 및 법령상 의무이행",
+       "고객이 직접 제공한 개인(신용)정보(그 고객과의 상거래에서 생긴 신용정보 포함)을 제공받은 목적",
+       "상품과 서비스를 소개하거나 그 구매를 권유하거나 경품지급, 사은행사 등 고객에게 편의를 제공할 목적",
+       "통계작성(상업적 목적 포함), 과학적 연구(산업적 연구 포함), 공익적 기록보존 목적 등"]),
+   P("나. 신용정보의 종류"),
+   {t:"table", head:["구분","상세 항목"], rows:[
+     ["식별정보","개인의 성명, 주소, 주민등록번호(외국인등록번호·국내거소신고번호 등) 및 개인기업·법인의 상호, 사업자등록번호, 법인등록번호, 대표자 성명 등"],
+     ["신용거래정보","① 개인신용거래정보 — 대출, 채무보증 및 신용카드 현금서비스 현황, 연체정보, 대위변제·대지급 정보, 어음·수표 부도정보 등 / ② 기업신용거래정보 — 신용공여현황 등"],
+     ["금융질서문란정보","부정한 방법으로 대출을 받는 등 금융거래질서를 문란하게 한 사실 등"],
+     ["신용도판단정보","채무의 불이행·연체·부도·대위변제·대지급 등 신용질서 문란행위 관련 금액 및 발생·해소 시기 등"],
+     ["신용능력정보","① 개인 — 직업·재산·채무·소득의 총액 및 납세실적 등 / ② 기업 — 재무상태, 재무비율, 감사의견, 납세실적 등"],
+     ["공공기록정보","국세·지방세·관세·과태료·고용산재보험료 체납, 채무불이행자 등록, 개인회생·파산면책 등"]
+   ]}
+ ]},
+ {key:"R03", uuid:"c728-1b05", tags:["제3자 제공"], title:"제공대상자, 제공받는 자의 이용 목적 및 제공하는 신용정보의 종류", body:[
+   {t:"table", head:["구분","회사명"], rows:[
+     ["신용정보집중기관","한국신용정보원, 전국은행연합회, 한국금융투자협회, 여신전문금융업협회 등"],
+     ["신용정보회사","SCI평가정보(주), 코리아크레딧뷰로(주), NICE신용평가정보(주) 등"],
+     ["기타","동법 및 다른 법률에 의해 제출을 요구하는 공공기관 등"]
+   ]},
+   P("나. 제공받는 자의 이용목적 — 금융기관에 대한 신용정보를 집중·수집·보관·제공, 기타 동법 및 다른 법률의 규정에서 정한 경우"),
+   P("다. 제공하는 신용정보의 종류 — 식별정보, 신용거래정보, 금융질서문란정보, 신용능력정보, 신용도판단정보, 기타 신용평가를 위한 정보"),
+   {t:"ref", to:"registry", title:"개인(신용)정보처리 위탁 및 제휴업체 현황", sub:"개인정보처리방침 제8조와 동일한 레지스트리를 참조합니다"},
+   NOTE("현행 원문에서는 이 자리가 “홈페이지 > 개인정보처리방침 > … 참고”라는 텍스트 경로 안내입니다. 개인정보처리방침과 완전히 같은 문구로, 두 문서가 같은 현황 문서를 참조하고 있습니다.")
+ ]},
+ {key:"R04", uuid:"70e5-3c96", tags:["보유기간","파기"], title:"신용정보 보유 및 이용 기간, 파기 절차 및 방법", body:[
+   P("가. 보유 및 이용기간 — 원칙적으로 동의일로부터 금융거래 종료일 이후 5년까지이나, 다른 법률에 따라 보존하여야 하는 경우에는 해당 법률에서 정하는 기간 동안 계속 보유·이용 가능"),
+   {t:"table", head:["관련 법령","보존 기간","보존 사항"], rows:[
+     ["자본시장과 금융투자업에 관한 법률 시행령","10년 (자료별 상이)","금융투자업 영위와 관련한 자료"],
+     ["금융실명거래 및 비밀보장에 관한 법률","5년","거래정보 등의 제공 내용 기록 관리"],
+     ["전자금융거래법","5년","전자금융 거래에 대한 기록"],
+     ["통신비밀보호법","3개월","웹사이트 방문에 관한 기록"]
+   ]},
+   NOTE("현행 원문의 마지막 행은 「웹사이트 방문에 관한 기록 | 3개월 | 통신비밀보호법」으로 되어 있어 법령 열과 보존사항 열이 뒤바뀌어 있습니다. 위 표는 정정한 형태입니다."),
+   P("나. 파기 절차 및 방법 — 파기 사유가 발생한 개인정보를 선정하고 개인정보보호책임자(신용정보관리·보호인)의 관리·감독 하에 파기합니다. 전자적 파일은 재생 불가능하도록, 종이 문서는 분쇄 또는 소각합니다.")
+ ]},
+ {key:"R05", uuid:"41ba-8e37", tags:["정보주체 권리"], title:"신용정보주체의 권리 및 행사 방법", body:[
+   UL(["가. 개인(신용)정보 이용·제공 사실 조회 및 통지 요구권",
+       "나. 개인(신용)정보 이용·제공 동의 철회권",
+       "다. 개인(신용)정보 열람 및 정정 청구권",
+       "라. 개인(신용)정보 삭제 요구권 — 상거래 종료 후 필수정보 5년, 그 외 3개월 경과 시",
+       "마. 개인(신용)정보 삭제 제외 요구권",
+       "바. 마케팅 연락중지 청구권",
+       "사. 상거래 거절 근거 신용정보의 고지 요구권",
+       "아. 자동화평가 결과에 대한 설명 요구권",
+       "자. 개인(신용)정보의 전송요구권 — 본인신용정보관리회사 등에 전송 요구 및 철회 가능",
+       "차. 권리행사방법 — 영업점 또는 인터넷 홈페이지, 전송요구는 마이데이터앱 등을 통해 요청"]),
+   NOTE("현행 원문의 “자” 항목은 같은 내용이 문단과 불릿으로 두 번 서술되어 있고, “보인에 관한”·“전송요구권를” 등 오탈자가 확인됩니다.")
+ ]},
+ {key:"R06", uuid:"d509-6f21", tags:["자동화 수집"], title:"인터넷 접속파일 등 개인정보 자동 수집 장치의 설치·운영 및 거부에 관한 사항", body:[
+   P("당사 홈페이지는 이용자가 접속 시 개별적인 맞춤서비스를 제공하기 위해 ‘쿠키(Cookie)’를 사용합니다. 이용자는 웹브라우저 옵션을 통해 모든 쿠키를 허용하거나, 저장 시마다 확인을 거치거나, 저장을 거부할 수 있습니다. 단, 거부 시 서비스 이용이 원활하지 않을 수 있습니다.")
+ ]},
+ {key:"R07", uuid:"8c34-05de", tags:["신용정보관리·보호인"], title:"신용정보관리·보호인 및 고충·처리 담당부서", body:[
+   {t:"org", kind:"cpo"},
+   NOTE("현행 원문에는 “신용정보관리·보호인 정보보호부장 상무 황돈구”로 기재되어 있습니다. 개인정보처리방침 제14조의 개인정보 보호책임자와 동일 인물이므로, 인사이동 시 두 문서를 함께 고쳐야 합니다. 조직 마스터를 분리하면 한 번의 데이터 수정으로 두 문서가 동시에 갱신됩니다.")
+ ]},
+ {key:"R08", uuid:"6e92-b7c0", tags:["변경 안내"], title:"신용정보활용체제 변경에 따른 안내", body:[
+   P("신용정보활용체제가 법령 및 내부방침 또는 보안기술 변경에 따라 내용의 추가·삭제 및 수정이 있을 시에는 회사 홈페이지를 통해 공지하도록 하겠습니다."),
+   {t:"vermeta"},
+   {t:"ref", to:"history", title:"신용정보활용체제 개정내역", sub:"현행은 팝업으로 제공되며 이전본이 PDF로 관리됩니다"}
+ ]}
+];
+
+const VERSIONS_CR = [
+ {id:"r7", status:"ACTIVE",   from:"2024-11-18", to:null,         hash:"—", reason:"현행 게시본 (시행일 = 개정일)", audit:[]},
+ {id:"r6", status:"ARCHIVED", from:"2024-08-01", to:"2024-11-17", hash:"—", reason:"— (사유 미공개)", audit:[]},
+ {id:"r5", status:"ARCHIVED", from:"2024-05-23", to:"2024-07-31", hash:"—", reason:"— (사유 미공개)", audit:[]},
+ {id:"r4", status:"ARCHIVED", from:"2024-05-03", to:"2024-05-22", hash:"—", reason:"— (사유 미공개)", audit:[]},
+ {id:"r3", status:"ARCHIVED", from:"2024-03-04", to:"2024-05-02", hash:"—", reason:"— (사유 미공개)", audit:[]},
+ {id:"r2", status:"ARCHIVED", from:"2023-03-23", to:"2024-03-03", hash:"—", reason:"— (사유 미공개)", audit:[]},
+ {id:"r1", status:"ARCHIVED", from:"2015-01-09", to:"2023-03-22", hash:"—", reason:"— (사유 미공개)", audit:[]},
+ {id:"—",  status:"GAP",      from:"2014-02-27", to:"2015-01-08", hash:"—",
+  reason:"제정본. 공개된 개정내역 목록에 없어 열람할 수 없음", audit:[]}
+];
+
+/* ═══════════ 문서 레지스트리 ═══════════ */
+const DOC_REG = {
+ "privacy-policy":{
+   name:"개인정보처리방침", law:"개인정보 보호법 제30조", own:"OWN", provider:"우리투자증권",
+   sections:SECTIONS_PP, versions:VERSIONS_PP, labels:LABELS_PP, diffs:DIFFS_PP,
+   hasRegistry:true, filePrefix:"privacy-policy",
+   integrity:[
+     ["결번","제정일은 <b>2014-02-27</b>이나 공개된 이전 방침 목록은 <b>2015-01-26</b>부터 시작합니다. 제정본(2014-02-27 ~ 2015-01-25)을 열람할 수 없습니다."],
+     ["기간중복","<b>2019-12-02</b>가 v1의 종료일이자 v2의 시작일로 동시에 표기되어 있습니다. 시행기간이 하루 겹칩니다."],
+     ["누락","각 버전의 개정 사유가 공개되어 있지 않아, 어떤 조항이 왜 바뀌었는지 외부에서 확인할 수 없습니다."]
+   ]},
+ "credit-info":{
+   name:"신용정보활용체제", law:"신용정보의 이용 및 보호에 관한 법률 제31조", own:"OWN", provider:"우리투자증권",
+   sections:SECTIONS_CR, versions:VERSIONS_CR, labels:[], diffs:{},
+   hasRegistry:true, filePrefix:"credit-info",
+   integrity:[
+     ["결번","제정일은 <b>2014-02-27</b>이나 공개된 개정내역은 <b>2015-01-09</b>부터 시작합니다. 개인정보처리방침과 <b>같은 날 제정</b>되었으며 같은 결번 구간을 가집니다."],
+     ["목록 중복","현행 게시본의 개정일자(<b>2024-11-18</b>)와 개정내역 목록 첫 항목의 날짜가 동일합니다. 현행본이 이전본 목록에 함께 들어가 있는 것으로 보입니다."],
+     ["PDF 관리","이전본과 변경이력이 <b>PDF로 관리</b>되고 있어 검색·링크·본문 대조가 불가능합니다."],
+     ["문서 간 중복","제7조 신용정보관리·보호인이 개인정보처리방침 제14조 개인정보 보호책임자와 <b>동일 인물</b>입니다. 인사이동 시 한쪽만 고치면 두 문서가 어긋납니다."],
+     ["개정 지연","개인정보처리방침은 2024-11-18 이후 <b>3회 더 개정</b>(2025-03-25 / 2025-08-22 / 2026-03-12)되었으나 신용정보활용체제는 멈춰 있습니다. 두 문서가 같은 사실을 다르게 기술하고 있을 가능성을 점검해야 합니다."],
+     ["본문 오류","제4조 보존기간 표의 마지막 행에서 <b>법령 열과 보존사항 열이 뒤바뀌어</b> 있습니다. 제3조 제목의 “제공받는 자의의”, 제5조의 “보인에 관한”·“전송요구권를”·“상거래 관게” 등 오탈자도 확인됩니다."]
+   ]},
+ "customer-info":{
+   name:"고객정보취급방침", law:"금융지주회사법 제48조의2", own:"GROUP", provider:"우리금융지주",
+   sections:SECTIONS_CI, versions:VERSIONS_CI, labels:[], diffs:{},
+   hasRegistry:false, filePrefix:"customer-info",
+   integrity:[
+     ["시행일 없음","제정일·시행일·개정일 표기가 <b>전혀 없습니다.</b> 현재 게시본이 언제 시행된 원문인지 확인할 수 없습니다."],
+     ["이전본 없음","이전 취급방침이 제공되지 않습니다. 과거 시점의 게시본을 특정할 수 없습니다."],
+     ["게시 추적 불가","그룹 시행일과 당사 게시일이 기록되지 않아, <b>그룹이 개정했는데 당사가 게시하지 않은 상태</b>를 탐지할 수단이 없습니다. 본문 III-⑥의 “지체없이 게시” 의무 이행을 입증하기 어렵습니다."]
+   ]}
+ };
+
+let currentDocCode = "privacy-policy";
+let SECTIONS = SECTIONS_PP, VERSIONS = VERSIONS_PP, LABELS = LABELS_PP, DIFFS = DIFFS_PP;
+const D = () => DOC_REG[currentDocCode];
+
+function useDoc(code){
+  currentDocCode = code;
+  const d = D();
+  SECTIONS = d.sections; VERSIONS = d.versions; LABELS = d.labels; DIFFS = d.diffs;
+  const act = d.versions.find(v => v.status === "ACTIVE") || d.versions[0];
+  currentVersion = act.id;
+  editSecKey = null;
+  refreshAll();
+}
+
 /* ═══════════ 렌더링 ═══════════ */
 const $  = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
@@ -841,11 +1236,12 @@ function orgFor(vid){
   return ORG_SNAPSHOT[vid] || ORG_SNAPSHOT.v7;
 }
 function versionsFor(vid){
+  if (vid === "W" && WORK[currentDocCode]) return WORK[currentDocCode].sections;
   const n = V_INDEX[vid] || 8;
   return SECTIONS.filter(s => !s.since || (V_INDEX[s.since] || 0) <= n);
 }
-function verObj(vid){ return VERSIONS.find(v => v.id === vid) || VERSIONS[1]; }
-function spanOf(v){ return v.from + " ~ " + (v.to || (v.status === "DRAFT" ? "(시행 예정)" : "현재")); }
+function verObj(vid){ return allVersions().find(v => v.id === vid) || VERSIONS.find(v => v.status === "ACTIVE") || VERSIONS[0]; }
+function spanOf(v){ if (v.isWork) return "작업 중 · 시행일 미정"; return v.from + " ~ " + (v.to || (v.status === "DRAFT" ? "(시행 예정)" : "현재")); }
 
 function tableHTML(head, rows){
   return '<div class="tscroll"><table><thead><tr>' +
@@ -907,9 +1303,17 @@ function renderPolicy(){
   $("#vermeta").innerHTML =
     '<div><span>상태</span><span class="chip ' + STATUS_CLS[v.status] + '"><span class="dot"></span>' + STATUS_KO[v.status] + "</span></div>" +
     '<div><span>시행기간</span><b class="mono">' + spanOf(v) + "</b></div>" +
-    '<div><span>조항 수</span><b class="mono">' + secs.length + "개조</b></div>" +
+    '<div><span>구성</span><b class="mono">' + secs.length + (D().own === "GROUP" ? "개 장" : "개조") + "</b></div>" +
     '<div><span>스냅샷 해시</span><b class="mono">' + esc(v.hash) + "</b></div>";
 
+  const d = D();
+  $("#polTitle").textContent = d.name;
+  $("#docbanner").innerHTML = d.own === "GROUP"
+    ? '<div class="groupbanner"><span class="gk">그룹 제공</span><div><b>' + esc(d.provider) +
+      '가 제정하고 각 그룹사가 자사 홈페이지에 게시하는 공통 문서입니다.</b> 당사는 <b>게시 주체</b>이며 조항을 편집하지 않습니다 — 원문을 변형하는 것이기 때문입니다. ' +
+      '따라서 관리의 초점이 “편집·승인”이 아니라 <b>“수신 → 대조 → 게시” 추적</b>으로 바뀝니다. 근거: ' + esc(d.law) + "</div></div>"
+    : "";
+  $("#labelboard").hidden = !d.labels.length;
   const secByKey = {};
   secs.forEach((s, i) => { secByKey[s.key] = i + 1; });
 
@@ -923,12 +1327,12 @@ function renderPolicy(){
   }).join("");
 
   $("#toc").innerHTML = secs.map((s, i) =>
-    '<li><a href="#sec-' + s.key + '"><span class="tn">제' + (i + 1) + '조</span>' + esc(s.title) + "</a></li>"
+    '<li><a href="#sec-' + s.key + '"><span class="tn">' + esc(s.noLabel || ("제" + (i + 1) + "조")) + "</span>" + esc(s.title) + "</a></li>"
   ).join("");
 
   $("#sections").innerHTML = secs.map((s, i) =>
     '<article class="sec" id="sec-' + s.key + '">' +
-      '<div class="gutter"><b>제' + (i + 1) + '조</b><span class="seckey">' + esc(s.key + " · " + s.uuid) + "</span></div>" +
+      '<div class="gutter"><b>' + esc(s.noLabel || ("제" + (i + 1) + "조")) + '</b><span class="seckey">' + esc(s.key + " · " + s.uuid) + "</span></div>" +
       "<div><h3>" + esc(s.title) + "</h3>" +
         '<div class="seclabels">' + s.tags.map(t => '<span class="tag">' + esc(t) + "</span>").join("") + "</div>" +
         '<div class="body">' + s.body.map(b => blockHTML(b, vid)).join("") + "</div>" +
@@ -938,6 +1342,12 @@ function renderPolicy(){
 }
 
 function renderRegistry(){
+  if (!D().hasRegistry){
+    $("#regmeta").innerHTML = "";
+    $("#regbody").innerHTML = '<tr><td colspan="5" style="color:var(--ink-3);padding:22px">' +
+      esc(D().name) + "은 위·수탁 현황을 별도로 두지 않습니다. 그룹 제공 원문에 제공처가 직접 기재되어 있으며, 그 목록은 그룹이 정합니다.</td></tr>";
+    return;
+  }
   $("#regmeta").innerHTML =
     '<div><span>기준일 (as-of)</span><b class="mono">' + REGISTRY.asOf + "</b></div>" +
     '<div><span>최종 갱신 주체</span><b>' + esc(REGISTRY.updatedBy) + "</b></div>" +
@@ -949,12 +1359,10 @@ function renderRegistry(){
 }
 
 function renderHistory(){
-  $("#integrity").innerHTML =
-    '<div class="ichk"><span class="ibadge">결번</span><div>제정일은 <b class="mono">2014-02-27</b>이나 공개된 이전 방침 목록은 <b class="mono">2015-01-26</b>부터 시작합니다. 제정본(2014-02-27 ~ 2015-01-25)을 열람할 수 없습니다.</div></div>' +
-    '<div class="ichk"><span class="ibadge">기간중복</span><div><b class="mono">2019-12-02</b>가 v1의 종료일이자 v2의 시작일로 동시에 표기되어 있습니다. 시행기간이 하루 겹칩니다.</div></div>' +
-    '<div class="ichk"><span class="ibadge">누락</span><div>각 버전의 개정 사유가 공개되어 있지 않아, 어떤 조항이 왜 바뀌었는지 외부에서 확인할 수 없습니다.</div></div>';
+  $("#integrity").innerHTML = D().integrity.map(x =>
+    '<div class="ichk"><span class="ibadge">' + esc(x[0]) + "</span><div>" + x[1] + "</div></div>").join("");
 
-  $("#vlist").innerHTML = VERSIONS.map(v => {
+  $("#vlist").innerHTML = allVersions().map(v => {
     const hasAudit = v.audit && v.audit.length;
     return '<div class="vrow' + (v.status === "GAP" ? " isgap" : "") + '">' +
       '<div><div class="vid">' + esc(v.id) + '</div><span class="chip ' + STATUS_CLS[v.status] +
@@ -1044,7 +1452,7 @@ function renderStackCards(set){
 
 function renderDiff(){
   const key = $("#dfrom").value + "|" + $("#dto").value;
-  const set = DIFFS[key];
+  const set = diffSetFor(key);
   const out = $("#diffout");
   if (!set){
     out.innerHTML = '<div class="card" style="padding:22px; color:var(--ink-3); font-size:13px">' +
@@ -1056,11 +1464,11 @@ function renderDiff(){
 
 /* 대고객 변경내역 — 감사 로그와 같은 데이터, 공개 필드만 */
 function renderChanges(){
-  const pub = VERSIONS.filter(v => v.status !== "GAP");
+  const pub = allVersions().filter(v => v.status !== "GAP");
   const html = pub.map((v, i) => {
     const prev = pub[i + 1];
     const key = prev ? prev.id + "|" + v.id : null;
-    const set = key ? DIFFS[key] : null;
+    const set = key ? diffSetFor(key) : null;
 
     const head =
       '<div class="chg-h">' +
@@ -1108,6 +1516,552 @@ function fillOrgForm(){
   $$("[data-org]").forEach(el => { el.value = ORG[el.dataset.org]; });
 }
 
+/* ═══════════ 인계 파일 내보내기 ═══════════
+   정보보호부 → 개발팀 인계용 HTML 생성.
+   모든 클래스에 pp- 접두사를 붙여 홈페이지 기존 스타일과 충돌하지 않는다.
+   ═══════════════════════════════════════ */
+const EXPORT_OPT = {frag:1, css:1};
+
+const PP_CSS = [
+".pp-doc{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;color:#1F2733;line-height:1.75;font-size:15px;word-break:keep-all;max-width:960px;margin:0 auto}",
+".pp-doc *{box-sizing:border-box}",
+".pp-title{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:0 0 10px}",
+".pp-meta{font-size:13px;color:#5A6675;margin:0 0 22px;padding-bottom:16px;border-bottom:2px solid #273A92}",
+".pp-lead{margin:0 0 24px;color:#3D4A5C}",
+".pp-labels{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 24px;padding:0;list-style:none}",
+".pp-lab{display:inline-flex;align-items:center;gap:6px;border:1px solid #C9D3E2;border-radius:5px;padding:5px 10px;font-size:12px;color:#3D4A5C;text-decoration:none}",
+".pp-lab:hover{border-color:#273A92;color:#273A92;background:#F1F4FB}",
+".pp-lab i{font-style:normal;font-size:10px;background:#273A92;color:#fff;padding:1px 5px;border-radius:3px}",
+".pp-toc{margin:0 0 28px;padding:15px 18px;background:#F5F7FB;border-top:2px solid #273A92;border-radius:2px 2px 8px 8px}",
+".pp-toc h2{font-size:12px;letter-spacing:.08em;color:#6B7789;margin:0 0 9px;font-weight:600}",
+".pp-toc ol{margin:0;padding:0;list-style:none}",
+".pp-toc li{margin-bottom:4px}",
+".pp-toc a{font-size:13.5px;color:#3D4A5C;text-decoration:none}",
+".pp-toc a:hover{color:#273A92;text-decoration:underline}",
+".pp-toc em{font-style:normal;color:#00789F;font-weight:600;display:inline-block;min-width:3.4em}",
+".pp-sec{padding:22px 0;border-top:1px solid #E0E6EF}",
+".pp-sec-h{font-size:17px;font-weight:700;margin:0 0 10px;letter-spacing:-.02em}",
+".pp-no{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#273A92;padding:3px 8px;border-radius:4px;margin-right:9px;vertical-align:2px}",
+".pp-tags{margin:0 0 12px;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:5px}",
+".pp-tags li{font-size:10.5px;padding:2px 7px;border-radius:4px;background:#E4F5FD;color:#00789F;border:1px solid #A7DDF1;font-weight:600}",
+".pp-body p{margin:0 0 11px}",
+".pp-body ul{margin:0 0 11px;padding-left:20px}",
+".pp-body li{margin-bottom:5px}",
+".pp-note{font-size:12.5px;color:#6B7789;border-left:2px solid #C9D3E2;padding-left:10px}",
+".pp-tw{overflow-x:auto;border:1px solid #E0E6EF;border-radius:8px;margin:0 0 12px}",
+".pp-tw table{width:100%;min-width:520px;border-collapse:collapse;font-size:13px}",
+".pp-tw th,.pp-tw td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid #E0E6EF}",
+".pp-tw th{background:#EDF1F9;color:#273A92;font-weight:700;font-size:11.5px;white-space:nowrap;border-bottom:1px solid #C2CDE5}",
+".pp-tw tbody tr:last-child td{border-bottom:0}",
+".pp-ref{margin:0 0 12px}",
+".pp-ref a{display:inline-block;padding:11px 14px;border:1px solid #C2CDE5;background:#F1F4FB;border-radius:8px;color:#273A92;font-weight:600;font-size:13px;text-decoration:none}",
+".pp-ref a:hover{border-color:#273A92;background:#E4F5FD}",
+".pp-ref small{display:block;color:#6B7789;font-weight:400;font-size:11.5px;margin-top:2px}",
+".pp-ins{background:#DFF1E8;color:#0C6E4C;text-decoration:underline;padding:1px 3px;border-radius:3px;font-weight:700}",
+".pp-del{background:#F9E3E6;color:#A32F42;text-decoration:line-through;padding:1px 3px;border-radius:3px}",
+"@media(max-width:640px){.pp-title{font-size:21px}.pp-sec-h{font-size:15.5px}}"
+].join("\n");
+
+const REF_FILE = {registry:"privacy-policy-registry-outsourcing.html", history:"privacy-policy-history.html"};
+
+function ppTable(head, rows){
+  return '<div class="pp-tw"><table><thead><tr>' + head.map(h => "<th>" + esc(h) + "</th>").join("") +
+    "</tr></thead><tbody>" + rows.map(r => "<tr>" + r.map(c => "<td>" + esc(c) + "</td>").join("") + "</tr>").join("") +
+    "</tbody></table></div>";
+}
+
+function expBlock(b, vid){
+  const o = orgFor(vid), v = verObj(vid);
+  switch (b.t){
+    case "p":    return "<p>" + esc(b.v) + "</p>";
+    case "ul":   return "<ul>" + b.v.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>";
+    case "note": return '<p class="pp-note">' + esc(b.v) + "</p>";
+    case "table":return ppTable(b.head, b.rows);
+    case "org":  return b.kind === "cpo"
+      ? ppTable(["개인정보보호 책임자","개인정보 보호업무","고충처리부서"],
+          [[o.cpoRank + " " + o.cpoName, o.deptPrivacy, o.deptGrievance], [o.tel + " / " + o.email, "", ""]])
+      : ppTable(["구분","상세 내용"], [
+          ["설치 근거 및 목적","「개인정보보호법」 제25조제1항에 따라 고객 안전을 위한 범죄 예방, 시설안전 및 관리, 화재 예방"],
+          ["설치 현황", "설치 대수 : " + o.cctvCount + "대 · " + o.cctvSites],
+          ["관리책임자 및 접근권한자", "관리책임자 : " + o.cctvManager + " / 접근권한자 : " + o.acc1 + ", " + o.acc2],
+          ["촬영 시간·보관","촬영 24시간 · 촬영일로부터 3개월 · 서버실 내 영상정보저장장치"]]);
+    case "vermeta": return ppTable(["구분","일자"], [
+      ["개인정보 처리방침 제정일","2014. 02. 27."],
+      ["개인정보 처리방침 시행일", v.from.replace(/-/g, ". ") + "."],
+      ["개인정보 처리방침 최근 개정일", v.from.replace(/-/g, ". ") + "."]]);
+    case "ref":  return '<p class="pp-ref"><a href="./' + REF_FILE[b.to] + '">' + esc(b.title) +
+                   "<small>" + esc(b.sub) + "</small></a></p>";
+    default: return "";
+  }
+}
+
+function wrapDoc(inner, title, vid){
+  const v = verObj(vid);
+  const stamp = "2026-08-12";
+  const banner = "<!-- " + D().name + " · " + title + " · 버전 " + v.id + " · 시행 " + v.from + " · 생성 " + stamp + " -->\n" +
+                 "<!-- 이 파일은 정책 문서 관리 콘솔에서 생성되었습니다. 직접 편집하지 마십시오. -->\n" +
+                 (D().own === "GROUP" ? "<!-- 그룹 제공 원문 · 제정 " + D().provider + " · 당사는 게시 주체입니다. 내용을 변경하지 마십시오. -->\n" : "");
+  const style = EXPORT_OPT.css ? "<style>\n" + PP_CSS + "\n</style>\n" : "";
+  const body = '<div class="pp-doc" data-policy-version="' + v.id + '" data-effective-from="' + v.from + '">\n' + inner + "\n</div>";
+  if (EXPORT_OPT.frag) return banner + style + body;
+  return "<!doctype html>\n<html lang=\"ko\">\n<head>\n<meta charset=\"utf-8\">\n" +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">\n' +
+    "<title>" + esc(title) + " | " + esc(D().name) + "</title>\n" + banner + style +
+    "</head>\n<body>\n" + body + "\n</body>\n</html>\n";
+}
+
+function buildPolicy(){
+  const w = WORK[currentDocCode];
+  const approved = w && w.status === "APPROVED" && changedKeys(currentDocCode).size;
+  const vid = approved ? "W" : currentVersion, v = verObj(vid), secs = versionsFor(vid);
+  const byKey = {}; secs.forEach((x, i) => byKey[x.key] = i + 1);
+  const labels = '<ul class="pp-labels">' + LABELS.filter(l => byKey[l.sec]).map(l =>
+    '<li><a class="pp-lab" href="#pp-' + l.sec + '"><i>제' + byKey[l.sec] + "조</i>" + esc(l.n) + "</a></li>").join("") + "</ul>";
+  const toc = '<nav class="pp-toc"><h2>목차</h2><ol>' + secs.map((x, i) =>
+    '<li><a href="#pp-' + x.key + '"><em>제' + (i + 1) + "조</em>" + esc(x.title) + "</a></li>").join("") + "</ol></nav>";
+  const body = secs.map((x, i) =>
+    '<section class="pp-sec" id="pp-' + x.key + '">' +
+      '<h2 class="pp-sec-h"><span class="pp-no">제' + (i + 1) + "조</span>" + esc(x.title) + "</h2>" +
+      '<ul class="pp-tags">' + x.tags.map(t => "<li>" + esc(t) + "</li>").join("") + "</ul>" +
+      '<div class="pp-body">' + x.body.map(bb => expBlock(bb, vid)).join("") + "</div>" +
+    "</section>").join("\n");
+  const d = D();
+  const head = '<h1 class="pp-title">' + esc(d.name) + "</h1>" +
+    '<p class="pp-meta">시행일 ' + v.from.replace(/-/g, ". ") + " · 버전 " + v.id + " · 근거 " + esc(d.law) +
+    (d.own === "GROUP" ? " · 제정 " + esc(d.provider) : "") + "</p>";
+  return wrapDoc(head + labels + toc + body, "본문", vid);
+}
+
+function buildHistory(){
+  const rows = allVersions().map(v => [v.isWork ? "작업본" : v.id, v.from + " ~ " + (v.to || (v.status === "DRAFT" ? "(시행 예정)" : "현재")),
+    STATUS_KO[v.status], v.reason]);
+  return wrapDoc('<h1 class="pp-title">' + esc(D().name) + " 이력</h1>" +
+    '<p class="pp-meta">버전별 시행기간 및 개정 사유</p>' +
+    ppTable(["버전","적용 기간","상태","개정 사유"], rows), "이전본 목록", currentVersion);
+}
+
+function buildChanges(){
+  const pub = VERSIONS.filter(v => v.status !== "GAP");
+  const secs = pub.map((v, i) => {
+    const prev = pub[i + 1], set = prev ? DIFFS[prev.id + "|" + v.id] : null;
+    if (!set) return '<section class="pp-sec"><h2 class="pp-sec-h"><span class="pp-no">' + v.id + "</span>" +
+      v.from + ' 시행</h2><p class="pp-note">이 개정의 변경내역은 별도 문서로 관리되었습니다.</p></section>';
+    return '<section class="pp-sec"><h2 class="pp-sec-h"><span class="pp-no">' + v.id + "</span>" + v.from + " 시행</h2>" +
+      '<div class="pp-body">' + ppTable(["변경 사유","변경 조항"],
+        set.map(g => [g.reason, g.changes.map(c => TYPE_KO[c.type] + " · " + c.title).join("\n")])) + "</div></section>";
+  }).join("\n");
+  return wrapDoc('<h1 class="pp-title">' + esc(D().name) + " 변경내역</h1>" +
+    '<p class="pp-meta">개정 건별 변경 사유 및 변경 조항</p>' + secs, "변경내역", currentVersion);
+}
+
+function diffPairForCurrent(){
+  const pub = allVersions().filter(v => v.status !== "GAP");
+  const i = pub.findIndex(v => v.id === currentVersion);
+  const prev = pub[i + 1];
+  return prev ? [prev.id, currentVersion] : null;
+}
+
+function buildDiffDoc(){
+  const pair = diffPairForCurrent();
+  if (!pair) return wrapDoc("<p>비교 대상 버전이 없습니다.</p>", "신구대조표", currentVersion);
+  const set = diffSetFor(pair[0] + "|" + pair[1]);
+  if (!set) return wrapDoc('<h1 class="pp-title">개인정보처리방침 신구대조표</h1>' +
+    '<p class="pp-meta">' + pair[0] + " → " + pair[1] + '</p><p class="pp-note">해당 구간의 비교 데이터가 없습니다.</p>',
+    "신구대조표", currentVersion);
+  const rows = set.map(g => g.changes.map((c, k) => {
+    let L, R;
+    if (c.type === "MODIFIED"){ const [o, n] = wordDiff(c.before, c.after);
+      L = o.replace(/<del>/g, '<del class="pp-del">').replace(/<ins>/g, '<ins class="pp-ins">');
+      R = n.replace(/<del>/g, '<del class="pp-del">').replace(/<ins>/g, '<ins class="pp-ins">'); }
+    else if (c.type === "ADDED"){ L = "〈신설〉"; R = '<ins class="pp-ins">' + esc(c.after) + "</ins>"; }
+    else { L = '<del class="pp-del">' + esc(c.before) + "</del>"; R = "〈삭제〉"; }
+    const t = "<strong>" + esc(c.title) + "</strong><br>";
+    return "<tr><td>" + t + L + "</td><td>" + t + R + "</td>" +
+      (k === 0 ? '<td rowspan="' + g.changes.length + '">' + esc(g.reason) + "</td>" : "") + "</tr>";
+  }).join("")).join("");
+  return wrapDoc('<h1 class="pp-title">' + esc(D().name) + " 신구대조표</h1>" +
+    '<p class="pp-meta">' + pair[0] + " → " + pair[1] + " · 시행 " + verObj(pair[1]).from + "</p>" +
+    '<div class="pp-tw"><table><thead><tr><th>변경 전</th><th>변경 후</th><th>비고</th></tr></thead><tbody>' +
+    rows + "</tbody></table></div>", "신구대조표", currentVersion);
+}
+
+function buildRegistry(){
+  return wrapDoc('<h1 class="pp-title">개인(신용)정보 처리 위탁 및 제휴업체 현황</h1>' +
+    '<p class="pp-meta">기준일 ' + REGISTRY.asOf + " · 등재 " + REGISTRY.rows.length + "건</p>" +
+    ppTable(["수탁사","위탁 업무","제공 항목","국외","등재일"], REGISTRY.rows), "위·수탁 현황", currentVersion);
+}
+
+function fileSet(){
+  const d = D(), pre = d.filePrefix, pair = diffPairForCurrent();
+  const set = [
+    {name:pre + ".html", desc:"현행본 본문 — 홈페이지 본문 영역에 include", fn:buildPolicy},
+    {name:pre + "-history.html",
+     desc:d.own === "GROUP" ? "게시 이력 (그룹 시행일 · 당사 게시일)" : "이전 방침 목록 (버전 · 적용기간 · 개정 사유)",
+     fn:buildHistory}
+  ];
+  if (Object.keys(d.diffs).length){
+    set.push({name:pre + "-changes.html", desc:"변경내역 — 개정 건별 사유 및 변경 조항", fn:buildChanges});
+    set.push({name:pre + "-diff-" + (pair ? pair[0] + "-" + pair[1] : "current") + ".html",
+      desc:"신구대조표 — 좌우 병렬 3열, 비고 셀 병합", fn:buildDiffDoc});
+  }
+  if (d.hasRegistry){
+    set.push({name:pre + "-registry-outsourcing.html",
+      desc:"위·수탁 현황 — 기준일 보유, 본문과 별개로 갱신", fn:buildRegistry});
+  }
+  return set;
+}
+
+function bytes(str){ return new Blob([str]).size; }
+
+function renderExport(){
+  const w = WORK[currentDocCode], n = changedKeys(currentDocCode).size;
+  const gate = $("#expgate");
+  if (gate) gate.innerHTML = !n ? ""
+    : w.status === "APPROVED"
+      ? '<div class="proof" style="background:var(--active-soft);border-color:var(--active-line);border-left-color:var(--active)">' +
+        '<span class="k" style="background:var(--active)">승인</span><div><b>작업본이 승인되었습니다.</b> 아래 파일에는 편집 내용이 반영되어 있습니다. ' +
+        '개발팀에 폴더째 전달하시면 됩니다.</div></div>'
+      : '<div class="groupbanner"><span class="gk">승인 전</span><div><b>작업본에 ' + n + '건의 변경이 있으나 아직 승인되지 않았습니다.</b> ' +
+        '아래 파일은 <b>현행 게시본</b> 기준으로 생성됩니다. 편집 내용을 반영하려면 <b>09 결재 · 데이터</b>에서 검토 요청 → 승인을 완료하세요.</div></div>';
+  $("#filelist").innerHTML = fileSet().map((f, i) => {
+    const src = f.fn();
+    return '<div class="filecard"><div>' +
+      '<div class="fname">' + esc(f.name) + "</div>" +
+      '<div class="fdesc">' + esc(f.desc) + "</div>" +
+      '<div class="fsize">' + bytes(src).toLocaleString() + " bytes</div></div>" +
+      '<div class="facts">' +
+        '<button class="mini" data-exp="' + i + '">미리보기</button>' +
+        '<button class="mini" data-dl="' + i + '">다운로드</button>' +
+      "</div></div>";
+  }).join("");
+}
+
+function showCode(i){
+  const f = fileSet()[i];
+  $("#codename").textContent = f.name;
+  $("#codebody").textContent = f.fn();
+  $("#codebox").hidden = false;
+  $("#codebox").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function downloadFile(i){
+  const f = fileSet()[i];
+  const url = URL.createObjectURL(new Blob([f.fn()], {type:"text/html;charset=utf-8"}));
+  const a = document.createElement("a");
+  a.href = url; a.download = f.name; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ═══════════ 작업자 · 이력 · 무결성 ═══════════
+   서버가 없으므로 "인증"은 불가능하다. 자기 신고 기반의 "기록"만 가능하다.
+   이 한계는 09 화면에 명시되며 문서(docs/03)에도 동일하게 기재한다.
+   ═══════════════════════════════════════════ */
+const LS_USER = "wib-policy-console-user";
+let USER = {name:"", dept:"정보보호부"};
+let AUDIT = [];
+let LOADED = null;   // 불러온 파일의 검증 결과
+
+function nowStamp(){
+  const d = new Date(), p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+}
+function whoami(){ return USER.name ? (USER.dept + " " + USER.name) : "(작업자 미등록)"; }
+function registered(){ return !!USER.name; }
+function logAudit(action, detail){
+  AUDIT.push({at:nowStamp(), by:whoami(), doc:D().name, action, detail:detail || ""});
+  if (AUDIT.length > 500) AUDIT = AUDIT.slice(-500);
+}
+/* 변조 감지용 체크섬 — 암호학적 해시가 아니며 고의적 위변조는 막지 못한다 */
+function checksum(str){
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16).padStart(8, "0");
+}
+function corePayload(){
+  return JSON.stringify({org:ORG, work:WORK, audit:AUDIT,
+    docs:Object.fromEntries(Object.entries(DOC_REG).map(([k, d]) => [k, {sections:d.sections}]))});
+}
+function loadUser(){
+  try { const r = localStorage.getItem(LS_USER); if (r) USER = Object.assign(USER, JSON.parse(r)); } catch (e) {}
+}
+function saveUser(){ try { localStorage.setItem(LS_USER, JSON.stringify(USER)); } catch (e) {} }
+
+/* ── 09 화면: 작업자 · 저장 상태 · 이력 · 한계 ── */
+function renderAudit(){
+  const box = $("#auditbox"); if (!box) return;
+  const payload = corePayload(), cs = checksum(payload);
+  const lastSave = localStorage.getItem(LS_KEY + ":meta");
+  const meta = lastSave ? JSON.parse(lastSave) : null;
+
+  box.innerHTML =
+    '<div class="card fset" style="margin-bottom:16px">' +
+      "<h3>작업자 등록</h3>" +
+      '<div class="fh">' + (registered()
+        ? "이후 모든 편집·상태 변경 기록에 이 이름이 남습니다."
+        : '<b style="color:var(--del)">등록 전에는 검토 요청·승인을 할 수 없습니다.</b> 기록에 남길 이름이 없기 때문입니다.') + "</div>" +
+      '<div class="reasonrow">' +
+        '<input type="text" id="uname" placeholder="성명" value="' + esc(USER.name) + '" style="max-width:180px">' +
+        '<input type="text" id="udept" placeholder="부서" value="' + esc(USER.dept) + '" style="max-width:180px">' +
+        '<button class="btn" id="usave">등록</button>' +
+        '<span style="font-size:12.5px;color:var(--ink-3);align-self:center">현재 ' + esc(whoami()) + "</span>" +
+      "</div>" +
+    "</div>" +
+
+    '<div class="card" style="margin-bottom:16px">' +
+      '<div class="dataline"><div><div class="dt">현재 데이터 체크섬</div>' +
+        '<div class="dd">저장할 때 파일에 함께 기록됩니다. 불러온 파일이 도중에 손상되거나 직접 편집되었는지 <b>감지</b>하는 용도입니다.</div></div>' +
+        '<div class="facts"><span class="mono" style="font-size:13px;font-weight:700;color:var(--woori)">' + cs + "</span></div></div>" +
+      '<div class="dataline"><div><div class="dt">마지막 저장</div>' +
+        '<div class="dd">' + (meta ? esc(meta.at + " · " + meta.by) : "아직 파일로 저장한 적이 없습니다.") + "</div></div>" +
+        '<div class="facts"><span class="chip ' + (meta ? "active" : "archived") + '"><span class="dot"></span>' +
+        (meta ? "저장됨" : "미저장") + "</span></div></div>" +
+      (LOADED ? '<div class="dataline"><div><div class="dt">불러온 파일 검증</div>' +
+        '<div class="dd">' + esc(LOADED.msg) + "</div></div>" +
+        '<div class="facts"><span class="chip ' + (LOADED.ok ? "active" : "gap") + '"><span class="dot"></span>' +
+        (LOADED.ok ? "체크섬 일치" : "체크섬 불일치") + "</span></div></div>" : "") +
+    "</div>" +
+
+    '<div class="card" style="margin-bottom:16px">' +
+      '<div style="padding:14px 17px 8px"><b style="font-size:13px">편집 이력</b>' +
+      '<span style="font-size:11.5px;color:var(--ink-3);margin-left:8px">이 파일 안에만 존재합니다 · ' + AUDIT.length + "건</span></div>" +
+      (AUDIT.length
+        ? '<div style="max-height:260px;overflow:auto;padding:0 17px 14px">' + AUDIT.slice().reverse().map(a =>
+            '<div class="astep" style="grid-template-columns:132px 132px 1fr"><span class="at">' + esc(a.at) + "</span>" +
+            '<span class="aw">' + esc(a.by) + "</span>" +
+            '<span class="aa">' + esc(a.action) + (a.detail ? ' <span class="ad">— ' + esc(a.detail) + "</span>" : "") +
+            ' <span class="ad">· ' + esc(a.doc) + "</span></span></div>").join("") + "</div>"
+        : '<div style="padding:0 17px 16px;font-size:12.5px;color:var(--ink-3)">아직 기록이 없습니다.</div>') +
+    "</div>" +
+
+    '<div class="card rulecard">' +
+      "<h3>이 도구가 보장하는 것과 보장하지 못하는 것</h3>" +
+      '<div class="ckrow"><span class="cknum">O</span><div><b>기록은 남습니다.</b> 누가(자기 신고) 언제 어느 조항을 왜 고쳤는지, 어떤 상태 전이가 있었는지가 데이터 파일 안에 누적됩니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">O</span><div><b>손상·직접편집은 감지됩니다.</b> 체크섬이 맞지 않으면 불러올 때 표시됩니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">X</span><div><b>본인 확인은 되지 않습니다.</b> 작업자 이름은 <b>자기 신고</b>입니다. 사내 계정으로 인증하려면 서버가 필요합니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">X</span><div><b>권한 통제가 없습니다.</b> 파일을 가진 사람은 누구나 편집·승인 표시를 할 수 있습니다. <b>결재의 효력은 사내 전자결재에 있고, 여기의 승인 상태는 작업 진행 표시일 뿐입니다.</b></div></div>' +
+      '<div class="ckrow"><span class="cknum">X</span><div><b>고의적 위변조는 막지 못합니다.</b> 체크섬은 파일 안에 함께 들어 있어 다시 계산할 수 있습니다. 감사 증빙이 필요하면 기획안의 CMS 단계가 필요합니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">X</span><div><b>동시 편집을 제어하지 못합니다.</b> 두 사람이 각자 고치면 나중에 저장한 파일이 앞선 것을 덮어씁니다. 한 번에 한 사람만 작업하는 규칙이 필요합니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">!</span><div><b>실질적 통제 수단은 파일이 놓인 위치입니다.</b> 데이터 파일을 <b>접근권한이 통제된 부서 공유 폴더</b>에 두면, 그 폴더의 권한 설정과 파일 서버 접근 기록이 이 도구가 제공하지 못하는 통제를 대신합니다. 개인 PC 바탕화면에 두면 지금 워드 파일과 다를 바 없습니다.</div></div>' +
+    "</div>";
+}
+
+/* ═══════════ 작업본 · 편집 · 결재 · 데이터 ═══════════
+   현행본을 복사한 작업본(W)을 편집한다. 변경은 저장 시점에 자동 계산되며,
+   같은 사유를 입력한 조항끼리 하나의 ChangeSet으로 묶여 비고 셀이 병합된다.
+   ═══════════════════════════════════════════════════ */
+const LS_KEY = "wib-policy-console-v1";
+const WORK = {};
+let editSecKey = null;
+
+const STEPS = [["DRAFT","작성 중"],["REVIEW","검토 중"],["APPROVED","승인 완료"]];
+const clone = o => JSON.parse(JSON.stringify(o));
+const EDITABLE = b => b.t === "p" || b.t === "ul" || b.t === "note";
+
+function blockText(b){ return b.t === "ul" ? b.v.join("\n") : b.v; }
+function setBlockText(b, t){ b.v = b.t === "ul" ? t.split("\n").map(x => x.trim()).filter(Boolean) : t; }
+function plainOf(sec){ return sec.title + "" + sec.body.filter(EDITABLE).map(blockText).join(""); }
+function editableText(sec){ return sec.body.filter(EDITABLE).map(blockText).join(" ").replace(/\n/g, " "); }
+
+function workOf(code){
+  if (!WORK[code]){
+    const d = DOC_REG[code];
+    const act = d.versions.find(v => v.status === "ACTIVE") || d.versions[0];
+    WORK[code] = {base:act.id, sections:clone(d.sections), reasons:{}, status:"DRAFT", log:[]};
+  }
+  return WORK[code];
+}
+function baseSections(code){ return DOC_REG[code].sections; }
+
+function computeChangeSets(code){
+  const w = WORK[code]; if (!w) return [];
+  const base = baseSections(code), out = [];
+  w.sections.forEach(ns => {
+    const os = base.find(x => x.key === ns.key);
+    const reason = (w.reasons[ns.key] || "").trim() || "(변경 사유 미입력)";
+    if (!os){ out.push({sec:ns.key, type:"ADDED", title:ns.title, after:editableText(ns), reason}); return; }
+    if (plainOf(os) !== plainOf(ns))
+      out.push({sec:ns.key, type:"MODIFIED", title:ns.title, before:editableText(os), after:editableText(ns), reason});
+  });
+  base.forEach(os => { if (!w.sections.find(x => x.key === os.key))
+    out.push({sec:os.key, type:"REMOVED", title:os.title, before:editableText(os),
+              reason:(w.reasons[os.key] || "").trim() || "(변경 사유 미입력)"}); });
+  const g = new Map();
+  out.forEach(c => { if (!g.has(c.reason)) g.set(c.reason, []); g.get(c.reason).push(c); });
+  return [...g].map(([reason, changes]) => ({reason, changes}));
+}
+function changedKeys(code){
+  const w = WORK[code]; if (!w) return new Set();
+  const base = baseSections(code);
+  return new Set(w.sections.filter(ns => { const os = base.find(x => x.key === ns.key); return !os || plainOf(os) !== plainOf(ns); }).map(x => x.key));
+}
+
+/* 작업본을 버전 목록 맨 앞에 얹는다 */
+function allVersions(){
+  const d = D(), w = WORK[currentDocCode];
+  if (!w || !changedKeys(currentDocCode).size) return d.versions;
+  return [{id:"W", status:"DRAFT", from:"(시행일 미정)", to:null, hash:"—", isWork:true,
+           reason:"작업본 — " + (STEPS.find(x => x[0] === w.status) || ["","작성 중"])[1], audit:[]}].concat(d.versions);
+}
+function diffSetFor(key){
+  if (DIFFS[key]) return DIFFS[key];
+  const w = WORK[currentDocCode];
+  if (w && key === w.base + "|W") return computeChangeSets(currentDocCode);
+  return null;
+}
+
+/* ── 편집 화면 ── */
+function renderEdit(){
+  const code = currentDocCode, d = D();
+  if (d.own === "GROUP"){
+    $("#editnotice").innerHTML = '<div class="groupbanner"><span class="gk">편집 불가</span><div><b>' + esc(d.name) +
+      "은 " + esc(d.provider) + "가 제정하는 그룹 제공 문서입니다.</b> 당사는 게시 주체이므로 조항을 편집하지 않습니다. " +
+      "그룹에서 개정 원문을 수신하면 원문을 그대로 등록하고 게시 이력만 기록합니다.</div></div>";
+    ["#seclist","#edithead","#editblocks","#reasonbox"].forEach(k => { $(k).innerHTML = ""; });
+    return;
+  }
+  $("#editnotice").innerHTML = "";
+  const w = workOf(code), ch = changedKeys(code);
+  if (!editSecKey || !w.sections.find(x => x.key === editSecKey)) editSecKey = w.sections[0].key;
+
+  $("#seclist").innerHTML = w.sections.map((x, i) =>
+    '<button data-editsec="' + x.key + '" aria-current="' + (x.key === editSecKey) + '">' +
+      '<span class="sn">' + esc(x.noLabel || ("제" + (i + 1) + "조")) + "</span>" + esc(x.title) +
+      (ch.has(x.key) ? '<span class="chg" title="변경됨"></span>' : "") + "</button>").join("");
+
+  const idx = w.sections.findIndex(x => x.key === editSecKey), sec = w.sections[idx];
+  const locked = w.status === "APPROVED";
+  $("#edithead").innerHTML =
+    "<h3>" + esc(sec.noLabel || ("제" + (idx + 1) + "조")) + " · " + esc(sec.title) + "</h3>" +
+    '<div class="blk"><label>조항 제목</label>' +
+    '<textarea data-fld="title" rows="1"' + (locked ? " disabled" : "") + ">" + esc(sec.title) + "</textarea></div>" +
+    '<div style="font-size:11px;color:var(--ink-3)">불변키 ' + esc(sec.key + " · " + sec.uuid) +
+    " — 조항 번호가 밀려도 이력이 깨지지 않습니다.</div>";
+
+  $("#editblocks").innerHTML = '<div class="card" style="padding:15px 17px">' + sec.body.map((b, bi) => {
+    if (EDITABLE(b)) return '<div class="blk"><label><span class="bt">' +
+      (b.t === "ul" ? "목록 · 한 줄에 한 항목" : b.t === "note" ? "안내문" : "문단") + "</span></label>" +
+      '<textarea data-blk="' + bi + '" rows="' + (b.t === "ul" ? Math.min(10, b.v.length + 1) : 3) + '"' +
+      (locked ? " disabled" : "") + ">" + esc(blockText(b)) + "</textarea></div>";
+    const kind = b.t === "table" ? "표" : b.t === "org" ? "조직 마스터 자동 반영" : b.t === "vermeta" ? "시행일 자동 생성" : "참조 링크";
+    const why = b.t === "table" ? "표는 별도 관리 대상입니다(프로토타입 범위 밖)."
+      : b.t === "org" ? "05 관리 데이터에서 수정하면 모든 문서에 함께 반영됩니다." : "시스템이 자동 생성합니다.";
+    return '<div class="blk"><label><span class="bt">' + kind + '</span></label><div class="rdonly">이 블록은 여기서 편집하지 않습니다. ' + why + "</div></div>";
+  }).join("") + "</div>";
+
+  const isChanged = ch.has(sec.key);
+  const reasons = [...new Set(Object.values(w.reasons).map(r => (r || "").trim()).filter(Boolean))];
+  $("#reasonbox").innerHTML =
+    "<h4>변경 사유" + (isChanged ? ' <span class="pill on">입력 필요</span>' : ' <span class="pill off">변경 없음</span>') + "</h4>" +
+    '<div class="rh">같은 사유를 입력한 조항들은 신구대조표에서 <b>하나의 비고 셀로 병합</b>됩니다. 용어 일괄 치환처럼 여러 조항이 한 사안으로 바뀔 때 사유를 반복해 쓰지 않아도 됩니다.</div>' +
+    '<div class="reasonrow"><input type="text" id="reasoninput" placeholder="예: 타 업권 표현 정정" value="' +
+      esc(w.reasons[sec.key] || "") + '"' + (locked ? " disabled" : "") + ">" +
+      (reasons.length ? '<select id="reasonpick"><option value="">기존 사유에서 선택…</option>' +
+        reasons.map(r => '<option value="' + esc(r) + '">' + esc(r) + "</option>").join("") + "</select>" : "") +
+    "</div>" +
+    '<div class="editbar" style="padding:13px 0 0"><button class="btn" id="editsave"' + (locked ? " disabled" : "") + ">저장</button>" +
+      '<button class="mini" id="editrevert"' + (locked || !isChanged ? " disabled" : "") + ">이 조항 되돌리기</button>" +
+      '<span style="font-size:12px;color:var(--ink-3)">변경된 조항 <b style="color:var(--woori)">' + ch.size + "</b>건" +
+      (locked ? " · 승인 완료 상태에서는 편집할 수 없습니다" : "") + "</span></div>";
+}
+
+function saveEdit(){
+  const w = workOf(currentDocCode), sec = w.sections.find(x => x.key === editSecKey);
+  const t = $('[data-fld="title"]'); if (t) sec.title = t.value.trim() || sec.title;
+  $$("[data-blk]").forEach(el => setBlockText(sec.body[Number(el.dataset.blk)], el.value));
+  const r = $("#reasoninput"); if (r) w.reasons[sec.key] = r.value.trim();
+  logAudit("조항 편집 저장", (sec.noLabel || sec.title) + (w.reasons[sec.key] ? " · 사유: " + w.reasons[sec.key] : " · 사유 미입력"));
+  persist(); refreshAll();
+  toast("dtoast", "저장했습니다. <b>04 신구대조</b>와 <b>06 변경내역</b>에 자동 반영되었습니다." +
+    (registered() ? "" : " <b>작업자가 등록되지 않아 기록에 이름이 남지 않습니다.</b>"));
+}
+function revertSec(){
+  const w = workOf(currentDocCode), i = w.sections.findIndex(x => x.key === editSecKey);
+  const os = baseSections(currentDocCode).find(x => x.key === editSecKey);
+  if (os){ w.sections[i] = clone(os); delete w.reasons[editSecKey]; logAudit("조항 되돌리기", os.noLabel || os.title); }
+  persist(); refreshAll();
+}
+
+/* ── 결재 ── */
+function renderApprove(){
+  const w = workOf(currentDocCode), n = changedKeys(currentDocCode).size;
+  const cur = STEPS.findIndex(x => x[0] === w.status);
+  $("#flow").innerHTML = STEPS.map(([k, label], i) => {
+    const rec = w.log.find(l => l.to === k);
+    return '<div class="step ' + (i < cur ? "done" : i === cur ? "now" : "") + '"><div class="st">' + label + "</div>" +
+      '<div class="sd">' + (rec ? esc(rec.at + " · " + rec.by) : i === cur ? "진행 중" : "—") + "</div></div>";
+  }).join("");
+  const noReason = computeChangeSets(currentDocCode).some(g => g.reason === "(변경 사유 미입력)");
+  $("#flowacts").innerHTML =
+    '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">' +
+    (w.status === "DRAFT"
+      ? '<button class="btn" id="toreview"' + (!n || noReason || !registered() ? " disabled" : "") + ">검토 요청</button>"
+      : w.status === "REVIEW"
+      ? '<button class="btn" id="toapprove">승인</button> <button class="mini" id="toback">작성 중으로 되돌리기</button>'
+      : '<button class="mini" id="toback">승인 취소</button>') +
+    '<span style="font-size:12.5px;color:var(--ink-3)">변경된 조항 <b style="color:var(--woori)">' + n + "</b>건" +
+    (noReason ? ' · <b style="color:var(--del)">사유가 입력되지 않은 조항이 있어 검토 요청할 수 없습니다</b>' : "") +
+    (!registered() ? ' · <b style="color:var(--del)">작업자 등록이 필요합니다</b>' : "") +
+    (w.status === "APPROVED" ? ' · <b style="color:var(--active)">07 인계 파일 내보내기가 활성화되었습니다</b>' : "") +
+    "</span></div>";
+  const li = $("#lsinfo");
+  if (li) li.textContent = localStorage.getItem(LS_KEY)
+    ? "이 브라우저에 자동 저장되어 있습니다. 다른 PC로 옮기려면 위 데이터 파일을 사용하세요."
+    : "아직 자동 저장된 내용이 없습니다.";
+}
+function setStatus(st){
+  if (!registered()){ toast("dtoast", "작업자를 먼저 등록해 주세요. 기록에 남길 이름이 없습니다."); return; }
+  const w = workOf(currentDocCode);
+  w.status = st;
+  w.log = w.log.filter(l => l.to !== st);
+  w.log.push({to:st, at:nowStamp(), by:whoami()});
+  logAudit((STEPS.find(x => x[0] === st) || ["", st])[1] + " 상태로 변경", "변경 조항 " + changedKeys(currentDocCode).size + "건");
+  persist(); refreshAll();
+}
+
+/* ── 데이터 저장 · 복원 (인수인계) ── */
+function snapshotState(){
+  const o = {v:2, savedAt:nowStamp(), savedBy:whoami(), org:ORG, work:WORK, audit:AUDIT,
+             docs:Object.fromEntries(Object.entries(DOC_REG).map(([k, d]) => [k, {sections:d.sections}]))};
+  o.checksum = checksum(corePayload());
+  return o;
+}
+function persist(){ try { localStorage.setItem(LS_KEY, JSON.stringify(snapshotState())); } catch (e) {} }
+function restoreState(o){
+  if (!o || !o.work) return false;
+  Object.assign(ORG, o.org || {});
+  AUDIT = Array.isArray(o.audit) ? o.audit : [];
+  Object.keys(WORK).forEach(k => delete WORK[k]);
+  Object.entries(o.work).forEach(([k, v]) => { WORK[k] = v; });
+  if (o.docs) Object.entries(o.docs).forEach(([k, v]) => { if (DOC_REG[k] && v && v.sections) DOC_REG[k].sections = v.sections; });
+  SECTIONS = D().sections;
+  if (o.checksum){
+    const ok = checksum(corePayload()) === o.checksum;
+    LOADED = {ok, msg:ok
+      ? "저장 " + (o.savedAt || "-") + " · 저장자 " + (o.savedBy || "-") + " — 저장 이후 내용이 바뀌지 않았습니다."
+      : "저장 " + (o.savedAt || "-") + " · 저장자 " + (o.savedBy || "-") + " — 저장 이후 내용이 바뀌었습니다. 파일이 직접 편집되었거나 손상되었을 수 있습니다."};
+  } else LOADED = {ok:false, msg:"체크섬이 없는 구버전 파일입니다. 검증할 수 없습니다."};
+  return true;
+}
+function toast(id, msg){ const t = $("#" + id); if (!t) return; t.innerHTML = msg; t.classList.add("on"); }
+
+function refreshAll(){
+  const pub = allVersions().filter(v => v.status !== "GAP");
+  currentVersion = pub.find(v => v.id === currentVersion) ? currentVersion : pub[0].id;
+  $("#verpick").innerHTML = pub.map(v =>
+    '<option value="' + v.id + '"' + (v.id === currentVersion ? " selected" : "") + ">" +
+    (v.isWork ? "작업본" : v.id) + " · " + spanOf(v) + " · " + (v.isWork ? "초안" : STATUS_KO[v.status]) + "</option>").join("");
+  const dOpts = pub.map(v => '<option value="' + v.id + '">' + (v.isWork ? "작업본" : v.id) + " (" + v.from + ")</option>").join("");
+  const df = $("#dfrom").value, dt = $("#dto").value;
+  $("#dfrom").innerHTML = dOpts; $("#dto").innerHTML = dOpts;
+  const w = WORK[currentDocCode];
+  if (w && changedKeys(currentDocCode).size){ $("#dfrom").value = w.base; $("#dto").value = "W"; }
+  else {
+    if ([...$("#dfrom").options].some(o => o.value === df)) $("#dfrom").value = df;
+    if ([...$("#dto").options].some(o => o.value === dt)) $("#dto").value = dt;
+  }
+  renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); renderExport(); renderEdit(); renderApprove(); renderAudit();
+}
+
 /* ═══════════ 이벤트 ═══════════ */
 function showView(name){
   $$(".view").forEach(v => { v.hidden = v.id !== "v-" + name; });
@@ -1126,7 +2080,60 @@ $("#verpick").innerHTML = VERSIONS.filter(v => v.status !== "GAP").map(v =>
   '<option value="' + v.id + '"' + (v.id === "v8" ? " selected" : "") + ">" +
   v.id + " · " + spanOf(v) + " · " + STATUS_KO[v.status] + "</option>"
 ).join("");
-$("#verpick").addEventListener("change", e => { currentVersion = e.target.value; renderPolicy(); });
+$("#docpick").addEventListener("change", e => { useDoc(e.target.value); showView("policy"); });
+
+document.addEventListener("click", e => {
+  const es = e.target.closest("[data-editsec]");
+  if (es){ editSecKey = es.dataset.editsec; renderEdit(); return; }
+  if (e.target.id === "editsave"){ saveEdit(); return; }
+  if (e.target.id === "editrevert"){ revertSec(); return; }
+  if (e.target.id === "toreview"){ setStatus("REVIEW"); return; }
+  if (e.target.id === "toapprove"){ setStatus("APPROVED"); return; }
+  if (e.target.id === "toback"){ setStatus(WORK[currentDocCode].status === "APPROVED" ? "REVIEW" : "DRAFT"); return; }
+});
+document.addEventListener("change", e => {
+  if (e.target.id === "reasonpick" && e.target.value){ $("#reasoninput").value = e.target.value; }
+});
+$("#dsave").addEventListener("click", () => {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(snapshotState(), null, 2)], {type:"application/json"}));
+  const a = document.createElement("a"); a.href = url; a.download = "policy-data.json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  localStorage.setItem(LS_KEY + ":meta", JSON.stringify({at:nowStamp(), by:whoami()}));
+  logAudit("데이터 파일 저장", "policy-data.json");
+  refreshAll();
+  toast("dtoast", "policy-data.json 을 저장했습니다. <b>접근권한이 통제된 부서 공유 폴더</b>에 두세요 — 개인 PC에 두면 지금 워드 파일과 같아집니다.");
+});
+document.addEventListener("click", e => {
+  if (e.target.id !== "usave") return;
+  const n = $("#uname").value.trim(), d = $("#udept").value.trim() || "정보보호부";
+  if (!n){ toast("dtoast", "성명을 입력해 주세요."); return; }
+  USER = {name:n, dept:d}; saveUser(); logAudit("작업자 등록", whoami());
+  persist(); refreshAll(); toast("dtoast", "등록했습니다. 이후 기록에 <b>" + whoami() + "</b> 이름이 남습니다.");
+});
+$("#dload").addEventListener("click", () => $("#dfile").click());
+$("#dfile").addEventListener("change", ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      if (restoreState(JSON.parse(r.result))){
+        logAudit("데이터 파일 불러오기", f.name + (LOADED && LOADED.ok ? " · 체크섬 일치" : " · 체크섬 불일치"));
+        persist(); refreshAll();
+        toast("dtoast", "불러왔습니다. " + (LOADED && LOADED.ok ? "체크섬이 일치합니다." : "<b>체크섬이 일치하지 않습니다 — 파일이 직접 편집되었을 수 있습니다.</b>"));
+      }
+      else toast("dtoast", "형식을 인식하지 못했습니다. 이 콘솔에서 저장한 policy-data.json 인지 확인해 주세요.");
+    } catch (err){ toast("dtoast", "파일을 읽지 못했습니다: " + err.message); }
+  };
+  r.readAsText(f);
+  ev.target.value = "";
+});
+$("#dclear").addEventListener("click", () => {
+  localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_KEY + ":meta");
+  Object.keys(WORK).forEach(k => delete WORK[k]); AUDIT = []; LOADED = null;
+  refreshAll(); toast("dtoast", "자동 저장을 지우고 현행 게시본 상태로 되돌렸습니다.");
+});
+$("#verpick").addEventListener("change", e => { currentVersion = e.target.value; renderPolicy(); renderExport(); });
 
 const dOpts = VERSIONS.filter(v => v.status !== "GAP").map(v =>
   '<option value="' + v.id + '">' + v.id + " (" + v.from + ")</option>").join("");
@@ -1134,6 +2141,27 @@ $("#dfrom").innerHTML = dOpts; $("#dto").innerHTML = dOpts;
 $("#dfrom").value = "v8"; $("#dto").value = "v9";
 $("#dfrom").addEventListener("change", renderDiff);
 $("#dto").addEventListener("change", renderDiff);
+$$("[data-opt]").forEach(b => b.addEventListener("click", () => {
+  const k = b.dataset.opt;
+  EXPORT_OPT[k] = Number(b.dataset.val);
+  $$('[data-opt="' + k + '"]').forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  renderExport();
+  if (!$("#codebox").hidden) $("#codebox").hidden = true;
+}));
+$("#copybtn").addEventListener("click", async () => {
+  const t = $("#codebody").textContent, btn = $("#copybtn");
+  try { await navigator.clipboard.writeText(t); }
+  catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch (e2) {}
+    document.body.removeChild(ta);
+  }
+  btn.textContent = "복사했습니다"; setTimeout(() => { btn.textContent = "클립보드 복사"; }, 1600);
+});
+$("#closebtn").addEventListener("click", () => { $("#codebox").hidden = true; });
+
 $$("[data-dview]").forEach(b => b.addEventListener("click", () => {
   diffLayout = b.dataset.dview;
   $$("[data-dview]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
@@ -1157,13 +2185,17 @@ document.addEventListener("click", e => {
     $("#dfrom").value = f; $("#dto").value = t;
     renderDiff(); showView("diff"); return;
   }
+  const exp = e.target.closest("[data-exp]");
+  if (exp){ showCode(Number(exp.dataset.exp)); return; }
+  const dl = e.target.closest("[data-dl]");
+  if (dl){ downloadFile(Number(dl.dataset.dl)); return; }
   const aud = e.target.closest("[data-audit]");
   if (aud){ const p = document.getElementById("audit-" + aud.dataset.audit); if (p) p.hidden = !p.hidden; }
 });
 
 $("#orgsave").addEventListener("click", () => {
   $$("[data-org]").forEach(el => { ORG[el.dataset.org] = el.value.trim() || "—"; });
-  renderPolicy();
+  persist(); refreshAll();
   const t = $("#orgtoast");
   t.innerHTML = "저장했습니다. 제14·16조에 즉시 반영되었습니다 — <b>방침 버전은 v8 그대로이고 개정 절차는 발생하지 않았습니다.</b>";
   t.classList.add("on");
@@ -1176,5 +2208,7 @@ $("#orgreset").addEventListener("click", () => {
   t.classList.add("on");
 });
 
-renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); fillOrgForm();
+loadUser();
+try { const raw = localStorage.getItem(LS_KEY); if (raw) restoreState(JSON.parse(raw)); } catch (e) {}
+refreshAll(); fillOrgForm();
 </script>
