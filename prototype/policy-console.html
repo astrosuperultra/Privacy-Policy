@@ -248,6 +248,35 @@ select{font:inherit; font-size:13px; padding:7px 10px; border-radius:6px; border
 ins{background:var(--add-soft); color:var(--add); text-decoration:none; padding:1px 3px; border-radius:3px; font-weight:700}
 del{background:var(--del-soft); color:var(--del); padding:1px 3px; border-radius:3px}
 
+/* ── 변경내역 (대고객) ── */
+.chgcard{margin-bottom:14px; overflow:hidden}
+.chg-h{display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:14px 17px; background:var(--surface-2); border-bottom:1px solid var(--rule)}
+.chg-h .cv{font-family:var(--mono); font-size:13.5px; font-weight:700; color:var(--woori)}
+.chg-h .cd{font-family:var(--mono); font-size:12.5px; color:var(--ink); font-weight:600}
+.chg-h .cstats{margin-left:auto; display:flex; gap:6px; flex-wrap:wrap}
+.cstat{font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; white-space:nowrap}
+.cstat.add{background:var(--add-soft); color:var(--add); border:1px solid var(--add)}
+.cstat.mod{background:var(--woori-soft); color:var(--woori); border:1px solid var(--woori-line)}
+.chg-b{padding:15px 17px; display:flex; flex-direction:column; gap:12px}
+.chg-sum{font-size:13.5px; color:var(--ink); font-weight:600}
+.chgitem{display:grid; grid-template-columns:56px minmax(0,1fr); gap:12px; padding:11px 13px; background:var(--surface-2); border-radius:8px; border-left:3px solid var(--sky)}
+.chgitem .ci-type{font-size:10.5px; font-family:var(--mono); font-weight:700; padding:2px 0; text-align:center; border-radius:4px; height:fit-content}
+.chgitem .ci-type.ADDED{background:var(--add-soft); color:var(--add)}
+.chgitem .ci-type.MODIFIED{background:var(--woori-soft); color:var(--woori)}
+.chgitem .ci-title{font-size:13.5px; font-weight:700; color:var(--ink)}
+.chgitem .ci-reason{font-size:12.5px; color:var(--ink-2); margin-top:3px}
+.chg-f{display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding-top:4px}
+.chg-link{font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-left:auto}
+.chg-none{padding:15px 17px; font-size:12.5px; color:var(--ink-3); display:flex; gap:10px; align-items:flex-start}
+.chg-none .nb{flex:none; font-size:10.5px; font-family:var(--mono); padding:2px 7px; border-radius:4px; background:var(--del-soft); color:var(--del); border:1px solid var(--del); font-weight:700}
+.privacynote{padding:15px 17px; margin-top:20px; border-top:2px solid var(--sky)}
+.privacynote h3{font-size:13px; margin-bottom:10px}
+.pnrow{display:grid; grid-template-columns:120px minmax(0,1fr); gap:12px; font-size:12.5px; padding:5px 0; border-bottom:1px dotted var(--rule)}
+.pnrow:last-child{border-bottom:0}
+.pnrow b{color:var(--ink-2)}
+.pnrow .no{color:var(--del)}
+.pnrow .yes{color:var(--active)}
+
 /* ── 관리 데이터 ── */
 .grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(272px,1fr)); gap:16px}
 .fset{padding:17px 19px; border-top:2px solid var(--woori); border-radius:2px 2px 11px 11px}
@@ -361,6 +390,7 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
       <button data-view="history"><span class="n">03</span>버전 이력</button>
       <button data-view="diff"><span class="n">04</span>신구대조</button>
       <button data-view="admin"><span class="n">05</span>관리 데이터</button>
+      <button data-view="changes"><span class="n">06</span>변경내역 (대고객)</button>
       <div class="rail-note">이 콘솔은 홈페이지와 별도로 배포되며, 홈페이지는 게시 시점에 만들어진 정적 스냅샷만 읽습니다.</div>
     </nav>
 
@@ -474,6 +504,23 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
           <button class="btn" id="orgsave">조직 마스터 저장</button>
           <button class="btn ghost" id="orgreset">공개본 값으로 되돌리기</button>
           <div class="toast" id="orgtoast"></div>
+        </div>
+      </section>
+
+      <!-- 06 변경내역 (대고객) -->
+      <section class="view" id="v-changes" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">06 · 정보주체가 보는 화면</div>
+          <h2>개인정보처리방침 변경내역</h2>
+          <p class="sub">현행 제17조는 “변경된 내용은 고객이 쉽게 확인할 수 있도록 변경 전·후를 비교하여 공개합니다”라고 이미 명문화하고 있습니다. 이 화면이 그 이행 수단입니다.</p>
+        </div>
+        <div class="proof"><span class="k">요구 1</span><div><b>신구비교표를 사람이 만들지 않습니다.</b> 아래 내용은 조항 데이터에서 <b>계산된 결과</b>입니다. 수기 작성은 “바뀐 것을 기억해서 적는” 방식이라 표 안의 한 행이 빠져도 검증할 방법이 없지만, 계산 결과는 누락이 원리적으로 발생하지 않습니다.</div></div>
+        <div id="chglist"></div>
+        <div class="card privacynote">
+          <h3>이 화면에 노출되는 것과 노출되지 않는 것</h3>
+          <div class="pnrow"><b>노출함</b><span class="yes">시행일 · 변경 조항 · 변경 유형 · 변경 사유 · 변경 전·후 본문</span></div>
+          <div class="pnrow"><b>노출하지 않음</b><span class="no">작성자 · 검토자 · 승인자 · 결재 일시 · 초안 이력 · 스냅샷 해시</span></div>
+          <div class="pnrow"><b>이유</b><span>내부 감사 로그와 대고객 변경내역은 <b>같은 변경 기록에서 나오지만 노출 범위가 다릅니다.</b> 필드 단위로 공개 여부를 지정해, 담당자 실명과 결재 정보가 대외로 새어 나가지 않게 합니다.</span></div>
         </div>
       </section>
 
@@ -897,6 +944,52 @@ function renderDiff(){
   }).join("");
 }
 
+/* 대고객 변경내역 — 감사 로그와 같은 데이터, 공개 필드만 */
+function renderChanges(){
+  const pub = VERSIONS.filter(v => v.status !== "GAP");
+  const html = pub.map((v, i) => {
+    const prev = pub[i + 1];
+    const key = prev ? prev.id + "|" + v.id : null;
+    const set = key ? DIFFS[key] : null;
+
+    const head =
+      '<div class="chg-h">' +
+        '<span class="cv">' + esc(v.id) + "</span>" +
+        '<span class="cd">' + v.from + (v.status === "DRAFT" ? " 시행 예정" : " 시행") + "</span>" +
+        '<span class="chip ' + STATUS_CLS[v.status] + '"><span class="dot"></span>' + STATUS_KO[v.status] + "</span>" +
+        (set ? '<span class="cstats">' +
+          (set.filter(d => d.type === "ADDED").length ? '<span class="cstat add">신설 ' + set.filter(d => d.type === "ADDED").length + "개조</span>" : "") +
+          (set.filter(d => d.type === "MODIFIED").length ? '<span class="cstat mod">수정 ' + set.filter(d => d.type === "MODIFIED").length + "개조</span>" : "") +
+        "</span>" : "") +
+      "</div>";
+
+    if (!set){
+      return '<div class="card chgcard">' + head +
+        '<div class="chg-none"><span class="nb">데이터 없음</span><div>이 개정의 변경내역은 시스템에 남아 있지 않습니다. ' +
+        '당시에는 <b>신구비교표를 별도 문서로 수기 작성</b>했기 때문입니다 — 지금 개선하려는 바로 그 상태입니다.</div></div></div>';
+    }
+
+    const items = set.map(d =>
+      '<div class="chgitem">' +
+        '<span class="ci-type ' + d.type + '">' + (d.type === "ADDED" ? "신설" : "수정") + "</span>" +
+        '<div><div class="ci-title">' + esc(d.title) + "</div>" +
+        '<div class="ci-reason">' + esc(d.reason) + "</div></div>" +
+      "</div>"
+    ).join("");
+
+    return '<div class="card chgcard">' + head +
+      '<div class="chg-b">' +
+        '<div class="chg-sum">' + esc(v.reason) + "</div>" +
+        items +
+        '<div class="chg-f">' +
+          '<button class="mini" data-diff="' + key + '">변경 전·후 대조 보기 →</button>' +
+          '<span class="chg-link">/privacy-policy/changes/' + v.id + "</span>" +
+        "</div>" +
+      "</div></div>";
+  }).join("");
+  $("#chglist").innerHTML = html;
+}
+
 function fillOrgForm(){
   $$("[data-org]").forEach(el => { el.value = ORG[el.dataset.org]; });
 }
@@ -939,6 +1032,12 @@ document.addEventListener("click", e => {
   if (goto){ showView(goto.dataset.goto); return; }
   const open = e.target.closest("[data-openver]");
   if (open){ currentVersion = open.dataset.openver; $("#verpick").value = currentVersion; renderPolicy(); showView("policy"); return; }
+  const dlink = e.target.closest("[data-diff]");
+  if (dlink){
+    const [f, t] = dlink.dataset.diff.split("|");
+    $("#dfrom").value = f; $("#dto").value = t;
+    renderDiff(); showView("diff"); return;
+  }
   const aud = e.target.closest("[data-audit]");
   if (aud){ const p = document.getElementById("audit-" + aud.dataset.audit); if (p) p.hidden = !p.hidden; }
 });
@@ -958,5 +1057,5 @@ $("#orgreset").addEventListener("click", () => {
   t.classList.add("on");
 });
 
-renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); fillOrgForm();
+renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); fillOrgForm();
 </script>
