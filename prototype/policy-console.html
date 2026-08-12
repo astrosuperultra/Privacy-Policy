@@ -656,9 +656,11 @@ textarea.edited{border-color:var(--add); background:var(--add-soft)}
         <div class="pagehead">
           <div class="eyebrow">09 · 정보보호부 내부</div>
           <h2>결재 · 데이터 관리</h2>
-          <p class="sub">작업본의 상태를 관리하고, 전체 데이터를 파일로 주고받습니다. 실제 결재는 사내 전자결재로 하시고, 여기서는 그 결과를 기록해 내보내기 시점을 통제합니다.</p>
+          <p class="sub">작업자를 등록하고, 편집·상태 변경 이력을 남기며, 전체 데이터를 파일로 주고받습니다. <b>서버가 없으므로 본인 확인과 권한 통제는 불가능하며</b>, 이 도구는 <b>기록</b>만 제공합니다. 아래 마지막 카드에 보장 범위를 명시했습니다.</p>
         </div>
         <div class="proof"><span class="k">인수인계</span><div><b>담당자가 바뀌어도 상태가 그대로 넘어갑니다.</b> 지금은 워드 파일·PDF·개인 폴더가 흩어져 있어 인수인계가 곧 파일 뭉치 전달입니다. 여기서는 <b>데이터 파일 하나와 이 콘솔 하나</b>가 전부입니다 — 조항·버전·변경 사유·승인 상태가 모두 그 안에 있습니다.</div></div>
+
+        <div id="auditbox"></div>
 
         <div class="flow" id="flow"></div>
         <div class="card" id="flowacts" style="padding:14px 16px; margin-bottom:20px"></div>
@@ -1750,6 +1752,99 @@ function downloadFile(i){
   document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+/* ═══════════ 작업자 · 이력 · 무결성 ═══════════
+   서버가 없으므로 "인증"은 불가능하다. 자기 신고 기반의 "기록"만 가능하다.
+   이 한계는 09 화면에 명시되며 문서(docs/03)에도 동일하게 기재한다.
+   ═══════════════════════════════════════════ */
+const LS_USER = "wib-policy-console-user";
+let USER = {name:"", dept:"정보보호부"};
+let AUDIT = [];
+let LOADED = null;   // 불러온 파일의 검증 결과
+
+function nowStamp(){
+  const d = new Date(), p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+}
+function whoami(){ return USER.name ? (USER.dept + " " + USER.name) : "(작업자 미등록)"; }
+function registered(){ return !!USER.name; }
+function logAudit(action, detail){
+  AUDIT.push({at:nowStamp(), by:whoami(), doc:D().name, action, detail:detail || ""});
+  if (AUDIT.length > 500) AUDIT = AUDIT.slice(-500);
+}
+/* 변조 감지용 체크섬 — 암호학적 해시가 아니며 고의적 위변조는 막지 못한다 */
+function checksum(str){
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16).padStart(8, "0");
+}
+function corePayload(){
+  return JSON.stringify({org:ORG, work:WORK, audit:AUDIT,
+    docs:Object.fromEntries(Object.entries(DOC_REG).map(([k, d]) => [k, {sections:d.sections}]))});
+}
+function loadUser(){
+  try { const r = localStorage.getItem(LS_USER); if (r) USER = Object.assign(USER, JSON.parse(r)); } catch (e) {}
+}
+function saveUser(){ try { localStorage.setItem(LS_USER, JSON.stringify(USER)); } catch (e) {} }
+
+/* ── 09 화면: 작업자 · 저장 상태 · 이력 · 한계 ── */
+function renderAudit(){
+  const box = $("#auditbox"); if (!box) return;
+  const payload = corePayload(), cs = checksum(payload);
+  const lastSave = localStorage.getItem(LS_KEY + ":meta");
+  const meta = lastSave ? JSON.parse(lastSave) : null;
+
+  box.innerHTML =
+    '<div class="card fset" style="margin-bottom:16px">' +
+      "<h3>작업자 등록</h3>" +
+      '<div class="fh">' + (registered()
+        ? "이후 모든 편집·상태 변경 기록에 이 이름이 남습니다."
+        : '<b style="color:var(--del)">등록 전에는 검토 요청·승인을 할 수 없습니다.</b> 기록에 남길 이름이 없기 때문입니다.') + "</div>" +
+      '<div class="reasonrow">' +
+        '<input type="text" id="uname" placeholder="성명" value="' + esc(USER.name) + '" style="max-width:180px">' +
+        '<input type="text" id="udept" placeholder="부서" value="' + esc(USER.dept) + '" style="max-width:180px">' +
+        '<button class="btn" id="usave">등록</button>' +
+        '<span style="font-size:12.5px;color:var(--ink-3);align-self:center">현재 ' + esc(whoami()) + "</span>" +
+      "</div>" +
+    "</div>" +
+
+    '<div class="card" style="margin-bottom:16px">' +
+      '<div class="dataline"><div><div class="dt">현재 데이터 체크섬</div>' +
+        '<div class="dd">저장할 때 파일에 함께 기록됩니다. 불러온 파일이 도중에 손상되거나 직접 편집되었는지 <b>감지</b>하는 용도입니다.</div></div>' +
+        '<div class="facts"><span class="mono" style="font-size:13px;font-weight:700;color:var(--woori)">' + cs + "</span></div></div>" +
+      '<div class="dataline"><div><div class="dt">마지막 저장</div>' +
+        '<div class="dd">' + (meta ? esc(meta.at + " · " + meta.by) : "아직 파일로 저장한 적이 없습니다.") + "</div></div>" +
+        '<div class="facts"><span class="chip ' + (meta ? "active" : "archived") + '"><span class="dot"></span>' +
+        (meta ? "저장됨" : "미저장") + "</span></div></div>" +
+      (LOADED ? '<div class="dataline"><div><div class="dt">불러온 파일 검증</div>' +
+        '<div class="dd">' + esc(LOADED.msg) + "</div></div>" +
+        '<div class="facts"><span class="chip ' + (LOADED.ok ? "active" : "gap") + '"><span class="dot"></span>' +
+        (LOADED.ok ? "체크섬 일치" : "체크섬 불일치") + "</span></div></div>" : "") +
+    "</div>" +
+
+    '<div class="card" style="margin-bottom:16px">' +
+      '<div style="padding:14px 17px 8px"><b style="font-size:13px">편집 이력</b>' +
+      '<span style="font-size:11.5px;color:var(--ink-3);margin-left:8px">이 파일 안에만 존재합니다 · ' + AUDIT.length + "건</span></div>" +
+      (AUDIT.length
+        ? '<div style="max-height:260px;overflow:auto;padding:0 17px 14px">' + AUDIT.slice().reverse().map(a =>
+            '<div class="astep" style="grid-template-columns:132px 132px 1fr"><span class="at">' + esc(a.at) + "</span>" +
+            '<span class="aw">' + esc(a.by) + "</span>" +
+            '<span class="aa">' + esc(a.action) + (a.detail ? ' <span class="ad">— ' + esc(a.detail) + "</span>" : "") +
+            ' <span class="ad">· ' + esc(a.doc) + "</span></span></div>").join("") + "</div>"
+        : '<div style="padding:0 17px 16px;font-size:12.5px;color:var(--ink-3)">아직 기록이 없습니다.</div>') +
+    "</div>" +
+
+    '<div class="card rulecard">' +
+      "<h3>이 도구가 보장하는 것과 보장하지 못하는 것</h3>" +
+      '<div class="ckrow"><span class="cknum">O</span><div><b>기록은 남습니다.</b> 누가(자기 신고) 언제 어느 조항을 왜 고쳤는지, 어떤 상태 전이가 있었는지가 데이터 파일 안에 누적됩니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">O</span><div><b>손상·직접편집은 감지됩니다.</b> 체크섬이 맞지 않으면 불러올 때 표시됩니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">X</span><div><b>본인 확인은 되지 않습니다.</b> 작업자 이름은 <b>자기 신고</b>입니다. 사내 계정으로 인증하려면 서버가 필요합니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">X</span><div><b>권한 통제가 없습니다.</b> 파일을 가진 사람은 누구나 편집·승인 표시를 할 수 있습니다. <b>결재의 효력은 사내 전자결재에 있고, 여기의 승인 상태는 작업 진행 표시일 뿐입니다.</b></div></div>' +
+      '<div class="ckrow"><span class="cknum">X</span><div><b>고의적 위변조는 막지 못합니다.</b> 체크섬은 파일 안에 함께 들어 있어 다시 계산할 수 있습니다. 감사 증빙이 필요하면 기획안의 CMS 단계가 필요합니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">X</span><div><b>동시 편집을 제어하지 못합니다.</b> 두 사람이 각자 고치면 나중에 저장한 파일이 앞선 것을 덮어씁니다. 한 번에 한 사람만 작업하는 규칙이 필요합니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">!</span><div><b>실질적 통제 수단은 파일이 놓인 위치입니다.</b> 데이터 파일을 <b>접근권한이 통제된 부서 공유 폴더</b>에 두면, 그 폴더의 권한 설정과 파일 서버 접근 기록이 이 도구가 제공하지 못하는 통제를 대신합니다. 개인 PC 바탕화면에 두면 지금 워드 파일과 다를 바 없습니다.</div></div>' +
+    "</div>";
+}
+
 /* ═══════════ 작업본 · 편집 · 결재 · 데이터 ═══════════
    현행본을 복사한 작업본(W)을 편집한다. 변경은 저장 시점에 자동 계산되며,
    같은 사유를 입력한 조항끼리 하나의 ChangeSet으로 묶여 비고 셀이 병합된다.
@@ -1874,13 +1969,15 @@ function saveEdit(){
   const t = $('[data-fld="title"]'); if (t) sec.title = t.value.trim() || sec.title;
   $$("[data-blk]").forEach(el => setBlockText(sec.body[Number(el.dataset.blk)], el.value));
   const r = $("#reasoninput"); if (r) w.reasons[sec.key] = r.value.trim();
+  logAudit("조항 편집 저장", (sec.noLabel || sec.title) + (w.reasons[sec.key] ? " · 사유: " + w.reasons[sec.key] : " · 사유 미입력"));
   persist(); refreshAll();
-  toast("dtoast", "저장했습니다. <b>04 신구대조</b>와 <b>06 변경내역</b>에 자동 반영되었습니다.");
+  toast("dtoast", "저장했습니다. <b>04 신구대조</b>와 <b>06 변경내역</b>에 자동 반영되었습니다." +
+    (registered() ? "" : " <b>작업자가 등록되지 않아 기록에 이름이 남지 않습니다.</b>"));
 }
 function revertSec(){
   const w = workOf(currentDocCode), i = w.sections.findIndex(x => x.key === editSecKey);
   const os = baseSections(currentDocCode).find(x => x.key === editSecKey);
-  if (os){ w.sections[i] = clone(os); delete w.reasons[editSecKey]; }
+  if (os){ w.sections[i] = clone(os); delete w.reasons[editSecKey]; logAudit("조항 되돌리기", os.noLabel || os.title); }
   persist(); refreshAll();
 }
 
@@ -1897,12 +1994,13 @@ function renderApprove(){
   $("#flowacts").innerHTML =
     '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">' +
     (w.status === "DRAFT"
-      ? '<button class="btn" id="toreview"' + (!n || noReason ? " disabled" : "") + ">검토 요청</button>"
+      ? '<button class="btn" id="toreview"' + (!n || noReason || !registered() ? " disabled" : "") + ">검토 요청</button>"
       : w.status === "REVIEW"
       ? '<button class="btn" id="toapprove">승인</button> <button class="mini" id="toback">작성 중으로 되돌리기</button>'
       : '<button class="mini" id="toback">승인 취소</button>') +
     '<span style="font-size:12.5px;color:var(--ink-3)">변경된 조항 <b style="color:var(--woori)">' + n + "</b>건" +
     (noReason ? ' · <b style="color:var(--del)">사유가 입력되지 않은 조항이 있어 검토 요청할 수 없습니다</b>' : "") +
+    (!registered() ? ' · <b style="color:var(--del)">작업자 등록이 필요합니다</b>' : "") +
     (w.status === "APPROVED" ? ' · <b style="color:var(--active)">07 인계 파일 내보내기가 활성화되었습니다</b>' : "") +
     "</span></div>";
   const li = $("#lsinfo");
@@ -1911,26 +2009,37 @@ function renderApprove(){
     : "아직 자동 저장된 내용이 없습니다.";
 }
 function setStatus(st){
+  if (!registered()){ toast("dtoast", "작업자를 먼저 등록해 주세요. 기록에 남길 이름이 없습니다."); return; }
   const w = workOf(currentDocCode);
   w.status = st;
   w.log = w.log.filter(l => l.to !== st);
-  w.log.push({to:st, at:"2026-08-12", by:"정보보호부 담당자"});
+  w.log.push({to:st, at:nowStamp(), by:whoami()});
+  logAudit((STEPS.find(x => x[0] === st) || ["", st])[1] + " 상태로 변경", "변경 조항 " + changedKeys(currentDocCode).size + "건");
   persist(); refreshAll();
 }
 
 /* ── 데이터 저장 · 복원 (인수인계) ── */
 function snapshotState(){
-  return {v:1, savedAt:"2026-08-12", org:ORG, work:WORK,
-          docs:Object.fromEntries(Object.entries(DOC_REG).map(([k, d]) => [k, {sections:d.sections}]))};
+  const o = {v:2, savedAt:nowStamp(), savedBy:whoami(), org:ORG, work:WORK, audit:AUDIT,
+             docs:Object.fromEntries(Object.entries(DOC_REG).map(([k, d]) => [k, {sections:d.sections}]))};
+  o.checksum = checksum(corePayload());
+  return o;
 }
 function persist(){ try { localStorage.setItem(LS_KEY, JSON.stringify(snapshotState())); } catch (e) {} }
 function restoreState(o){
   if (!o || !o.work) return false;
   Object.assign(ORG, o.org || {});
+  AUDIT = Array.isArray(o.audit) ? o.audit : [];
   Object.keys(WORK).forEach(k => delete WORK[k]);
   Object.entries(o.work).forEach(([k, v]) => { WORK[k] = v; });
   if (o.docs) Object.entries(o.docs).forEach(([k, v]) => { if (DOC_REG[k] && v && v.sections) DOC_REG[k].sections = v.sections; });
   SECTIONS = D().sections;
+  if (o.checksum){
+    const ok = checksum(corePayload()) === o.checksum;
+    LOADED = {ok, msg:ok
+      ? "저장 " + (o.savedAt || "-") + " · 저장자 " + (o.savedBy || "-") + " — 저장 이후 내용이 바뀌지 않았습니다."
+      : "저장 " + (o.savedAt || "-") + " · 저장자 " + (o.savedBy || "-") + " — 저장 이후 내용이 바뀌었습니다. 파일이 직접 편집되었거나 손상되었을 수 있습니다."};
+  } else LOADED = {ok:false, msg:"체크섬이 없는 구버전 파일입니다. 검증할 수 없습니다."};
   return true;
 }
 function toast(id, msg){ const t = $("#" + id); if (!t) return; t.innerHTML = msg; t.classList.add("on"); }
@@ -1950,7 +2059,7 @@ function refreshAll(){
     if ([...$("#dfrom").options].some(o => o.value === df)) $("#dfrom").value = df;
     if ([...$("#dto").options].some(o => o.value === dt)) $("#dto").value = dt;
   }
-  renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); renderExport(); renderEdit(); renderApprove();
+  renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); renderExport(); renderEdit(); renderApprove(); renderAudit();
 }
 
 /* ═══════════ 이벤트 ═══════════ */
@@ -1990,7 +2099,17 @@ $("#dsave").addEventListener("click", () => {
   const a = document.createElement("a"); a.href = url; a.download = "policy-data.json";
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-  toast("dtoast", "policy-data.json 을 저장했습니다. 부서 공유 폴더에 두시면 인수인계 시 이 파일 하나만 넘기면 됩니다.");
+  localStorage.setItem(LS_KEY + ":meta", JSON.stringify({at:nowStamp(), by:whoami()}));
+  logAudit("데이터 파일 저장", "policy-data.json");
+  refreshAll();
+  toast("dtoast", "policy-data.json 을 저장했습니다. <b>접근권한이 통제된 부서 공유 폴더</b>에 두세요 — 개인 PC에 두면 지금 워드 파일과 같아집니다.");
+});
+document.addEventListener("click", e => {
+  if (e.target.id !== "usave") return;
+  const n = $("#uname").value.trim(), d = $("#udept").value.trim() || "정보보호부";
+  if (!n){ toast("dtoast", "성명을 입력해 주세요."); return; }
+  USER = {name:n, dept:d}; saveUser(); logAudit("작업자 등록", whoami());
+  persist(); refreshAll(); toast("dtoast", "등록했습니다. 이후 기록에 <b>" + whoami() + "</b> 이름이 남습니다.");
 });
 $("#dload").addEventListener("click", () => $("#dfile").click());
 $("#dfile").addEventListener("change", ev => {
@@ -1998,7 +2117,11 @@ $("#dfile").addEventListener("change", ev => {
   const r = new FileReader();
   r.onload = () => {
     try {
-      if (restoreState(JSON.parse(r.result))){ persist(); refreshAll(); toast("dtoast", "불러왔습니다."); }
+      if (restoreState(JSON.parse(r.result))){
+        logAudit("데이터 파일 불러오기", f.name + (LOADED && LOADED.ok ? " · 체크섬 일치" : " · 체크섬 불일치"));
+        persist(); refreshAll();
+        toast("dtoast", "불러왔습니다. " + (LOADED && LOADED.ok ? "체크섬이 일치합니다." : "<b>체크섬이 일치하지 않습니다 — 파일이 직접 편집되었을 수 있습니다.</b>"));
+      }
       else toast("dtoast", "형식을 인식하지 못했습니다. 이 콘솔에서 저장한 policy-data.json 인지 확인해 주세요.");
     } catch (err){ toast("dtoast", "파일을 읽지 못했습니다: " + err.message); }
   };
@@ -2006,8 +2129,8 @@ $("#dfile").addEventListener("change", ev => {
   ev.target.value = "";
 });
 $("#dclear").addEventListener("click", () => {
-  localStorage.removeItem(LS_KEY);
-  Object.keys(WORK).forEach(k => delete WORK[k]);
+  localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_KEY + ":meta");
+  Object.keys(WORK).forEach(k => delete WORK[k]); AUDIT = []; LOADED = null;
   refreshAll(); toast("dtoast", "자동 저장을 지우고 현행 게시본 상태로 되돌렸습니다.");
 });
 $("#verpick").addEventListener("change", e => { currentVersion = e.target.value; renderPolicy(); renderExport(); });
@@ -2085,6 +2208,7 @@ $("#orgreset").addEventListener("click", () => {
   t.classList.add("on");
 });
 
+loadUser();
 try { const raw = localStorage.getItem(LS_KEY); if (raw) restoreState(JSON.parse(raw)); } catch (e) {}
 refreshAll(); fillOrgForm();
 </script>
