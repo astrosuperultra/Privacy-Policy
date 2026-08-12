@@ -286,6 +286,7 @@ del{background:var(--del-soft); color:var(--del); text-decoration:line-through; 
 .chg-h .cv{font-family:var(--mono); font-size:13.5px; font-weight:700; color:var(--woori)}
 .chg-h .cd{font-family:var(--mono); font-size:12.5px; color:var(--ink); font-weight:600}
 .chg-h .cstats{margin-left:auto; display:flex; gap:6px; flex-wrap:wrap}
+.cohint{font-size:10.5px; color:var(--ink-3); font-weight:500; margin-top:3px}
 .cstat{font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; white-space:nowrap}
 .cstat.add{background:var(--add-soft); color:var(--add); border:1px solid var(--add)}
 .cstat.mod{background:var(--woori-soft); color:var(--woori); border:1px solid var(--woori-line)}
@@ -1659,8 +1660,9 @@ function buildRegistry(){
   const v = regActive();
   return wrapDoc('<h1 class="pp-title">' + esc(REG_DOC.name) + "</h1>" +
     '<p class="pp-meta">기준일 ' + v.asOf + " · 현황 버전 " + v.id + " · 등재 " + v.rows.length + "건</p>" +
-    ppTable(REG_COLS, v.rows.map(r => [r.name, r.task, r.items, r.overseas, r.since])) +
-    '<p class="pp-note">이 현황은 개인정보처리방침·신용정보활용체제가 공통으로 참조하며, 방침 개정과 무관하게 갱신됩니다.</p>',
+    ppTable(REG_COLS, v.rows.map(r => [r.name, r.task, r.items, r.dept || "—", r.overseas, r.since])) +
+    '<p class="pp-note">이 현황은 개인정보처리방침·신용정보활용체제가 공통으로 참조하며, 방침 개정과 무관하게 갱신됩니다. ' +
+    '<b>이 파일은 고유 주소를 가진 독립 페이지입니다</b> — 팝업이 아니므로 정보주체에게 주소로 안내하고, 버전별로 인용할 수 있습니다.</p>',
     "위·수탁 현황", currentVersion);
 }
 
@@ -2044,38 +2046,75 @@ function refreshAll(){
         본문이 "별도 현황 참조"로 되어 있으므로 수탁사 변경은 방침 개정이 아니지만,
         현황 자체의 갱신·이력 관리 의무는 그대로 남는다.
    ═══════════════════════════════════════════ */
-const REG_COLS = ["수탁사","위탁 업무","제공 항목","국외","등재일"];
+/* 실제 게시 팝업의 컬럼: 위탁업체명 / 위탁 목적 / 위탁하는 개인(신용)정보항목 / 담당부서
+   뒤의 2개(국외 이전·등재일)는 관리 목적으로 추가한 필드다.
+   국외 이전은 본문 검토 대상 판정에, 등재일은 시점별 이력 추적에 쓰인다. */
+const REG_FIELDS = ["name","task","items","dept","overseas"];
+const REG_LABEL = {name:"위탁업체명", task:"위탁 목적", items:"정보항목", dept:"담당부서", overseas:"국외 이전"};
+const REG_COLS = ["위탁업체명","위탁 목적","위탁하는 개인(신용)정보항목","담당부서","국외 이전","등재일"];
 
 const REG_DOC = {
   code:"outsourcing",
   name:"개인(신용)정보 처리 위탁 및 제휴업체 현황",
   usedBy:["privacy-policy","credit-info"],
+  /* 현행(g3)의 실제 등재 내용은 대고객 게시 팝업에서 옮긴 것이다(2026-08 확인, 일부 발췌).
+     과거 버전(g1·g2)과 ○○ 업체는 시연을 위해 가정한 것이다.
+     실제로는 과거 이력이 존재하지 않는다 — 그것이 이 화면을 만드는 이유다. */
+  captured:"2026-08 대고객 게시 팝업에서 발췌",
   versions:[
     {id:"g3", status:"ACTIVE", asOf:"2026-08-01", by:"정보보호부", at:"2026-08-01 09:10",
-     reason:"전산시스템 개발·유지보수 수탁사 신규 계약, 리서치 위탁 계약 종료",
+     reason:"전산시스템 개발·유지보수 수탁사 신규 계약, 만족도 조사 위탁 계약 종료",
      rows:[
-       {id:"W01", name:"코스콤", task:"원장관리 시스템 운영 및 유지보수", items:"개인식별정보, 금융거래정보", overseas:"—", since:"2024-02-20"},
-       {id:"W02", name:"한국정보인증", task:"전자서명 인증 서비스", items:"성명, 생년월일, 휴대전화번호", overseas:"—", since:"2024-02-20"},
-       {id:"W03", name:"○○컨택센터", task:"고객 상담 및 아웃바운드 업무, 만족도 조사", items:"성명, 연락처, 거래내역", overseas:"—", since:"2024-02-20"},
-       {id:"W04", name:"○○디엠", task:"각종 보고서·안내장 인쇄 및 발송", items:"성명, 주소, 계좌정보", overseas:"—", since:"2024-02-20"},
-       {id:"W05", name:"○○테크놀로지", task:"전산시스템 개발 및 유지보수", items:"시스템 운영상 접근 가능한 정보", overseas:"—", since:"2026-08-01"}
+       {id:"W01", co:"C-WFIS",  name:"우리FIS", task:"전산인프라 토탈 아웃소싱", items:"신정보시스템운영데이터", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W02", co:"C-INIT",  name:"이니텍", task:"전자금융(인터넷뱅킹, 스마트뱅킹 등) ASP", items:"ASP운영에 필요한 개인(신용)정보 항목", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W03", co:"C-EBIZ",  name:"(주)이비즈엔시스템", task:"메일 및 SMS발송 서비스, 휴대폰 본인확인 서비스", items:"고객전화번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W04", co:"C-GSMB",  name:"GS엠비즈 주식회사", task:"모바일쿠폰 운영 및 발송서비스", items:"핸드폰번호", dept:"리테일성장실", overseas:"—", since:"2024-02-20"},
+       {id:"W05", co:"C-KMC",   name:"한국모바일인증(주)", task:"휴대폰본인확인서비스", items:"성명, 생년월일, 성별, 내/외국인여부, 이동통신사 및 휴대폰번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W06", co:"C-NICE",  name:"나이스평가정보", task:"휴대폰본인확인서비스", items:"성명, 생년월일, 성별, 내/외국인여부, 이동통신사 및 휴대폰번호", dept:"CX기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W07", co:"C-NICE",  name:"나이스평가정보", task:"연계정보(CI)발급", items:"주민등록번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W08", co:"C-HANJU", name:"(주)한주홀딩스", task:"ARS전화인증서비스", items:"인증요청 고객전화번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W09", co:"C-IHRT",  name:"아이하트", task:"SMS발송", items:"핸드폰번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W10", co:"C-KCB",   name:"코리아크레딧뷰로(KCB)", task:"마이데이터 통합인증 서비스", items:"주민등록번호", dept:"CX기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W11", co:"C-WOORI", name:"우리은행", task:"연계대출 상품 소개 및 설명", items:"소개관리번호, 진행상태, 취급일, 취급금액", dept:"종합금융사업추진부", overseas:"—", since:"2024-02-20"},
+       {id:"W12", co:"C-BILL",  name:"빌포스트", task:"대고객 우편물 발송", items:"계좌번호, 성명, 예수금, 미납금, 담보대출금, 펀드잔고, 투자원금, 중간환매대금, 평가금액, 환매예상금액, 누적수익률, 연환산수익률, 평가손익, 거래내역, 자택주소, 직장주소, 이메일주소", dept:"영업솔루션부", overseas:"—", since:"2024-02-20"},
+       {id:"W13", co:"C-KOSCOM",name:"코스콤", task:"전산서비스 및 공인인증서비스", items:"PowerBase전산서비스이용계약서에 의거한 전산서비스업무를 위한 개인정보", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W91", co:"C-DEMO2", name:"○○테크놀로지", task:"전산시스템 개발 및 유지보수", items:"시스템 운영상 접근 가능한 정보", dept:"IT기획부", overseas:"—", since:"2026-08-01"}
      ]},
     {id:"g2", status:"ARCHIVED", asOf:"2025-03-25", by:"정보보호부", at:"2025-03-25 14:02",
-     reason:"컨택센터 위탁 업무에 만족도 조사 추가, 리서치 위탁 신규",
+     reason:"만족도 조사 위탁 담당부서 이관 (조직개편 — 위탁 내용 변경 없음)",
      rows:[
-       {id:"W01", name:"코스콤", task:"원장관리 시스템 운영 및 유지보수", items:"개인식별정보, 금융거래정보", overseas:"—", since:"2024-02-20"},
-       {id:"W02", name:"한국정보인증", task:"전자서명 인증 서비스", items:"성명, 생년월일, 휴대전화번호", overseas:"—", since:"2024-02-20"},
-       {id:"W03", name:"○○컨택센터", task:"고객 상담 및 아웃바운드 업무, 만족도 조사", items:"성명, 연락처, 거래내역", overseas:"—", since:"2024-02-20"},
-       {id:"W04", name:"○○디엠", task:"각종 보고서·안내장 인쇄 및 발송", items:"성명, 주소, 계좌정보", overseas:"—", since:"2024-02-20"},
-       {id:"W06", name:"○○리서치", task:"고객 만족도 조사", items:"성명, 연락처", overseas:"—", since:"2025-03-25"}
+       {id:"W01", co:"C-WFIS",  name:"우리FIS", task:"전산인프라 토탈 아웃소싱", items:"신정보시스템운영데이터", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W02", co:"C-INIT",  name:"이니텍", task:"전자금융(인터넷뱅킹, 스마트뱅킹 등) ASP", items:"ASP운영에 필요한 개인(신용)정보 항목", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W03", co:"C-EBIZ",  name:"(주)이비즈엔시스템", task:"메일 및 SMS발송 서비스, 휴대폰 본인확인 서비스", items:"고객전화번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W04", co:"C-GSMB",  name:"GS엠비즈 주식회사", task:"모바일쿠폰 운영 및 발송서비스", items:"핸드폰번호", dept:"리테일성장실", overseas:"—", since:"2024-02-20"},
+       {id:"W05", co:"C-KMC",   name:"한국모바일인증(주)", task:"휴대폰본인확인서비스", items:"성명, 생년월일, 성별, 내/외국인여부, 이동통신사 및 휴대폰번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W06", co:"C-NICE",  name:"나이스평가정보", task:"휴대폰본인확인서비스", items:"성명, 생년월일, 성별, 내/외국인여부, 이동통신사 및 휴대폰번호", dept:"CX기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W07", co:"C-NICE",  name:"나이스평가정보", task:"연계정보(CI)발급", items:"주민등록번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W08", co:"C-HANJU", name:"(주)한주홀딩스", task:"ARS전화인증서비스", items:"인증요청 고객전화번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W09", co:"C-IHRT",  name:"아이하트", task:"SMS발송", items:"핸드폰번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W10", co:"C-KCB",   name:"코리아크레딧뷰로(KCB)", task:"마이데이터 통합인증 서비스", items:"주민등록번호", dept:"CX기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W11", co:"C-WOORI", name:"우리은행", task:"연계대출 상품 소개 및 설명", items:"소개관리번호, 진행상태, 취급일, 취급금액", dept:"종합금융사업추진부", overseas:"—", since:"2024-02-20"},
+       {id:"W12", co:"C-BILL",  name:"빌포스트", task:"대고객 우편물 발송", items:"계좌번호, 성명, 예수금, 미납금, 담보대출금, 펀드잔고, 투자원금, 중간환매대금, 평가금액, 환매예상금액, 누적수익률, 연환산수익률, 평가손익, 거래내역, 자택주소, 직장주소, 이메일주소", dept:"영업솔루션부", overseas:"—", since:"2024-02-20"},
+       {id:"W13", co:"C-KOSCOM",name:"코스콤", task:"전산서비스 및 공인인증서비스", items:"PowerBase전산서비스이용계약서에 의거한 전산서비스업무를 위한 개인정보", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W90", co:"C-DEMO1", name:"○○리서치", task:"고객 만족도 조사", items:"성명, 연락처", dept:"리테일성장실", overseas:"—", since:"2025-03-25"}
      ]},
     {id:"g1", status:"ARCHIVED", asOf:"2024-02-20", by:"정보보호부", at:"2024-02-20 10:00",
      reason:"최초 등재",
      rows:[
-       {id:"W01", name:"코스콤", task:"원장관리 시스템 운영 및 유지보수", items:"개인식별정보, 금융거래정보", overseas:"—", since:"2024-02-20"},
-       {id:"W02", name:"한국정보인증", task:"전자서명 인증 서비스", items:"성명, 생년월일, 휴대전화번호", overseas:"—", since:"2024-02-20"},
-       {id:"W03", name:"○○컨택센터", task:"고객 상담 및 아웃바운드 업무", items:"성명, 연락처, 거래내역", overseas:"—", since:"2024-02-20"},
-       {id:"W04", name:"○○디엠", task:"각종 보고서·안내장 인쇄 및 발송", items:"성명, 주소, 계좌정보", overseas:"—", since:"2024-02-20"}
+       {id:"W01", co:"C-WFIS",  name:"우리FIS", task:"전산인프라 토탈 아웃소싱", items:"신정보시스템운영데이터", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W02", co:"C-INIT",  name:"이니텍", task:"전자금융(인터넷뱅킹, 스마트뱅킹 등) ASP", items:"ASP운영에 필요한 개인(신용)정보 항목", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W03", co:"C-EBIZ",  name:"(주)이비즈엔시스템", task:"메일 및 SMS발송 서비스, 휴대폰 본인확인 서비스", items:"고객전화번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W04", co:"C-GSMB",  name:"GS엠비즈 주식회사", task:"모바일쿠폰 운영 및 발송서비스", items:"핸드폰번호", dept:"리테일성장실", overseas:"—", since:"2024-02-20"},
+       {id:"W05", co:"C-KMC",   name:"한국모바일인증(주)", task:"휴대폰본인확인서비스", items:"성명, 생년월일, 성별, 내/외국인여부, 이동통신사 및 휴대폰번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W06", co:"C-NICE",  name:"나이스평가정보", task:"휴대폰본인확인서비스", items:"성명, 생년월일, 성별, 내/외국인여부, 이동통신사 및 휴대폰번호", dept:"CX기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W07", co:"C-NICE",  name:"나이스평가정보", task:"연계정보(CI)발급", items:"주민등록번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W08", co:"C-HANJU", name:"(주)한주홀딩스", task:"ARS전화인증서비스", items:"인증요청 고객전화번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W09", co:"C-IHRT",  name:"아이하트", task:"SMS발송", items:"핸드폰번호", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W10", co:"C-KCB",   name:"코리아크레딧뷰로(KCB)", task:"마이데이터 통합인증 서비스", items:"주민등록번호", dept:"CX기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W11", co:"C-WOORI", name:"우리은행", task:"연계대출 상품 소개 및 설명", items:"소개관리번호, 진행상태, 취급일, 취급금액", dept:"종합금융사업추진부", overseas:"—", since:"2024-02-20"},
+       {id:"W12", co:"C-BILL",  name:"빌포스트", task:"대고객 우편물 발송", items:"계좌번호, 성명, 예수금, 미납금, 담보대출금, 펀드잔고, 투자원금, 중간환매대금, 평가금액, 환매예상금액, 누적수익률, 연환산수익률, 평가손익, 거래내역, 자택주소, 직장주소, 이메일주소", dept:"영업솔루션부", overseas:"—", since:"2024-02-20"},
+       {id:"W13", co:"C-KOSCOM",name:"코스콤", task:"전산서비스 및 공인인증서비스", items:"PowerBase전산서비스이용계약서에 의거한 전산서비스업무를 위한 개인정보", dept:"IT기획부", overseas:"—", since:"2024-02-20"},
+       {id:"W90", co:"C-DEMO1", name:"○○리서치", task:"고객 만족도 조사", items:"성명, 연락처", dept:"CX기획부", overseas:"—", since:"2025-03-25"}
      ]}
   ]
 };
@@ -2106,7 +2145,7 @@ function regChanges(){
   w.rows.forEach(r => {
     const o = base.find(x => x.id === r.id);
     if (!o) { out.push({type:"ADDED", row:r}); return; }
-    const diffs = ["name","task","items","overseas"].filter(k => o[k] !== r[k]);
+    const diffs = REG_FIELDS.filter(k => o[k] !== r[k]);
     if (diffs.length) out.push({type:"MODIFIED", row:r, old:o, fields:diffs});
   });
   base.forEach(o => { if (!w.rows.find(x => x.id === o.id)) out.push({type:"REMOVED", row:o}); });
@@ -2128,6 +2167,13 @@ function regEscalations(){
   return out;
 }
 function w_reasonText(){ return (REG_WORK && REG_WORK.reason) || ""; }
+
+/* 담당부서만 바뀐 변경은 조직개편이다 — 위탁 내용이 그대로이므로 본문 검토 대상이 아니다.
+   그러나 현황에는 기재되는 값이므로 현황 버전은 올라가야 한다(요구사항 3의 위·수탁판). */
+function regOrgOnly(){
+  return regChanges().filter(c => c.type === "MODIFIED" &&
+    c.fields.length === 1 && c.fields[0] === "dept");
+}
 
 function regRowLabel(r){ return r.name + " · " + r.task; }
 
@@ -2163,12 +2209,24 @@ function renderRegistry(){
 
     '<div class="card" style="margin-bottom:14px"><div class="tscroll"><table><thead><tr>' +
       REG_COLS.map(c => "<th>" + esc(c) + "</th>").join("") + "<th>관리</th></tr></thead><tbody>" +
-      w.rows.map(r => {
+      /* 한 업체가 여러 업무를 위탁받는 경우 업체명 셀을 병합한다.
+         실제 게시 팝업도 나이스평가정보를 이렇게 표기하고 있다(업무 2건, 담당부서 상이).
+         → 데이터 단위는 '수탁사'가 아니라 '수탁사 × 위탁업무'다. */
+      w.rows.map((r, i) => {
         const c = ch.find(x => x.row.id === r.id);
         const mark = c ? (c.type === "ADDED" ? '<span class="cstat add">신규</span> ' :
                           c.type === "MODIFIED" ? '<span class="cstat mod">수정</span> ' : "") : "";
+        const first = i === 0 || w.rows[i - 1].co !== r.co;
+        let span = 0;
+        if (first) for (let j = i; j < w.rows.length && w.rows[j].co === r.co; j++) span++;
+        const gmark = first && span > 1
+          ? (ch.find(x => w.rows.some(y => y.co === r.co && y.id === x.row.id)) ? mark : "") : mark;
         return '<tr' + (c ? ' style="background:var(--add-soft)"' : "") + ">" +
-          "<td>" + mark + "<b>" + esc(r.name) + "</b></td><td>" + esc(r.task) + "</td><td>" + esc(r.items) + "</td>" +
+          (first ? '<td' + (span > 1 ? ' rowspan="' + span + '"' : "") + ">" + gmark +
+                   "<b>" + esc(r.name) + "</b>" +
+                   (span > 1 ? '<div class="cohint">위탁 업무 ' + span + "건</div>" : "") + "</td>" : "") +
+          "<td>" + (first ? "" : mark) + esc(r.task) + "</td><td>" + esc(r.items) + "</td>" +
+          "<td>" + esc(r.dept || "—") + "</td>" +
           '<td class="num">' + esc(r.overseas) + '</td><td class="num">' + esc(r.since) + "</td>" +
           '<td><div class="facts"><button class="mini" data-regedit="' + r.id + '">수정</button>' +
           '<button class="mini" data-regdel="' + r.id + '">삭제</button></div></td></tr>';
@@ -2176,7 +2234,8 @@ function renderRegistry(){
       ch.filter(x => x.type === "REMOVED").map(x =>
         '<tr style="background:var(--del-soft);opacity:.75"><td><span class="cstat" style="background:var(--del-soft);color:var(--del);border:1px solid var(--del)">삭제</span> <b><del>' +
         esc(x.row.name) + "</del></b></td><td><del>" + esc(x.row.task) + "</del></td><td><del>" + esc(x.row.items) +
-        '</del></td><td class="num">' + esc(x.row.overseas) + '</td><td class="num">' + esc(x.row.since) + "</td>" +
+        "</del></td><td><del>" + esc(x.row.dept || "—") + "</del></td>" +
+        '<td class="num">' + esc(x.row.overseas) + '</td><td class="num">' + esc(x.row.since) + "</td>" +
         '<td><div class="facts"><button class="mini" data-regundo="' + x.row.id + '">되돌리기</button></div></td></tr>').join("") +
     "</tbody></table></div></div>" +
 
@@ -2188,16 +2247,30 @@ function renderRegistry(){
     (dirty ? regConfirmBox(ch, esc0) : "") +
 
     '<div class="card rulecard" style="margin-bottom:16px">' +
+      "<h3>지금은 이 현황이 어떻게 게시되고 있나 — 팝업입니다</h3>" +
+      '<div class="ckrow"><span class="cknum">現</span><div>제8조 수탁업체 칸의 <b>“홈페이지 &gt; 개인정보처리방침 &gt; ‘…현황’ 참고”</b>는 <b>클릭 가능한 링크가 맞습니다.</b> 다만 열리는 것이 별도 페이지가 아니라 <b>레이어 팝업(모달)</b>이어서 <b>고유 주소가 없습니다.</b></div></div>' +
+      '<div class="ckrow"><span class="cknum">1</span><div><b>인용·안내가 안 됩니다.</b> 민원·분쟁 대응이나 감독기관 제출 시 “이 주소를 보시면 됩니다”라고 지목할 대상이 없습니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">2</span><div><b>버전을 주소로 표현할 수 없습니다.</b> 위 이력의 g1·g2·g3를 각각 가리킬 방법이 없어, <b>과거 시점 현황을 지목하는 것 자체가 불가능</b>합니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">3</span><div><b>검색·북마크·인쇄에 잡히지 않습니다.</b> 「개인정보 보호법」 제26조 제2항이 요구하는 <b>“공개”</b>의 취지에 비추어 접근성이 취약합니다. <b>[확인 필요]</b></div></div>' +
+      '<div class="ckrow"><span class="cknum">4</span><div><b>홈페이지 프레임에 종속됩니다.</b> 팝업은 홈페이지 스크립트로 뜹니다. 재구축 과정에서 이 스크립트가 깨지면 <b>현황에 도달할 경로 자체가 사라집니다</b> — 요구사항 5(홈페이지 구조 비종속)와 정면으로 충돌합니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">→</span><div><b>이 화면에서 내보내는 파일은 고유 주소를 가진 독립 페이지</b>입니다. 팝업을 페이지로 바꾸는 것이 개선의 실질입니다.</div></div>' +
+    "</div>" +
+
+    '<div class="card rulecard" style="margin-bottom:16px">' +
       "<h3>이 현황을 바꾸면 개인정보처리방침을 개정한 것인가</h3>" +
       '<div class="ckrow"><span class="cknum">1</span><div><b>수탁사만 바뀌는 경우 — 방침 개정이 아닙니다.</b> 당사 제8조는 수탁사 목록을 본문에 두지 않고 <b>“…현황 참고”로 참조</b>하고 있습니다. 참조 대상이 갱신되는 것이므로 본문이 바뀌지 않습니다.</div></div>' +
       '<div class="ckrow"><span class="cknum">2</span><div><b>그렇다고 의무가 면제되는 것은 아닙니다.</b> 「개인정보 보호법」 제26조 제2항의 <b>위탁 업무 내용·수탁자 공개 의무는 제30조(처리방침)와 별개</b>로 존재합니다. 개정 절차를 밟지 않을 뿐, <b>현황은 지체 없이 갱신</b>해야 합니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">2+</span><div><b>게다가 당사 방침이 스스로 약속했습니다.</b> 제8조 말미에 <b>“업체 변경 시 공지사항 및 개인정보처리방침을 통해 고지하겠습니다”</b>라고 명시되어 있습니다. 제17조의 “변경 전·후를 비교하여 공개”와 같은 구조입니다 — <b>법령 이전에 방침상의 자기 구속</b>이고, 이행 수단은 지금 없습니다.</div></div>' +
       '<div class="ckrow"><span class="cknum">3</span><div><b>그래서 이 현황 자체의 버전·스냅샷이 필요합니다.</b> 방침 이전본에는 수탁사 목록이 없으므로(별도 문서니까), 현황의 시점별 스냅샷이 없으면 <b>“2025년 6월에 어느 수탁사에 위탁하고 있었는가”를 입증할 수 없습니다.</b></div></div>' +
       '<div class="ckrow"><span class="cknum">4</span><div><b>다만 본문 검토가 필요한 경우가 있습니다.</b> 국외 이전이 새로 생기거나, 홍보·판매권유 업무를 위탁하거나, 위탁 업무의 <b>종류 자체가 신설</b>되는 경우입니다. 아래 확정 단계에서 자동으로 걸러냅니다.</div></div>' +
+      '<div class="ckrow"><span class="cknum">5</span><div><b>담당부서만 바뀌는 경우는 조직개편입니다.</b> 실제 게시 팝업은 <b>담당부서까지 공개</b>하고 있어 조직개편 때마다 이 표도 손봐야 합니다. 위탁 내용이 그대로이므로 <b>본문 검토 대상은 아니지만</b>, 기재되는 값이므로 현황 버전은 올라갑니다 — 요구사항 3(조직개편 = 데이터 수정)이 위·수탁 현황에도 그대로 적용됩니다.</div></div>' +
       '<div class="ckrow"><span class="cknum">!</span><div>법령 해석의 최종 확인은 개인정보보호위원회 안내서 및 준법감시 검토가 필요합니다. <b>[확인 필요]</b></div></div>' +
     "</div>" +
 
     '<div class="card"><div style="padding:14px 17px 8px"><b style="font-size:13px">현황 버전 이력</b>' +
-    '<span style="font-size:11.5px;color:var(--ink-3);margin-left:8px">방침 버전과 독립적으로 관리됩니다</span></div>' +
+    '<span style="font-size:11.5px;color:var(--ink-3);margin-left:8px">방침 버전과 독립적으로 관리됩니다</span>' +
+    '<div class="fh" style="margin:6px 0 0">현행(g3)의 등재 내용은 <b>실제 게시 팝업에서 옮긴 것</b>입니다(' + esc(REG_DOC.captured) + ', 일부 발췌). ' +
+    '과거 버전과 ○○ 표기 업체는 <b>시연을 위해 가정</b>한 것입니다 — <b>실제로는 과거 이력이 존재하지 않기 때문</b>이고, 그것이 이 화면을 만드는 이유입니다.</div></div>' +
     REG_DOC.versions.map((v, i) => {
       const prev = REG_DOC.versions[i + 1];
       const delta = prev ? regDelta(prev.rows, v.rows) : null;
@@ -2216,7 +2289,7 @@ function regDelta(oldRows, newRows){
   const add = newRows.filter(r => !oldRows.find(o => o.id === r.id)).map(r => r.name);
   const del = oldRows.filter(o => !newRows.find(r => r.id === o.id)).map(o => o.name);
   const mod = newRows.filter(r => { const o = oldRows.find(x => x.id === r.id);
-    return o && ["name","task","items","overseas"].some(k => o[k] !== r[k]); }).map(r => r.name);
+    return o && REG_FIELDS.some(k => o[k] !== r[k]); }).map(r => r.name);
   const p = [];
   if (add.length) p.push("추가 " + add.join(", "));
   if (mod.length) p.push("수정 " + mod.join(", "));
@@ -2227,7 +2300,7 @@ function regDelta(oldRows, newRows){
 function regEditForm(){
   const w = regWork();
   const r = regEditId === "__new__"
-    ? {id:"", name:"", task:"", items:"", overseas:"—", since:nowStamp().slice(0, 10)}
+    ? {id:"", co:"", name:"", task:"", items:"", dept:"", overseas:"—", since:nowStamp().slice(0, 10)}
     : w.rows.find(x => x.id === regEditId);
   if (!r) return "";
   const isNew = regEditId === "__new__";
@@ -2235,9 +2308,11 @@ function regEditForm(){
     "<h3>" + (isNew ? "수탁사 추가" : "수탁사 수정") + "</h3>" +
     '<div class="fh">' + (isNew ? "등재 후 사유를 입력하고 확정해야 새 버전으로 게시됩니다."
       : "불변키 " + esc(r.id) + " — 회사명이 바뀌어도 이력이 이어집니다.") + "</div>" +
-    '<div class="frow"><label>수탁사명</label><input type="text" id="rf-name" value="' + esc(r.name) + '"></div>' +
-    '<div class="frow"><label>위탁 업무</label><input type="text" id="rf-task" value="' + esc(r.task) + '"></div>' +
-    '<div class="frow"><label>제공 항목</label><input type="text" id="rf-items" value="' + esc(r.items) + '"></div>' +
+    '<div class="frow"><label>위탁업체명</label><input type="text" id="rf-name" value="' + esc(r.name) + '"></div>' +
+    '<div class="frow"><label>위탁 목적</label><input type="text" id="rf-task" value="' + esc(r.task) + '"></div>' +
+    '<div class="frow"><label>정보항목</label><input type="text" id="rf-items" value="' + esc(r.items) + '"></div>' +
+    '<div class="frow"><label>담당부서</label><input type="text" id="rf-dept" value="' + esc(r.dept || "") + '">' +
+    '<div class="fh" style="margin:4px 0 0">조직개편으로 이 값만 바뀌는 경우는 <b>본문 검토 대상이 아닙니다.</b> 다만 현황에 기재되는 값이므로 현황 버전은 올라갑니다.</div></div>' +
     '<div class="frow"><label>국외 이전 (없으면 — 입력)</label><input type="text" id="rf-overseas" value="' + esc(r.overseas) + '"></div>' +
     '<div class="frow"><label>등재일</label><input type="text" id="rf-since" value="' + esc(r.since) + '"></div>' +
     '<div class="editbar" style="padding:8px 0 0"><button class="btn" id="rf-save">' + (isNew ? "추가" : "적용") + "</button>" +
@@ -2255,7 +2330,7 @@ function regConfirmBox(ch, escal){
       (c.type === "ADDED" ? "추가" : c.type === "REMOVED" ? "삭제" : "수정") + "</span>" +
       '<div><div class="ci-title">' + esc(c.row.name) + "</div>" +
       '<div class="ci-reason">' + esc(c.type === "MODIFIED"
-        ? c.fields.map(f => ({name:"수탁사명", task:"위탁 업무", items:"제공 항목", overseas:"국외"})[f]).join(", ") + " 변경"
+        ? c.fields.map(f => REG_LABEL[f]).join(", ") + " 변경"
         : c.row.task) + "</div></div></div>").join("") + "</div>" +
     (escal.length ? '<div class="groupbanner" style="margin-bottom:12px"><span class="gk">본문 검토</span><div>' +
       "<b>이 변경은 방침 본문 검토가 필요할 수 있습니다.</b><br>" +
@@ -2367,16 +2442,29 @@ document.addEventListener("click", e => {
   if (e.target.id === "rf-save"){
     const w = regWork();
     const vals = {name:$("#rf-name").value.trim(), task:$("#rf-task").value.trim(),
-                  items:$("#rf-items").value.trim(), overseas:$("#rf-overseas").value.trim() || "—",
+                  items:$("#rf-items").value.trim(), dept:$("#rf-dept").value.trim() || "—",
+                  overseas:$("#rf-overseas").value.trim() || "—",
                   since:$("#rf-since").value.trim()};
-    if (!vals.name){ toast("dtoast", "수탁사명을 입력해 주세요."); return; }
+    if (!vals.name){ toast("dtoast", "위탁업체명을 입력해 주세요."); return; }
+    if (!vals.task){ toast("dtoast", "위탁 목적을 입력해 주세요."); return; }
     if (regEditId === "__new__"){
       const used = new Set(REG_DOC.versions.flatMap(v => v.rows.map(r => r.id)).concat(w.rows.map(r => r.id)));
       let n = 1; while (used.has("W" + String(n).padStart(2, "0"))) n++;
-      w.rows.push(Object.assign({id:"W" + String(n).padStart(2, "0")}, vals));
+      /* 같은 업체가 이미 있으면 그 업체 불변키를 물려받는다.
+         → 한 업체의 두 번째 위탁 업무로 인식되어 업체명 셀이 병합된다. */
+      const sib = w.rows.find(x => x.name === vals.name);
+      const co = sib ? sib.co : "C-" + String(n).padStart(2, "0") + "-" + checksum(vals.name).slice(0, 4);
+      const row = Object.assign({id:"W" + String(n).padStart(2, "0"), co:co}, vals);
+      const at = sib ? w.rows.map(x => x.co).lastIndexOf(co) + 1 : w.rows.length;
+      w.rows.splice(at, 0, row);
     } else {
       const r = w.rows.find(x => x.id === regEditId);
-      if (r) Object.assign(r, vals);
+      /* 업체명을 바꾸면 같은 업체의 다른 위탁 업무 행도 함께 바뀌어야 한다(상호 변경). */
+      if (r){
+        const renamed = r.name !== vals.name;
+        Object.assign(r, vals);
+        if (renamed) w.rows.forEach(x => { if (x.co === r.co) x.name = vals.name; });
+      }
     }
     regEditId = null; persist(); renderRegistry(); return;
   }
