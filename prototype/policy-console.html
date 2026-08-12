@@ -320,6 +320,25 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
 .toast.on{display:block}
 .toast b{font-weight:700}
 
+/* ── 인계 파일 내보내기 ── */
+.optrow{display:flex; gap:22px; flex-wrap:wrap; margin-bottom:20px}
+.filecard{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:14px 17px; border-bottom:1px solid var(--rule)}
+.filecard:last-child{border-bottom:0}
+.fname{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--woori)}
+.fdesc{font-size:12.5px; color:var(--ink-3); margin-top:3px}
+.fsize{font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-top:4px}
+.facts{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end}
+.codebox{margin-top:18px; border-top:2px solid var(--woori); background:var(--surface); border:1px solid var(--rule); border-radius:2px 2px 11px 11px; overflow:hidden}
+.codebox-h{display:flex; gap:12px; align-items:center; padding:11px 15px; background:var(--surface-2); border-bottom:1px solid var(--rule); flex-wrap:wrap}
+.codebox-h .cn{font-family:var(--mono); font-size:12.5px; font-weight:700; color:var(--woori); margin-right:auto}
+.codebox pre{margin:0; padding:15px; overflow:auto; max-height:440px; font-family:var(--mono); font-size:11.5px; line-height:1.65; color:var(--ink-2); background:var(--surface); white-space:pre; word-break:normal}
+.rulecard{padding:15px 17px; margin-top:18px; border-top:2px solid var(--sky); border-radius:2px 2px 11px 11px}
+.rulecard h3{font-size:13px; margin-bottom:11px}
+.ckrow{display:grid; grid-template-columns:26px minmax(0,1fr); gap:10px; font-size:12.5px; padding:6px 0; border-bottom:1px dotted var(--rule); align-items:start}
+.ckrow:last-child{border-bottom:0}
+.ckrow .cknum{font-family:var(--mono); font-size:11px; color:var(--woori); font-weight:700; padding-top:2px}
+.ckrow b{color:var(--ink)}
+
 /* ── 게시 껍데기 예시 (요구 5) ── */
 .skinchrome{display:none}
 [data-skin="a"] .skin-a, [data-skin="b"] .skin-b{display:block}
@@ -416,6 +435,7 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
       <button data-view="diff"><span class="n">04</span>신구대조</button>
       <button data-view="admin"><span class="n">05</span>관리 데이터</button>
       <button data-view="changes"><span class="n">06</span>변경내역 (대고객)</button>
+      <button data-view="export"><span class="n">07</span>인계 파일 내보내기</button>
       <div class="rail-note">이 콘솔은 홈페이지와 별도로 배포되며, 홈페이지는 게시 시점에 만들어진 정적 스냅샷만 읽습니다.</div>
     </nav>
 
@@ -536,6 +556,51 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
           <button class="btn" id="orgsave">조직 마스터 저장</button>
           <button class="btn ghost" id="orgreset">공개본 값으로 되돌리기</button>
           <div class="toast" id="orgtoast"></div>
+        </div>
+      </section>
+
+      <!-- 07 인계 파일 내보내기 -->
+      <section class="view" id="v-export" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">07 · 개발팀 인계</div>
+          <h2>인계 파일 내보내기</h2>
+          <p class="sub">정보보호부가 조항을 수정하면 최종 HTML을 여기서 생성합니다. 개발팀은 <b>파일을 갈아끼우기만</b> 하면 되고, 텍스트를 직접 타이핑하지 않으므로 반영 과정의 오탈자가 발생하지 않습니다.</p>
+        </div>
+        <div class="proof"><span class="k">인계</span><div><b>별도 개발 발주 없이 시작할 수 있는 구간입니다.</b> 기존 홈페이지 프레임은 그대로 두고, 본문 영역만 파일로 분리해 교체합니다. 향후 홈페이지 재구축 시에도 이 파일들은 그대로 옮겨가면 됩니다.</div></div>
+
+        <div class="optrow">
+          <div class="field"><label>파일 형태</label>
+            <div class="segl" role="group" aria-label="파일 형태">
+              <button data-opt="frag" data-val="1" aria-pressed="true">본문 조각 (include용)</button>
+              <button data-opt="frag" data-val="0" aria-pressed="false">독립 페이지 (전체 HTML)</button>
+            </div>
+          </div>
+          <div class="field"><label>스타일</label>
+            <div class="segl" role="group" aria-label="스타일 포함 여부">
+              <button data-opt="css" data-val="1" aria-pressed="true">파일에 포함 (권장)</button>
+              <button data-opt="css" data-val="0" aria-pressed="false">클래스만 (홈페이지 CSS 사용)</button>
+            </div>
+          </div>
+        </div>
+        <p class="dhint"><b>스타일을 파일에 포함</b>하면 홈페이지 CSS에 의존하지 않으므로, 재구축으로 클래스 체계가 바뀌어도 깨지지 않습니다. 모든 클래스에 <b>pp-</b> 접두사를 붙여 기존 스타일과 충돌하지 않습니다.</p>
+
+        <div class="card" id="filelist"></div>
+        <div class="codebox" id="codebox" hidden>
+          <div class="codebox-h"><span class="cn" id="codename"></span>
+            <button class="mini" id="copybtn">클립보드 복사</button>
+            <button class="mini" id="closebtn">닫기</button>
+          </div>
+          <pre id="codebody"></pre>
+        </div>
+
+        <div class="card rulecard">
+          <h3>인계 절차 — 개발팀과 합의할 사항</h3>
+          <div class="ckrow"><span class="cknum">1</span><div><b>파일 경로를 고정합니다.</b> 예: <span class="mono">/static/policy/</span> 아래에 파일 세트를 두고, 기존 화면은 본문 자리에서 이 파일을 include 합니다. 경로가 고정되면 이후 인계는 항상 같은 폴더 교체입니다.</div></div>
+          <div class="ckrow"><span class="cknum">2</span><div><b>스타일 소유권을 정합니다.</b> 초기에는 파일에 포함(위 기본값), 홈페이지 재구축 이후 안정화되면 홈페이지 CSS로 통합하는 순서를 권장합니다.</div></div>
+          <div class="ckrow"><span class="cknum">3</span><div><b>파일은 세트로 넘깁니다.</b> 본문만 교체하면 변경내역·이전본은 여전히 수기로 남습니다. 아래 목록 전체가 한 번에 넘어가야 합니다.</div></div>
+          <div class="ckrow"><span class="cknum">4</span><div><b>생성 파일은 직접 수정하지 않습니다.</b> 각 파일 첫 줄에 “직접 편집 금지” 주석과 생성 버전이 기록됩니다. 수정이 필요하면 이 콘솔에서 다시 생성합니다.</div></div>
+          <div class="ckrow"><span class="cknum">5</span><div><b>정적 파일 경로를 형상관리 밖으로 뺄 수 있는지 확인합니다.</b> 가능하면 빌드 없이 파일 교체만으로 반영되어 리드타임이 더 줄어듭니다. 인프라·홈페이지 담당부서 협의 사항입니다.</div></div>
+          <div class="ckrow"><span class="cknum">6</span><div><b>반영 후 확인은 시행일·버전 표기로 합니다.</b> 각 파일에 <span class="mono">data-policy-version</span> 과 <span class="mono">data-effective-from</span> 속성이 들어 있어 브라우저에서 바로 확인됩니다.</div></div>
         </div>
       </section>
 
@@ -1108,6 +1173,221 @@ function fillOrgForm(){
   $$("[data-org]").forEach(el => { el.value = ORG[el.dataset.org]; });
 }
 
+/* ═══════════ 인계 파일 내보내기 ═══════════
+   정보보호부 → 개발팀 인계용 HTML 생성.
+   모든 클래스에 pp- 접두사를 붙여 홈페이지 기존 스타일과 충돌하지 않는다.
+   ═══════════════════════════════════════ */
+const EXPORT_OPT = {frag:1, css:1};
+
+const PP_CSS = [
+".pp-doc{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;color:#1F2733;line-height:1.75;font-size:15px;word-break:keep-all;max-width:960px;margin:0 auto}",
+".pp-doc *{box-sizing:border-box}",
+".pp-title{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:0 0 10px}",
+".pp-meta{font-size:13px;color:#5A6675;margin:0 0 22px;padding-bottom:16px;border-bottom:2px solid #273A92}",
+".pp-lead{margin:0 0 24px;color:#3D4A5C}",
+".pp-labels{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 24px;padding:0;list-style:none}",
+".pp-lab{display:inline-flex;align-items:center;gap:6px;border:1px solid #C9D3E2;border-radius:5px;padding:5px 10px;font-size:12px;color:#3D4A5C;text-decoration:none}",
+".pp-lab:hover{border-color:#273A92;color:#273A92;background:#F1F4FB}",
+".pp-lab i{font-style:normal;font-size:10px;background:#273A92;color:#fff;padding:1px 5px;border-radius:3px}",
+".pp-toc{margin:0 0 28px;padding:15px 18px;background:#F5F7FB;border-top:2px solid #273A92;border-radius:2px 2px 8px 8px}",
+".pp-toc h2{font-size:12px;letter-spacing:.08em;color:#6B7789;margin:0 0 9px;font-weight:600}",
+".pp-toc ol{margin:0;padding:0;list-style:none}",
+".pp-toc li{margin-bottom:4px}",
+".pp-toc a{font-size:13.5px;color:#3D4A5C;text-decoration:none}",
+".pp-toc a:hover{color:#273A92;text-decoration:underline}",
+".pp-toc em{font-style:normal;color:#00789F;font-weight:600;display:inline-block;min-width:3.4em}",
+".pp-sec{padding:22px 0;border-top:1px solid #E0E6EF}",
+".pp-sec-h{font-size:17px;font-weight:700;margin:0 0 10px;letter-spacing:-.02em}",
+".pp-no{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#273A92;padding:3px 8px;border-radius:4px;margin-right:9px;vertical-align:2px}",
+".pp-tags{margin:0 0 12px;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:5px}",
+".pp-tags li{font-size:10.5px;padding:2px 7px;border-radius:4px;background:#E4F5FD;color:#00789F;border:1px solid #A7DDF1;font-weight:600}",
+".pp-body p{margin:0 0 11px}",
+".pp-body ul{margin:0 0 11px;padding-left:20px}",
+".pp-body li{margin-bottom:5px}",
+".pp-note{font-size:12.5px;color:#6B7789;border-left:2px solid #C9D3E2;padding-left:10px}",
+".pp-tw{overflow-x:auto;border:1px solid #E0E6EF;border-radius:8px;margin:0 0 12px}",
+".pp-tw table{width:100%;min-width:520px;border-collapse:collapse;font-size:13px}",
+".pp-tw th,.pp-tw td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid #E0E6EF}",
+".pp-tw th{background:#EDF1F9;color:#273A92;font-weight:700;font-size:11.5px;white-space:nowrap;border-bottom:1px solid #C2CDE5}",
+".pp-tw tbody tr:last-child td{border-bottom:0}",
+".pp-ref{margin:0 0 12px}",
+".pp-ref a{display:inline-block;padding:11px 14px;border:1px solid #C2CDE5;background:#F1F4FB;border-radius:8px;color:#273A92;font-weight:600;font-size:13px;text-decoration:none}",
+".pp-ref a:hover{border-color:#273A92;background:#E4F5FD}",
+".pp-ref small{display:block;color:#6B7789;font-weight:400;font-size:11.5px;margin-top:2px}",
+".pp-ins{background:#DFF1E8;color:#0C6E4C;text-decoration:underline;padding:1px 3px;border-radius:3px;font-weight:700}",
+".pp-del{background:#F9E3E6;color:#A32F42;text-decoration:line-through;padding:1px 3px;border-radius:3px}",
+"@media(max-width:640px){.pp-title{font-size:21px}.pp-sec-h{font-size:15.5px}}"
+].join("\n");
+
+const REF_FILE = {registry:"privacy-policy-registry-outsourcing.html", history:"privacy-policy-history.html"};
+
+function ppTable(head, rows){
+  return '<div class="pp-tw"><table><thead><tr>' + head.map(h => "<th>" + esc(h) + "</th>").join("") +
+    "</tr></thead><tbody>" + rows.map(r => "<tr>" + r.map(c => "<td>" + esc(c) + "</td>").join("") + "</tr>").join("") +
+    "</tbody></table></div>";
+}
+
+function expBlock(b, vid){
+  const o = orgFor(vid), v = verObj(vid);
+  switch (b.t){
+    case "p":    return "<p>" + esc(b.v) + "</p>";
+    case "ul":   return "<ul>" + b.v.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>";
+    case "note": return '<p class="pp-note">' + esc(b.v) + "</p>";
+    case "table":return ppTable(b.head, b.rows);
+    case "org":  return b.kind === "cpo"
+      ? ppTable(["개인정보보호 책임자","개인정보 보호업무","고충처리부서"],
+          [[o.cpoRank + " " + o.cpoName, o.deptPrivacy, o.deptGrievance], [o.tel + " / " + o.email, "", ""]])
+      : ppTable(["구분","상세 내용"], [
+          ["설치 근거 및 목적","「개인정보보호법」 제25조제1항에 따라 고객 안전을 위한 범죄 예방, 시설안전 및 관리, 화재 예방"],
+          ["설치 현황", "설치 대수 : " + o.cctvCount + "대 · " + o.cctvSites],
+          ["관리책임자 및 접근권한자", "관리책임자 : " + o.cctvManager + " / 접근권한자 : " + o.acc1 + ", " + o.acc2],
+          ["촬영 시간·보관","촬영 24시간 · 촬영일로부터 3개월 · 서버실 내 영상정보저장장치"]]);
+    case "vermeta": return ppTable(["구분","일자"], [
+      ["개인정보 처리방침 제정일","2014. 02. 27."],
+      ["개인정보 처리방침 시행일", v.from.replace(/-/g, ". ") + "."],
+      ["개인정보 처리방침 최근 개정일", v.from.replace(/-/g, ". ") + "."]]);
+    case "ref":  return '<p class="pp-ref"><a href="./' + REF_FILE[b.to] + '">' + esc(b.title) +
+                   "<small>" + esc(b.sub) + "</small></a></p>";
+    default: return "";
+  }
+}
+
+function wrapDoc(inner, title, vid){
+  const v = verObj(vid);
+  const stamp = "2026-08-12";
+  const banner = "<!-- 개인정보처리방침 · " + title + " · 버전 " + v.id + " · 시행 " + v.from + " · 생성 " + stamp + " -->\n" +
+                 "<!-- 이 파일은 개인정보처리방침 관리 콘솔에서 생성되었습니다. 직접 편집하지 마십시오. -->\n";
+  const style = EXPORT_OPT.css ? "<style>\n" + PP_CSS + "\n</style>\n" : "";
+  const body = '<div class="pp-doc" data-policy-version="' + v.id + '" data-effective-from="' + v.from + '">\n' + inner + "\n</div>";
+  if (EXPORT_OPT.frag) return banner + style + body;
+  return "<!doctype html>\n<html lang=\"ko\">\n<head>\n<meta charset=\"utf-8\">\n" +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">\n' +
+    "<title>" + esc(title) + " | 개인정보처리방침</title>\n" + banner + style +
+    "</head>\n<body>\n" + body + "\n</body>\n</html>\n";
+}
+
+function buildPolicy(){
+  const vid = currentVersion, v = verObj(vid), secs = versionsFor(vid);
+  const byKey = {}; secs.forEach((x, i) => byKey[x.key] = i + 1);
+  const labels = '<ul class="pp-labels">' + LABELS.filter(l => byKey[l.sec]).map(l =>
+    '<li><a class="pp-lab" href="#pp-' + l.sec + '"><i>제' + byKey[l.sec] + "조</i>" + esc(l.n) + "</a></li>").join("") + "</ul>";
+  const toc = '<nav class="pp-toc"><h2>목차</h2><ol>' + secs.map((x, i) =>
+    '<li><a href="#pp-' + x.key + '"><em>제' + (i + 1) + "조</em>" + esc(x.title) + "</a></li>").join("") + "</ol></nav>";
+  const body = secs.map((x, i) =>
+    '<section class="pp-sec" id="pp-' + x.key + '">' +
+      '<h2 class="pp-sec-h"><span class="pp-no">제' + (i + 1) + "조</span>" + esc(x.title) + "</h2>" +
+      '<ul class="pp-tags">' + x.tags.map(t => "<li>" + esc(t) + "</li>").join("") + "</ul>" +
+      '<div class="pp-body">' + x.body.map(bb => expBlock(bb, vid)).join("") + "</div>" +
+    "</section>").join("\n");
+  const head = '<h1 class="pp-title">개인정보처리방침</h1>' +
+    '<p class="pp-meta">시행일 ' + v.from.replace(/-/g, ". ") + ". · 버전 " + v.id + "</p>" +
+    '<p class="pp-lead">㈜우리투자증권은 「개인정보보호법」, 「신용정보의 이용 및 보호에 관한 법률」, 「정보통신망 이용촉진 및 정보보호 등에 관한 법률」 등 관련 법령, 규정을 준수하고 있습니다.</p>';
+  return wrapDoc(head + labels + toc + body, "본문", vid);
+}
+
+function buildHistory(){
+  const rows = VERSIONS.map(v => [v.id, v.from + " ~ " + (v.to || (v.status === "DRAFT" ? "(시행 예정)" : "현재")),
+    STATUS_KO[v.status], v.reason]);
+  return wrapDoc('<h1 class="pp-title">개인정보처리방침 이전 방침</h1>' +
+    '<p class="pp-meta">버전별 시행기간 및 개정 사유</p>' +
+    ppTable(["버전","적용 기간","상태","개정 사유"], rows), "이전본 목록", currentVersion);
+}
+
+function buildChanges(){
+  const pub = VERSIONS.filter(v => v.status !== "GAP");
+  const secs = pub.map((v, i) => {
+    const prev = pub[i + 1], set = prev ? DIFFS[prev.id + "|" + v.id] : null;
+    if (!set) return '<section class="pp-sec"><h2 class="pp-sec-h"><span class="pp-no">' + v.id + "</span>" +
+      v.from + ' 시행</h2><p class="pp-note">이 개정의 변경내역은 별도 문서로 관리되었습니다.</p></section>';
+    return '<section class="pp-sec"><h2 class="pp-sec-h"><span class="pp-no">' + v.id + "</span>" + v.from + " 시행</h2>" +
+      '<div class="pp-body">' + ppTable(["변경 사유","변경 조항"],
+        set.map(g => [g.reason, g.changes.map(c => TYPE_KO[c.type] + " · " + c.title).join("\n")])) + "</div></section>";
+  }).join("\n");
+  return wrapDoc('<h1 class="pp-title">개인정보처리방침 변경내역</h1>' +
+    '<p class="pp-meta">개정 건별 변경 사유 및 변경 조항</p>' + secs, "변경내역", currentVersion);
+}
+
+function diffPairForCurrent(){
+  const pub = VERSIONS.filter(v => v.status !== "GAP");
+  const i = pub.findIndex(v => v.id === currentVersion);
+  const prev = pub[i + 1];
+  return prev ? [prev.id, currentVersion] : null;
+}
+
+function buildDiffDoc(){
+  const pair = diffPairForCurrent();
+  if (!pair) return wrapDoc("<p>비교 대상 버전이 없습니다.</p>", "신구대조표", currentVersion);
+  const set = DIFFS[pair[0] + "|" + pair[1]];
+  if (!set) return wrapDoc('<h1 class="pp-title">개인정보처리방침 신구대조표</h1>' +
+    '<p class="pp-meta">' + pair[0] + " → " + pair[1] + '</p><p class="pp-note">해당 구간의 비교 데이터가 없습니다.</p>',
+    "신구대조표", currentVersion);
+  const rows = set.map(g => g.changes.map((c, k) => {
+    let L, R;
+    if (c.type === "MODIFIED"){ const [o, n] = wordDiff(c.before, c.after);
+      L = o.replace(/<del>/g, '<del class="pp-del">').replace(/<ins>/g, '<ins class="pp-ins">');
+      R = n.replace(/<del>/g, '<del class="pp-del">').replace(/<ins>/g, '<ins class="pp-ins">'); }
+    else if (c.type === "ADDED"){ L = "〈신설〉"; R = '<ins class="pp-ins">' + esc(c.after) + "</ins>"; }
+    else { L = '<del class="pp-del">' + esc(c.before) + "</del>"; R = "〈삭제〉"; }
+    const t = "<strong>" + esc(c.title) + "</strong><br>";
+    return "<tr><td>" + t + L + "</td><td>" + t + R + "</td>" +
+      (k === 0 ? '<td rowspan="' + g.changes.length + '">' + esc(g.reason) + "</td>" : "") + "</tr>";
+  }).join("")).join("");
+  return wrapDoc('<h1 class="pp-title">개인정보처리방침 신구대조표</h1>' +
+    '<p class="pp-meta">' + pair[0] + " → " + pair[1] + " · 시행 " + verObj(pair[1]).from + "</p>" +
+    '<div class="pp-tw"><table><thead><tr><th>변경 전</th><th>변경 후</th><th>비고</th></tr></thead><tbody>' +
+    rows + "</tbody></table></div>", "신구대조표", currentVersion);
+}
+
+function buildRegistry(){
+  return wrapDoc('<h1 class="pp-title">개인(신용)정보 처리 위탁 및 제휴업체 현황</h1>' +
+    '<p class="pp-meta">기준일 ' + REGISTRY.asOf + " · 등재 " + REGISTRY.rows.length + "건</p>" +
+    ppTable(["수탁사","위탁 업무","제공 항목","국외","등재일"], REGISTRY.rows), "위·수탁 현황", currentVersion);
+}
+
+function fileSet(){
+  const pair = diffPairForCurrent();
+  return [
+    {name:"privacy-policy.html", desc:"현행본 본문 — 홈페이지 본문 영역에 include", fn:buildPolicy},
+    {name:"privacy-policy-history.html", desc:"이전 방침 목록 (버전 · 적용기간 · 개정 사유)", fn:buildHistory},
+    {name:"privacy-policy-changes.html", desc:"변경내역 — 개정 건별 사유 및 변경 조항", fn:buildChanges},
+    {name:"privacy-policy-diff-" + (pair ? pair[0] + "-" + pair[1] : "current") + ".html",
+     desc:"신구대조표 — 좌우 병렬 3열, 비고 셀 병합", fn:buildDiffDoc},
+    {name:"privacy-policy-registry-outsourcing.html", desc:"위·수탁 현황 — 기준일 보유, 본문과 별개로 갱신", fn:buildRegistry}
+  ];
+}
+
+function bytes(str){ return new Blob([str]).size; }
+
+function renderExport(){
+  $("#filelist").innerHTML = fileSet().map((f, i) => {
+    const src = f.fn();
+    return '<div class="filecard"><div>' +
+      '<div class="fname">' + esc(f.name) + "</div>" +
+      '<div class="fdesc">' + esc(f.desc) + "</div>" +
+      '<div class="fsize">' + bytes(src).toLocaleString() + " bytes</div></div>" +
+      '<div class="facts">' +
+        '<button class="mini" data-exp="' + i + '">미리보기</button>' +
+        '<button class="mini" data-dl="' + i + '">다운로드</button>' +
+      "</div></div>";
+  }).join("");
+}
+
+function showCode(i){
+  const f = fileSet()[i];
+  $("#codename").textContent = f.name;
+  $("#codebody").textContent = f.fn();
+  $("#codebox").hidden = false;
+  $("#codebox").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function downloadFile(i){
+  const f = fileSet()[i];
+  const url = URL.createObjectURL(new Blob([f.fn()], {type:"text/html;charset=utf-8"}));
+  const a = document.createElement("a");
+  a.href = url; a.download = f.name; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 /* ═══════════ 이벤트 ═══════════ */
 function showView(name){
   $$(".view").forEach(v => { v.hidden = v.id !== "v-" + name; });
@@ -1126,7 +1406,7 @@ $("#verpick").innerHTML = VERSIONS.filter(v => v.status !== "GAP").map(v =>
   '<option value="' + v.id + '"' + (v.id === "v8" ? " selected" : "") + ">" +
   v.id + " · " + spanOf(v) + " · " + STATUS_KO[v.status] + "</option>"
 ).join("");
-$("#verpick").addEventListener("change", e => { currentVersion = e.target.value; renderPolicy(); });
+$("#verpick").addEventListener("change", e => { currentVersion = e.target.value; renderPolicy(); renderExport(); });
 
 const dOpts = VERSIONS.filter(v => v.status !== "GAP").map(v =>
   '<option value="' + v.id + '">' + v.id + " (" + v.from + ")</option>").join("");
@@ -1134,6 +1414,27 @@ $("#dfrom").innerHTML = dOpts; $("#dto").innerHTML = dOpts;
 $("#dfrom").value = "v8"; $("#dto").value = "v9";
 $("#dfrom").addEventListener("change", renderDiff);
 $("#dto").addEventListener("change", renderDiff);
+$$("[data-opt]").forEach(b => b.addEventListener("click", () => {
+  const k = b.dataset.opt;
+  EXPORT_OPT[k] = Number(b.dataset.val);
+  $$('[data-opt="' + k + '"]').forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  renderExport();
+  if (!$("#codebox").hidden) $("#codebox").hidden = true;
+}));
+$("#copybtn").addEventListener("click", async () => {
+  const t = $("#codebody").textContent, btn = $("#copybtn");
+  try { await navigator.clipboard.writeText(t); }
+  catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch (e2) {}
+    document.body.removeChild(ta);
+  }
+  btn.textContent = "복사했습니다"; setTimeout(() => { btn.textContent = "클립보드 복사"; }, 1600);
+});
+$("#closebtn").addEventListener("click", () => { $("#codebox").hidden = true; });
+
 $$("[data-dview]").forEach(b => b.addEventListener("click", () => {
   diffLayout = b.dataset.dview;
   $$("[data-dview]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
@@ -1157,13 +1458,17 @@ document.addEventListener("click", e => {
     $("#dfrom").value = f; $("#dto").value = t;
     renderDiff(); showView("diff"); return;
   }
+  const exp = e.target.closest("[data-exp]");
+  if (exp){ showCode(Number(exp.dataset.exp)); return; }
+  const dl = e.target.closest("[data-dl]");
+  if (dl){ downloadFile(Number(dl.dataset.dl)); return; }
   const aud = e.target.closest("[data-audit]");
   if (aud){ const p = document.getElementById("audit-" + aud.dataset.audit); if (p) p.hidden = !p.hidden; }
 });
 
 $("#orgsave").addEventListener("click", () => {
   $$("[data-org]").forEach(el => { ORG[el.dataset.org] = el.value.trim() || "—"; });
-  renderPolicy();
+  renderPolicy(); renderExport();
   const t = $("#orgtoast");
   t.innerHTML = "저장했습니다. 제14·16조에 즉시 반영되었습니다 — <b>방침 버전은 v8 그대로이고 개정 절차는 발생하지 않았습니다.</b>";
   t.classList.add("on");
@@ -1176,5 +1481,5 @@ $("#orgreset").addEventListener("click", () => {
   t.classList.add("on");
 });
 
-renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); fillOrgForm();
+renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); renderExport(); fillOrgForm();
 </script>
