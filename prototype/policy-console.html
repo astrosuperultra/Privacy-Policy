@@ -108,6 +108,13 @@ button{font:inherit; color:inherit}
 .seg button{border:0; background:transparent; padding:5px 12px; border-radius:6px; cursor:pointer; font-size:12.5px; color:rgba(255,255,255,.82); white-space:nowrap}
 .seg button:hover{color:#fff}
 .seg button[aria-pressed="true"]{background:#fff; color:var(--woori); font-weight:700}
+.docpick{margin-left:4px}
+.docpick label{font-size:10px; letter-spacing:.07em; color:rgba(255,255,255,.62); margin-bottom:3px}
+.docpick select{font-size:12.5px; padding:6px 9px; border-radius:6px; border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.12); color:#fff; max-width:280px}
+.docpick select option{color:var(--ink); background:var(--surface)}
+.groupbanner{display:flex; gap:12px; align-items:flex-start; padding:14px 16px; margin-bottom:20px; background:var(--archived-soft); border:1px solid var(--archived-line); border-left:4px solid var(--archived); border-radius:0 10px 10px 0; font-size:12.5px; color:var(--ink-2); line-height:1.65}
+.groupbanner .gk{flex:none; font-family:var(--mono); font-size:10.5px; padding:2px 7px; border-radius:4px; background:var(--archived); color:#fff; font-weight:700; margin-top:1px}
+.groupbanner b{color:var(--archived)}
 .seg-lab{font-size:10.5px; color:rgba(255,255,255,.62); letter-spacing:.06em; margin:0 4px 0 6px; align-self:center}
 
 /* 스킨 적용 시 전체를 미리보기 프레임으로 감싼다 */
@@ -392,7 +399,7 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
 <div class="notice">
   <div class="wrap">
     <span>⚠</span>
-    <div><b>프로토타입입니다.</b> 실제 게시본이 아니며 대외 공개용이 아닙니다. 조문·라벨·개정이력은 2026-03-12 시행 공개본을 기준으로 재구성했고, <b>위·수탁 현황과 감사 로그는 샘플 데이터</b>입니다(실제 현황 문서 미수집).</div>
+    <div><b>프로토타입입니다.</b> 실제 게시본이 아니며 대외 공개용이 아닙니다. 개인정보처리방침은 2026-03-12 시행 공개본, 고객정보취급방침은 현재 게시본을 기준으로 재구성했으며 <b>위·수탁 현황과 감사 로그는 샘플 데이터</b>입니다.</div>
   </div>
 </div>
 
@@ -400,8 +407,14 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
   <div class="wrap topbar-in">
     <div class="brand">
       <span class="mark" aria-hidden="true"></span>
-      <span class="bn"><b>개인정보처리방침 관리 콘솔</b><span>우리투자증권 · 정보보호부</span></span>
+      <span class="bn"><b>정책 문서 관리 콘솔</b><span>우리투자증권 · 정보보호부</span></span>
       <span class="pbadge mono">PROTOTYPE</span>
+    </div>
+    <div class="field docpick"><label for="docpick">관리 문서</label>
+      <select id="docpick">
+        <option value="privacy-policy">개인정보처리방침 · 개인정보 보호법 §30</option>
+        <option value="customer-info">고객정보취급방침 · 금융지주회사법 §48-2</option>
+      </select>
     </div>
     <div class="seg" role="group" aria-label="게시 껍데기 전환">
       <span class="seg-lab">게시 껍데기</span>
@@ -446,7 +459,7 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
         <div class="pagehead">
           <div class="eyebrow">01 · 대고객 뷰</div>
           <div class="polhead">
-            <h2>개인정보처리방침</h2>
+            <h2 id="polTitle">개인정보처리방침</h2>
             <div class="field">
               <label for="verpick">열람 버전</label>
               <select id="verpick"></select>
@@ -457,7 +470,9 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
 
         <div class="proof"><span class="k">요구 2</span><div><b>스냅샷 버전관리.</b> 버전을 바꾸면 본문·조직정보·조문 구성이 그 시점 상태로 바뀝니다. 과거본은 게시 당시 값이 동결되어 있어, 지금 조직 마스터를 수정해도 변하지 않습니다.</div></div>
 
-        <div class="card labelboard">
+        <div id="docbanner"></div>
+
+        <div class="card labelboard" id="labelboard">
           <h3>주요 개인정보 표시 (라벨링)</h3>
           <div class="labels" id="labels"></div>
         </div>
@@ -652,7 +667,7 @@ const ORG_SNAPSHOT = {
 };
 
 /* ═══════════ 라벨링 20종 — 조항 앵커 (17 주라벨 + 3 세부) ═══════════ */
-const LABELS = [
+const LABELS_PP = [
   {n:"개인정보 처리목적", sec:"S01"}, {n:"개인정보 보유기간", sec:"S04"},
   {n:"처리항목", sec:"S02", subs:["개인정보","민감정보","고유식별정보"]},
   {n:"제3자 제공", sec:"S06"}, {n:"처리위탁", sec:"S08"}, {n:"파기", sec:"S05"},
@@ -669,7 +684,7 @@ const P = t => ({t:"p", v:t});
 const UL = a => ({t:"ul", v:a});
 const NOTE = t => ({t:"note", v:t});
 
-const SECTIONS = [
+const SECTIONS_PP = [
  {key:"S01", uuid:"9f2c-4a11", tags:["개인정보 처리목적"], title:"개인정보의 처리 목적", body:[
    P("당사는 다음의 목적으로 개인정보를 처리합니다. 처리한 개인정보는 목적 외의 용도로는 사용되지 않으며 처리 목적이 변경될 시에는 사전동의를 구할 예정입니다."),
    {t:"table", head:["구분","처리목적"], rows:[
@@ -783,7 +798,7 @@ const SECTIONS = [
 ];
 
 /* ═══════════ 버전 (요구 2) ═══════════ */
-const VERSIONS = [
+const VERSIONS_PP = [
  {id:"v9", status:"DRAFT",    from:"2026-09-01", to:null,         hash:"—",
   reason:"가명정보 조항 신설, 타 업권 표현 및 오타 정정, 외부 기관 링크 갱신",
   audit:[["2026-08-05 09:32","정보보호부 담당자","초안 작성","제18조 신설, 제12조·제6조 문구 정정"],
@@ -825,7 +840,7 @@ const REGISTRY = {
    용어 일괄 치환처럼 변경 지점이 수십 곳인 경우 사유를 지점마다 반복하면 읽을 수 없다.
    토스증권도 이 경우 비고 셀을 rowspan 병합한다.
    ══════════════════════════════════════════ */
-const DIFFS = {
+const DIFFS_PP = {
  "v8|v9":[
   {reason:"제1조 및 제4조에서 가명처리를 명시하고 있으나 별도 조항이 없어 신설",
    changes:[
@@ -893,6 +908,119 @@ const DIFFS = {
  ]
 };
 const flatChanges = set => set.reduce((a, g) => a.concat(g.changes), []);
+
+/* ═══════════ 고객정보취급방침 (그룹 제공 문서) ═══════════
+   우리금융지주가 제정하고 각 그룹사가 자사 홈페이지에 게시하는 공통 문서.
+   당사는 게시 주체이므로 조항을 편집하지 않는다 — 관리 초점이 '수신·게시 추적'으로 바뀐다.
+   ══════════════════════════════════════════════════════ */
+const SECTIONS_CI = [
+ {key:"C01", uuid:"a71f-0c93", noLabel:"머리말", tags:[], title:"안내", body:[
+   P("우리금융그룹을 아끼고 사랑해 주시는 고객 여러분께 깊은 감사를 드립니다."),
+   P("우리금융그룹은 금융지주회사법령에 의해 그룹사간에는 고객정보의 제공 및 이용이 가능하게 되어 있습니다. 이에 다음과 같이 안내하여 드리오니 참고하시기 바랍니다.")
+ ]},
+ {key:"C02", uuid:"5d20-b846", noLabel:"근거", tags:["금융지주회사법 제48조의2"], title:"금융지주회사법 제48조의2 (고객정보의 제공 및 관리)", body:[
+   P("① 금융지주회사등은 「금융실명거래 및 비밀보장에 관한법률」 제4조 제1항 및 「신용정보의 이용 및 보호에 관한 법률」 제32조·제33조에도 불구하고 금융거래정보 및 개인신용정보를 다음 각 호의 사항에 관하여 금융위원회가 정하는 방법과 절차에 따라 그가 속하는 금융지주회사등에게 신용위험관리 등 내부 경영관리상 이용하게 할 목적으로 제공할 수 있다."),
+   UL(["제공할 수 있는 정보의 범위", "고객정보의 암호화 등 처리방법", "고객정보의 분리 보관",
+       "고객정보의 이용기간 및 이용목적", "이용기간 경과 시 고객정보의 삭제",
+       "그 밖에 고객정보의 엄격한 관리를 위하여 대통령령으로 정하는 사항"]),
+   P("② 금융지주회사의 자회사등인 투자매매업자 또는 투자중개업자는 위탁자가 예탁한 금전 또는 증권에 관한 정보(증권총액정보등) 중 다음 각 호에 해당하는 정보를 고객정보제공절차에 따라 제공할 수 있다."),
+   UL(["예탁한 금전의 총액", "예탁한 증권의 총액", "예탁한 증권의 종류별 총액",
+       "그 밖에 제1호부터 제3호까지에 준하는 것으로서 금융위원회가 정하여 고시하는 정보"]),
+   P("이에 따라 우리금융그룹은 우리금융지주를 중심으로 고객정보를 그룹사간에 제공 및 이용하기 위하여 「고객정보 취급방침」을 제정·운영하고 있습니다."),
+   NOTE("프로토타입에서는 법령 인용문을 일부 축약했습니다. 실제 운영 시에는 그룹 제공 원문을 그대로 게시합니다.")
+ ]},
+ {key:"C03", uuid:"e402-19af", noLabel:"I", tags:["제공 정보"], title:"제공되는 고객정보의 종류", body:[
+   UL(["「금융실명거래 및 비밀보장에 관한 법률」 제4조에 따른 금융거래의 내용에 관한 정보 또는 자료",
+       "「신용정보의 이용 및 보호에 관한 법률」 제32조 제1항에 따른 개인신용정보",
+       "투자매매업자 또는 투자중개업자를 통하여 증권을 매매하거나 매매하고자 하는 위탁자가 예탁한 금전 또는 증권에 관한 정보"]),
+   UL(["가. 예탁한 금전의 총액", "나. 예탁한 증권의 총액", "다. 예탁한 증권의 종류별 총액",
+       "라. 채무증권의 종류별 총액", "마. 수익증권으로서 집합투자기구의 종류별 총액",
+       "바. 예탁한 증권의 총액을 기준으로 한 위탁자의 평균 증권보유기간 및 일정기간 동안의 평균 거래회수"])
+ ]},
+ {key:"C04", uuid:"9c88-3d61", noLabel:"II", tags:["제공처"], title:"고객정보의 제공처", body:[
+   P("우리금융그룹 중 금융지주회사법령에 의한 고객정보의 제공 및 이용이 가능한 회사는 다음과 같습니다."),
+   {t:"table", head:["구분","회사"], rows:[
+     ["지주회사","우리금융지주"],
+     ["은행·카드·캐피탈","우리은행, 우리카드, 우리금융캐피탈, 우리금융저축은행"],
+     ["보험","동양생명보험, 에이비엘생명보험"],
+     ["금융투자","우리투자증권, 우리자산운용, 우리프라이빗에퀴티자산운용, 우리벤처파트너스"],
+     ["신탁·기타","우리자산신탁, 우리금융에프앤아이, 우리신용정보, 우리에프아이에스"]
+   ]},
+   NOTE("이 목록은 계열사 편입·매각 시마다 바뀝니다. 다만 그룹이 정하는 사항이므로 당사 조직 마스터가 아니라 그룹 제공 원문의 일부로 취급합니다.")
+ ]},
+ {key:"C05", uuid:"6b17-f250", noLabel:"III", tags:["내부방침","게시 의무"], title:"고객정보의 보호에 관한 내부방침", body:[
+   P("우리금융그룹에서는 고객 여러분의 고객정보를 최대한 안전하게 관리하기 위해 그룹사간 정보 제공 및 이용이 아래와 같이 엄격한 절차와 관리·감독 하에 이루어지도록 하였습니다."),
+   UL(["① 고객정보의 제공 및 이용은 내부 경영관리 목적으로만 이용되도록 하였습니다.",
+       "② 그룹사의 임원 1인 이상을 고객정보관리인으로 선임하여 일체의 책임을 지도록 하였습니다.",
+       "③ 그룹사별로 소관부서 및 담당자를 지정하여 체계적이고 집중적인 관리를 도모하였습니다.",
+       "④ 요청 및 제공 시 서면 또는 전자결재시스템을 통하여 고객정보관리인의 결재를 받도록 하였습니다.",
+       "⑤ 금융지주회사 고객정보관리인에게 총괄관리 역할을 부여하였습니다.",
+       "⑥ 취급방침의 제·개정시 지체없이 그 내용을 기존의 고객에게 통지하거나 일간지에 공고하고, 각 영업점 및 각 그룹사 홈페이지 등에 게시하는 등 고객공지 의무에 최선을 다할 것입니다.",
+       "⑦ 고객정보조회시스템을 구축하고 관련 법령에 따라 통지하는 등 고객의 자기정보 접근권을 제공합니다.",
+       "⑧ 민원처리 관련 일체의 업무를 수행할 소관부서를 그룹사마다 두었습니다.",
+       "⑨ 권한이 부여된 자만 고객정보에 접근하고, 송·수신·보관 시 암호화하며, 보안시스템 구축 및 정기 보안 교육을 실시합니다."]),
+   NOTE("⑥항이 이 문서의 게시 의무 근거입니다. “제·개정시 지체없이 … 각 그룹사 홈페이지 등에 게시”가 문서에 명시되어 있습니다.")
+ ]},
+ {key:"C06", uuid:"c935-7e04", noLabel:"맺음말", tags:["고객정보관리인"], title:"고객정보관리인", body:[
+   P("우리금융그룹은 그룹사간 고객정보의 제공 및 이용을 허용한 것이 금융서비스의 질을 높이고, 나아가 우리나라 금융산업을 선진화시키기 위한 조치임을 명심하고, 고객 여러분의 고객정보의 보호 및 엄격한 관리를 위해 최선을 다할 것입니다."),
+   {t:"table", head:["회사","담당"], rows:[
+     ["우리금융지주","고객정보관리인"], ["우리은행","고객정보관리인"], ["동양생명보험","고객정보관리인"],
+     ["우리카드","고객정보관리인"], ["우리금융캐피탈","고객정보관리인"], ["우리투자증권","고객정보관리인"],
+     ["에이비엘생명보험","고객정보관리인"], ["우리자산신탁","고객정보관리인"], ["우리금융저축은행","고객정보관리인"],
+     ["우리자산운용","고객정보관리인"], ["우리벤처파트너스","고객정보관리인"],
+     ["우리프라이빗에퀴티자산운용","고객정보관리인"], ["우리금융에프앤아이","고객정보관리인"],
+     ["우리신용정보","고객정보관리인"], ["우리에프아이에스","고객정보관리인"]
+   ]}
+ ]}
+];
+
+const VERSIONS_CI = [
+ {id:"c1", status:"ACTIVE", from:"(미표기)", to:null, hash:"—",
+  reason:"현재 게시 중인 그룹 제공 원문. 그룹 시행일·당사 게시일이 모두 기록되어 있지 않습니다.",
+  audit:[]}
+];
+
+/* ═══════════ 문서 레지스트리 ═══════════ */
+const DOC_REG = {
+ "privacy-policy":{
+   name:"개인정보처리방침", law:"개인정보 보호법 제30조", own:"OWN", provider:"우리투자증권",
+   sections:SECTIONS_PP, versions:VERSIONS_PP, labels:LABELS_PP, diffs:DIFFS_PP,
+   hasRegistry:true, filePrefix:"privacy-policy",
+   integrity:[
+     ["결번","제정일은 <b>2014-02-27</b>이나 공개된 이전 방침 목록은 <b>2015-01-26</b>부터 시작합니다. 제정본(2014-02-27 ~ 2015-01-25)을 열람할 수 없습니다."],
+     ["기간중복","<b>2019-12-02</b>가 v1의 종료일이자 v2의 시작일로 동시에 표기되어 있습니다. 시행기간이 하루 겹칩니다."],
+     ["누락","각 버전의 개정 사유가 공개되어 있지 않아, 어떤 조항이 왜 바뀌었는지 외부에서 확인할 수 없습니다."]
+   ]},
+ "customer-info":{
+   name:"고객정보취급방침", law:"금융지주회사법 제48조의2", own:"GROUP", provider:"우리금융지주",
+   sections:SECTIONS_CI, versions:VERSIONS_CI, labels:[], diffs:{},
+   hasRegistry:false, filePrefix:"customer-info",
+   integrity:[
+     ["시행일 없음","제정일·시행일·개정일 표기가 <b>전혀 없습니다.</b> 현재 게시본이 언제 시행된 원문인지 확인할 수 없습니다."],
+     ["이전본 없음","이전 취급방침이 제공되지 않습니다. 과거 시점의 게시본을 특정할 수 없습니다."],
+     ["게시 추적 불가","그룹 시행일과 당사 게시일이 기록되지 않아, <b>그룹이 개정했는데 당사가 게시하지 않은 상태</b>를 탐지할 수단이 없습니다. 본문 III-⑥의 “지체없이 게시” 의무 이행을 입증하기 어렵습니다."]
+   ]}
+ };
+
+let currentDocCode = "privacy-policy";
+let SECTIONS = SECTIONS_PP, VERSIONS = VERSIONS_PP, LABELS = LABELS_PP, DIFFS = DIFFS_PP;
+const D = () => DOC_REG[currentDocCode];
+
+function useDoc(code){
+  currentDocCode = code;
+  const d = D();
+  SECTIONS = d.sections; VERSIONS = d.versions; LABELS = d.labels; DIFFS = d.diffs;
+  const act = d.versions.find(v => v.status === "ACTIVE") || d.versions[0];
+  currentVersion = act.id;
+  const pub = d.versions.filter(v => v.status !== "GAP");
+  $("#verpick").innerHTML = pub.map(v =>
+    '<option value="' + v.id + '"' + (v.id === currentVersion ? " selected" : "") + ">" +
+    v.id + " · " + spanOf(v) + " · " + STATUS_KO[v.status] + "</option>").join("");
+  const dOpts = pub.map(v => '<option value="' + v.id + '">' + v.id + " (" + v.from + ")</option>").join("");
+  $("#dfrom").innerHTML = dOpts; $("#dto").innerHTML = dOpts;
+  if (pub.length > 1){ $("#dfrom").value = pub[1].id; $("#dto").value = pub[0].id; }
+  renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); renderExport();
+}
 
 /* ═══════════ 렌더링 ═══════════ */
 const $  = s => document.querySelector(s);
@@ -972,9 +1100,17 @@ function renderPolicy(){
   $("#vermeta").innerHTML =
     '<div><span>상태</span><span class="chip ' + STATUS_CLS[v.status] + '"><span class="dot"></span>' + STATUS_KO[v.status] + "</span></div>" +
     '<div><span>시행기간</span><b class="mono">' + spanOf(v) + "</b></div>" +
-    '<div><span>조항 수</span><b class="mono">' + secs.length + "개조</b></div>" +
+    '<div><span>구성</span><b class="mono">' + secs.length + (D().own === "GROUP" ? "개 장" : "개조") + "</b></div>" +
     '<div><span>스냅샷 해시</span><b class="mono">' + esc(v.hash) + "</b></div>";
 
+  const d = D();
+  $("#polTitle").textContent = d.name;
+  $("#docbanner").innerHTML = d.own === "GROUP"
+    ? '<div class="groupbanner"><span class="gk">그룹 제공</span><div><b>' + esc(d.provider) +
+      '가 제정하고 각 그룹사가 자사 홈페이지에 게시하는 공통 문서입니다.</b> 당사는 <b>게시 주체</b>이며 조항을 편집하지 않습니다 — 원문을 변형하는 것이기 때문입니다. ' +
+      '따라서 관리의 초점이 “편집·승인”이 아니라 <b>“수신 → 대조 → 게시” 추적</b>으로 바뀝니다. 근거: ' + esc(d.law) + "</div></div>"
+    : "";
+  $("#labelboard").hidden = !d.labels.length;
   const secByKey = {};
   secs.forEach((s, i) => { secByKey[s.key] = i + 1; });
 
@@ -988,12 +1124,12 @@ function renderPolicy(){
   }).join("");
 
   $("#toc").innerHTML = secs.map((s, i) =>
-    '<li><a href="#sec-' + s.key + '"><span class="tn">제' + (i + 1) + '조</span>' + esc(s.title) + "</a></li>"
+    '<li><a href="#sec-' + s.key + '"><span class="tn">' + esc(s.noLabel || ("제" + (i + 1) + "조")) + "</span>" + esc(s.title) + "</a></li>"
   ).join("");
 
   $("#sections").innerHTML = secs.map((s, i) =>
     '<article class="sec" id="sec-' + s.key + '">' +
-      '<div class="gutter"><b>제' + (i + 1) + '조</b><span class="seckey">' + esc(s.key + " · " + s.uuid) + "</span></div>" +
+      '<div class="gutter"><b>' + esc(s.noLabel || ("제" + (i + 1) + "조")) + '</b><span class="seckey">' + esc(s.key + " · " + s.uuid) + "</span></div>" +
       "<div><h3>" + esc(s.title) + "</h3>" +
         '<div class="seclabels">' + s.tags.map(t => '<span class="tag">' + esc(t) + "</span>").join("") + "</div>" +
         '<div class="body">' + s.body.map(b => blockHTML(b, vid)).join("") + "</div>" +
@@ -1003,6 +1139,12 @@ function renderPolicy(){
 }
 
 function renderRegistry(){
+  if (!D().hasRegistry){
+    $("#regmeta").innerHTML = "";
+    $("#regbody").innerHTML = '<tr><td colspan="5" style="color:var(--ink-3);padding:22px">' +
+      esc(D().name) + "은 위·수탁 현황을 별도로 두지 않습니다. 그룹 제공 원문에 제공처가 직접 기재되어 있으며, 그 목록은 그룹이 정합니다.</td></tr>";
+    return;
+  }
   $("#regmeta").innerHTML =
     '<div><span>기준일 (as-of)</span><b class="mono">' + REGISTRY.asOf + "</b></div>" +
     '<div><span>최종 갱신 주체</span><b>' + esc(REGISTRY.updatedBy) + "</b></div>" +
@@ -1014,10 +1156,8 @@ function renderRegistry(){
 }
 
 function renderHistory(){
-  $("#integrity").innerHTML =
-    '<div class="ichk"><span class="ibadge">결번</span><div>제정일은 <b class="mono">2014-02-27</b>이나 공개된 이전 방침 목록은 <b class="mono">2015-01-26</b>부터 시작합니다. 제정본(2014-02-27 ~ 2015-01-25)을 열람할 수 없습니다.</div></div>' +
-    '<div class="ichk"><span class="ibadge">기간중복</span><div><b class="mono">2019-12-02</b>가 v1의 종료일이자 v2의 시작일로 동시에 표기되어 있습니다. 시행기간이 하루 겹칩니다.</div></div>' +
-    '<div class="ichk"><span class="ibadge">누락</span><div>각 버전의 개정 사유가 공개되어 있지 않아, 어떤 조항이 왜 바뀌었는지 외부에서 확인할 수 없습니다.</div></div>';
+  $("#integrity").innerHTML = D().integrity.map(x =>
+    '<div class="ichk"><span class="ibadge">' + esc(x[0]) + "</span><div>" + x[1] + "</div></div>").join("");
 
   $("#vlist").innerHTML = VERSIONS.map(v => {
     const hasAudit = v.audit && v.audit.length;
@@ -1255,14 +1395,15 @@ function expBlock(b, vid){
 function wrapDoc(inner, title, vid){
   const v = verObj(vid);
   const stamp = "2026-08-12";
-  const banner = "<!-- 개인정보처리방침 · " + title + " · 버전 " + v.id + " · 시행 " + v.from + " · 생성 " + stamp + " -->\n" +
-                 "<!-- 이 파일은 개인정보처리방침 관리 콘솔에서 생성되었습니다. 직접 편집하지 마십시오. -->\n";
+  const banner = "<!-- " + D().name + " · " + title + " · 버전 " + v.id + " · 시행 " + v.from + " · 생성 " + stamp + " -->\n" +
+                 "<!-- 이 파일은 정책 문서 관리 콘솔에서 생성되었습니다. 직접 편집하지 마십시오. -->\n" +
+                 (D().own === "GROUP" ? "<!-- 그룹 제공 원문 · 제정 " + D().provider + " · 당사는 게시 주체입니다. 내용을 변경하지 마십시오. -->\n" : "");
   const style = EXPORT_OPT.css ? "<style>\n" + PP_CSS + "\n</style>\n" : "";
   const body = '<div class="pp-doc" data-policy-version="' + v.id + '" data-effective-from="' + v.from + '">\n' + inner + "\n</div>";
   if (EXPORT_OPT.frag) return banner + style + body;
   return "<!doctype html>\n<html lang=\"ko\">\n<head>\n<meta charset=\"utf-8\">\n" +
     '<meta name="viewport" content="width=device-width,initial-scale=1">\n' +
-    "<title>" + esc(title) + " | 개인정보처리방침</title>\n" + banner + style +
+    "<title>" + esc(title) + " | " + esc(D().name) + "</title>\n" + banner + style +
     "</head>\n<body>\n" + body + "\n</body>\n</html>\n";
 }
 
@@ -1279,16 +1420,17 @@ function buildPolicy(){
       '<ul class="pp-tags">' + x.tags.map(t => "<li>" + esc(t) + "</li>").join("") + "</ul>" +
       '<div class="pp-body">' + x.body.map(bb => expBlock(bb, vid)).join("") + "</div>" +
     "</section>").join("\n");
-  const head = '<h1 class="pp-title">개인정보처리방침</h1>' +
-    '<p class="pp-meta">시행일 ' + v.from.replace(/-/g, ". ") + ". · 버전 " + v.id + "</p>" +
-    '<p class="pp-lead">㈜우리투자증권은 「개인정보보호법」, 「신용정보의 이용 및 보호에 관한 법률」, 「정보통신망 이용촉진 및 정보보호 등에 관한 법률」 등 관련 법령, 규정을 준수하고 있습니다.</p>';
+  const d = D();
+  const head = '<h1 class="pp-title">' + esc(d.name) + "</h1>" +
+    '<p class="pp-meta">시행일 ' + v.from.replace(/-/g, ". ") + " · 버전 " + v.id + " · 근거 " + esc(d.law) +
+    (d.own === "GROUP" ? " · 제정 " + esc(d.provider) : "") + "</p>";
   return wrapDoc(head + labels + toc + body, "본문", vid);
 }
 
 function buildHistory(){
   const rows = VERSIONS.map(v => [v.id, v.from + " ~ " + (v.to || (v.status === "DRAFT" ? "(시행 예정)" : "현재")),
     STATUS_KO[v.status], v.reason]);
-  return wrapDoc('<h1 class="pp-title">개인정보처리방침 이전 방침</h1>' +
+  return wrapDoc('<h1 class="pp-title">' + esc(D().name) + " 이력</h1>" +
     '<p class="pp-meta">버전별 시행기간 및 개정 사유</p>' +
     ppTable(["버전","적용 기간","상태","개정 사유"], rows), "이전본 목록", currentVersion);
 }
@@ -1303,7 +1445,7 @@ function buildChanges(){
       '<div class="pp-body">' + ppTable(["변경 사유","변경 조항"],
         set.map(g => [g.reason, g.changes.map(c => TYPE_KO[c.type] + " · " + c.title).join("\n")])) + "</div></section>";
   }).join("\n");
-  return wrapDoc('<h1 class="pp-title">개인정보처리방침 변경내역</h1>' +
+  return wrapDoc('<h1 class="pp-title">' + esc(D().name) + " 변경내역</h1>" +
     '<p class="pp-meta">개정 건별 변경 사유 및 변경 조항</p>' + secs, "변경내역", currentVersion);
 }
 
@@ -1332,7 +1474,7 @@ function buildDiffDoc(){
     return "<tr><td>" + t + L + "</td><td>" + t + R + "</td>" +
       (k === 0 ? '<td rowspan="' + g.changes.length + '">' + esc(g.reason) + "</td>" : "") + "</tr>";
   }).join("")).join("");
-  return wrapDoc('<h1 class="pp-title">개인정보처리방침 신구대조표</h1>' +
+  return wrapDoc('<h1 class="pp-title">' + esc(D().name) + " 신구대조표</h1>" +
     '<p class="pp-meta">' + pair[0] + " → " + pair[1] + " · 시행 " + verObj(pair[1]).from + "</p>" +
     '<div class="pp-tw"><table><thead><tr><th>변경 전</th><th>변경 후</th><th>비고</th></tr></thead><tbody>' +
     rows + "</tbody></table></div>", "신구대조표", currentVersion);
@@ -1345,15 +1487,23 @@ function buildRegistry(){
 }
 
 function fileSet(){
-  const pair = diffPairForCurrent();
-  return [
-    {name:"privacy-policy.html", desc:"현행본 본문 — 홈페이지 본문 영역에 include", fn:buildPolicy},
-    {name:"privacy-policy-history.html", desc:"이전 방침 목록 (버전 · 적용기간 · 개정 사유)", fn:buildHistory},
-    {name:"privacy-policy-changes.html", desc:"변경내역 — 개정 건별 사유 및 변경 조항", fn:buildChanges},
-    {name:"privacy-policy-diff-" + (pair ? pair[0] + "-" + pair[1] : "current") + ".html",
-     desc:"신구대조표 — 좌우 병렬 3열, 비고 셀 병합", fn:buildDiffDoc},
-    {name:"privacy-policy-registry-outsourcing.html", desc:"위·수탁 현황 — 기준일 보유, 본문과 별개로 갱신", fn:buildRegistry}
+  const d = D(), pre = d.filePrefix, pair = diffPairForCurrent();
+  const set = [
+    {name:pre + ".html", desc:"현행본 본문 — 홈페이지 본문 영역에 include", fn:buildPolicy},
+    {name:pre + "-history.html",
+     desc:d.own === "GROUP" ? "게시 이력 (그룹 시행일 · 당사 게시일)" : "이전 방침 목록 (버전 · 적용기간 · 개정 사유)",
+     fn:buildHistory}
   ];
+  if (Object.keys(d.diffs).length){
+    set.push({name:pre + "-changes.html", desc:"변경내역 — 개정 건별 사유 및 변경 조항", fn:buildChanges});
+    set.push({name:pre + "-diff-" + (pair ? pair[0] + "-" + pair[1] : "current") + ".html",
+      desc:"신구대조표 — 좌우 병렬 3열, 비고 셀 병합", fn:buildDiffDoc});
+  }
+  if (d.hasRegistry){
+    set.push({name:pre + "-registry-outsourcing.html",
+      desc:"위·수탁 현황 — 기준일 보유, 본문과 별개로 갱신", fn:buildRegistry});
+  }
+  return set;
 }
 
 function bytes(str){ return new Blob([str]).size; }
@@ -1406,6 +1556,7 @@ $("#verpick").innerHTML = VERSIONS.filter(v => v.status !== "GAP").map(v =>
   '<option value="' + v.id + '"' + (v.id === "v8" ? " selected" : "") + ">" +
   v.id + " · " + spanOf(v) + " · " + STATUS_KO[v.status] + "</option>"
 ).join("");
+$("#docpick").addEventListener("change", e => { useDoc(e.target.value); showView("policy"); });
 $("#verpick").addEventListener("change", e => { currentVersion = e.target.value; renderPolicy(); renderExport(); });
 
 const dOpts = VERSIONS.filter(v => v.status !== "GAP").map(v =>
