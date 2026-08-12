@@ -252,13 +252,26 @@ select{font:inherit; font-size:13px; padding:7px 10px; border-radius:6px; border
 .demptyt{color:var(--ink-3); font-size:12.5px; font-family:var(--mono)}
 .dhint{font-size:12px; color:var(--ink-3); margin:-6px 0 16px; padding-left:2px}
 .dhint b{color:var(--woori)}
+.dtable{font-size:13px; min-width:900px}
+.dtable th{background:var(--woori-soft); color:var(--woori); position:sticky; top:0}
+.dtable th:nth-child(1),.dtable th:nth-child(2){width:38%}
+.dtable th:nth-child(3){width:24%}
+.dtable td{vertical-align:top; line-height:1.8; color:var(--ink-2)}
+.dtable td.dnote{background:var(--woori-soft); color:var(--ink-2); font-size:12.5px; line-height:1.7; border-left:1px solid var(--woori-line)}
+.dtable td.dnote span{display:block; font-size:10.5px; letter-spacing:.06em; color:var(--woori); font-weight:700; margin-bottom:6px}
+.dtable .dst{display:block; font-weight:700; color:var(--ink); margin-bottom:7px; font-size:12.5px}
+.dtable .dtg{display:inline-block; font-size:9.5px; font-family:var(--mono); padding:1px 6px; border-radius:3px; margin-right:6px; font-weight:700; vertical-align:1.5px}
+.dtable .dtg.ADDED{background:var(--add-soft); color:var(--add); border:1px solid var(--add)}
+.dtable .dtg.MODIFIED{background:var(--surface-3); color:var(--ink-2); border:1px solid var(--rule-2)}
+.dtable .dtg.REMOVED{background:var(--del-soft); color:var(--del); border:1px solid var(--del)}
+.dtable tr.gstart td{border-top:2px solid var(--woori-line)}
 @media (max-width:900px){ .dpair{grid-template-columns:1fr} }
 .dreason{font-size:12px; color:var(--ink-3)}
 .dreason b{color:var(--ink-2); font-weight:700}
 .dtext{font-size:13.2px; line-height:1.85; color:var(--ink-2); padding:12px 14px; border-radius:8px; background:var(--surface-2); border:1px solid var(--rule)}
 .dtext .dlab{display:block; font-size:10.5px; letter-spacing:.07em; color:var(--ink-3); margin-bottom:7px}
-ins{background:var(--add-soft); color:var(--add); text-decoration:none; padding:1px 3px; border-radius:3px; font-weight:700}
-del{background:var(--del-soft); color:var(--del); padding:1px 3px; border-radius:3px}
+ins{background:var(--add-soft); color:var(--add); text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:2px; padding:1px 3px; border-radius:3px; font-weight:700}
+del{background:var(--del-soft); color:var(--del); text-decoration:line-through; padding:1px 3px; border-radius:3px; font-weight:600}
 
 /* ── 변경내역 (대고객) ── */
 .chgcard{margin-bottom:14px; overflow:hidden}
@@ -484,7 +497,7 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
             </div>
           </div>
         </div>
-        <p class="dhint">좌우 병렬 3열(변경 전 / 변경 후 / 비고)은 국내 신구조문대비표 관행이자 토스증권이 쓰는 형식입니다. 다만 토스증권은 <b>비고 열이 대부분 공란</b>입니다 — 여기서는 변경 사유가 필수 입력이므로 모든 행이 채워집니다.</p>
+        <p class="dhint">좌우 병렬 3열(변경 전 / 변경 후 / 비고)은 국내 신구조문대비표 관행이자 토스증권이 쓰는 형식입니다. 비고는 <b>변경 그룹(ChangeSet) 단위로 셀을 병합</b>합니다 — 용어 하나를 조문 전반에서 치환하면 변경 지점이 수십 곳 생기는데, 사유를 지점마다 반복하면 읽을 수 없는 표가 되기 때문입니다. 긴 조항의 미변경 구간은 <b>(중략)</b>으로 생략합니다.</p>
         <div id="diffout"></div>
       </section>
 
@@ -742,35 +755,79 @@ const REGISTRY = {
   ]
 };
 
-/* ═══════════ 신구대조 (요구 1) ═══════════ */
+/* ═══════════ 신구대조 (요구 1) ═══════════
+   ChangeSet(변경 그룹) : 사유 1건이 변경 N건을 묶는다.
+   용어 일괄 치환처럼 변경 지점이 수십 곳인 경우 사유를 지점마다 반복하면 읽을 수 없다.
+   토스증권도 이 경우 비고 셀을 rowspan 병합한다.
+   ══════════════════════════════════════════ */
 const DIFFS = {
  "v8|v9":[
-  {sec:"S18", type:"ADDED", title:"가명정보 처리에 관한 사항",
-   reason:"제1조 및 제4조에서 가명처리를 명시하고 있으나 별도 조항이 없어 신설",
-   after:"당사는 통계작성, 과학적 연구, 공익적 기록보존 등을 위하여 가명정보를 처리하며, 가명정보의 안전성 확보를 위해 필요한 기술적·관리적 및 물리적 조치를 하고 있습니다."},
-  {sec:"S12", type:"MODIFIED", title:"행태정보의 수집·이용·제공 및 거부 등에 관한 사항",
-   reason:"타 업권(은행) 표현 정정",
-   before:"또한 당행 앱 이용자의 행태정보 분석을 위해 아이지에이웍스의 디파이너리에서 제공하는 광고 성과 결과를 이용합니다.",
-   after:"또한 당사 앱 이용자의 행태정보 분석을 위해 아이지에이웍스의 디파이너리에서 제공하는 광고 성과 결과를 이용합니다."},
-  {sec:"S06", type:"MODIFIED", title:"개인정보의 제3자 제공",
-   reason:"오타 정정 및 현황 문서 참조 방식을 텍스트 경로에서 링크로 변경",
-   before:"납치, 감긍 등 범죄 관련된 자의 개인정보 처리 / 제휴업체 상세 정보는 홈페이지 > 개인정보처리방침 > ‘개인(신용)정보처리 위탁 및 제휴업체 현황’ 참고",
-   after:"납치, 감금 등 범죄 관련된 자의 개인정보 처리 / 제휴업체 상세 정보는 개인(신용)정보 제3자 제공 현황에서 확인하실 수 있습니다."},
-  {sec:"S15", type:"MODIFIED", title:"정보주체의 권익침해에 대한 구제방법",
-   reason:"경찰청 접수 창구 URL 갱신 및 정보보호마크인증위원회 항목 삭제 (존치 여부 확인 결과 반영)",
-   before:"경찰청 사이버안전국 — cyberbureau.police.go.kr / 국번없이 182 · 정보보호마크인증위원회 — www.eprivacy.or.kr / 02-550-9531~2",
-   after:"경찰청 사이버범죄 신고시스템 — ecrm.police.go.kr / 국번없이 182"}
+  {reason:"제1조 및 제4조에서 가명처리를 명시하고 있으나 별도 조항이 없어 신설",
+   changes:[
+    {sec:"S18", type:"ADDED", title:"[제18조] 가명정보 처리에 관한 사항",
+     after:"당사는 통계작성, 과학적 연구, 공익적 기록보존 등을 위하여 가명정보를 처리하며, 가명정보의 안전성 확보를 위해 필요한 기술적·관리적 및 물리적 조치를 하고 있습니다."}
+   ]},
+
+  {reason:"안전성 확보조치 대상에 개인정보 및 개인신용정보가 모두 포함되어, 조문 전반의 ‘개인정보’를 ‘개인(신용)정보’로 용어 명확화",
+   changes:[
+    {sec:"S10", type:"MODIFIED", title:"[제10조] 안전성 확보 조치 — 1. 암호화",
+     before:"고객의 비밀정보 등 개인정보는 암호화되어 저장 및 관리되고 있으며, 중요한 데이터는 파일 및 전송 데이터를 암호화 하거나 파일 잠금 기능을 사용하는 등의 별도 보안기능을 사용하고 있습니다.",
+     after:"고객의 비밀정보 등 개인(신용)정보는 암호화되어 저장 및 관리되고 있으며, 중요한 데이터는 파일 및 전송 데이터를 암호화 하거나 파일 잠금 기능을 사용하는 등의 별도 보안기능을 사용하고 있습니다."},
+    {sec:"S10", type:"MODIFIED", title:"[제10조] 안전성 확보 조치 — 2. 해킹 등에 대비한 기술적 대책",
+     before:"회사는 해킹이나 컴퓨터 바이러스 등에 의한 개인정보 유출 및 훼손을 막기 위하여 (중략) 기술적/물리적으로 감시 및 차단하고 있습니다.",
+     after:"회사는 해킹이나 컴퓨터 바이러스 등에 의한 개인(신용)정보 유출 및 훼손을 막기 위하여 (중략) 기술적/물리적으로 감시 및 차단하고 있습니다."},
+    {sec:"S10", type:"MODIFIED", title:"[제10조] 안전성 확보 조치 — 3. 처리 시스템 접근 제한",
+     before:"개인정보를 처리하는 데이터베이스시스템에 대한 접근권한의 부여, 변경, 말소를 통하여 개인정보에 대한 접근통제를 위하여 필요한 조치를 하고 있으며 (중략) 무단 접근을 통제하고 있습니다.",
+     after:"개인(신용)정보를 처리하는 데이터베이스시스템에 대한 접근권한의 부여, 변경, 말소를 통하여 개인(신용)정보에 대한 접근통제를 위하여 필요한 조치를 하고 있으며 (중략) 무단 접근을 통제하고 있습니다."},
+    {sec:"S10", type:"MODIFIED", title:"[제10조] 안전성 확보 조치 — 4. 취급 직원의 최소화 및 교육",
+     before:"개인정보 취급 직원의 최소화 및 교육 (중략) 대책을 시행하고 있습니다.",
+     after:"개인(신용)정보 취급 직원의 최소화 및 교육 (중략) 대책을 시행하고 있습니다."}
+   ]},
+
+  {reason:"타 업권(은행) 표현 정정",
+   changes:[
+    {sec:"S12", type:"MODIFIED", title:"[제12조] 행태정보의 수집·이용·제공 및 거부 등에 관한 사항",
+     before:"또한 당행 앱 이용자의 행태정보 분석을 위해 아이지에이웍스의 디파이너리에서 제공하는 광고 성과 결과를 이용합니다.",
+     after:"또한 당사 앱 이용자의 행태정보 분석을 위해 아이지에이웍스의 디파이너리에서 제공하는 광고 성과 결과를 이용합니다."}
+   ]},
+
+  {reason:"오타 정정 및 현황 문서 참조 방식을 텍스트 경로 안내에서 링크로 변경",
+   changes:[
+    {sec:"S06", type:"MODIFIED", title:"[제6조] 개인정보의 제3자 제공",
+     before:"납치, 감긍 등 범죄 관련된 자의 개인정보 처리 (중략) 제휴업체 상세 정보는 홈페이지 > 개인정보처리방침 > ‘개인(신용)정보처리 위탁 및 제휴업체 현황’ 참고",
+     after:"납치, 감금 등 범죄 관련된 자의 개인정보 처리 (중략) 제휴업체 상세 정보는 개인(신용)정보 제3자 제공 현황에서 확인하실 수 있습니다."}
+   ]},
+
+  {reason:"경찰청 접수 창구 URL 갱신 및 정보보호마크인증위원회 항목 삭제 (존치 여부 확인 결과 반영)",
+   changes:[
+    {sec:"S15", type:"MODIFIED", title:"[제15조] 정보주체의 권익침해에 대한 구제방법",
+     before:"경찰청 사이버안전국 — cyberbureau.police.go.kr / 국번없이 182 · 정보보호마크인증위원회 — www.eprivacy.or.kr / 02-550-9531~2",
+     after:"경찰청 사이버범죄 신고시스템 — ecrm.police.go.kr / 국번없이 182"}
+   ]},
+
+  {reason:"개정일자 반영",
+   changes:[
+    {sec:"S17", type:"MODIFIED", title:"[제17조] 개인정보 처리방침의 변경",
+     before:"개인정보 처리방침 시행일 : 2026. 03. 12.",
+     after:"개인정보 처리방침 시행일 : 2026. 09. 01."}
+   ]}
  ],
+
  "v7|v8":[
-  {sec:"S16", type:"ADDED", title:"고정형 영상정보처리기기 운영·관리",
-   reason:"영업점 내 CCTV 운영 현황 공개 조항 신설",
-   after:"당사는 고객, 시설 등의 안전 등을 위해 영업점 내 CCTV와 같은 고정형 영상정보처리기기를 운영하고 있습니다."},
-  {sec:"S14", type:"MODIFIED", title:"개인정보 보호책임자 및 담당부서",
-   reason:"고충처리 부서 명칭 변경",
-   before:"개인정보 보호업무 정보보호부 / 고충처리부서 소비자보호부",
-   after:"개인정보 보호업무 정보보호부 / 고충처리부서 금융소비자보호부"}
+  {reason:"영업점 내 CCTV 운영 현황 공개 조항 신설",
+   changes:[
+    {sec:"S16", type:"ADDED", title:"[제16조] 고정형 영상정보처리기기 운영·관리",
+     after:"당사는 고객, 시설 등의 안전 등을 위해 영업점 내 CCTV와 같은 고정형 영상정보처리기기를 운영하고 있습니다."}
+   ]},
+  {reason:"고충처리 부서 명칭 변경",
+   changes:[
+    {sec:"S14", type:"MODIFIED", title:"[제14조] 개인정보 보호책임자 및 담당부서",
+     before:"개인정보 보호업무 정보보호부 / 고충처리부서 소비자보호부",
+     after:"개인정보 보호업무 정보보호부 / 고충처리부서 금융소비자보호부"}
+   ]}
  ]
 };
+const flatChanges = set => set.reduce((a, g) => a.concat(g.changes), []);
 
 /* ═══════════ 렌더링 ═══════════ */
 const $  = s => document.querySelector(s);
@@ -939,38 +996,50 @@ function wordDiff(a, b){
 
 let diffLayout = "side";
 
-/* 좌우 병렬 3열 — 국내 신구조문대비표 관행. 신설·삭제는 한쪽 셀을 비운다 */
-function diffSide(d){
-  let left, right;
-  if (d.type === "MODIFIED"){
-    const [o, nw] = wordDiff(d.before, d.after);
-    left = o; right = nw;
-  } else if (d.type === "ADDED"){
-    left = '<span class="demptyt">〈신설〉</span>';
-    right = "<ins>" + esc(d.after) + "</ins>";
-  } else {
-    left = "<del>" + esc(d.before) + "</del>";
-    right = '<span class="demptyt">〈삭제〉</span>';
-  }
-  return '<div class="dpair">' +
-    '<div class="dcol"><span class="dlab">변경 전</span><div class="dcell">' + left + "</div></div>" +
-    '<div class="dcol"><span class="dlab">변경 후</span><div class="dcell">' + right + "</div></div>" +
-    '<div class="dcol"><span class="dlab">비고 (변경 사유)</span><div class="dcell dnote">' + esc(d.reason) + "</div></div>" +
-  "</div>";
+const TYPE_KO = {ADDED:"신설", MODIFIED:"수정", REMOVED:"삭제"};
+
+function cellPair(c){
+  if (c.type === "MODIFIED") return wordDiff(c.before, c.after);
+  if (c.type === "ADDED")    return ['<span class="demptyt">〈신설〉</span>', "<ins>" + esc(c.after) + "</ins>"];
+  return ["<del>" + esc(c.before) + "</del>", '<span class="demptyt">〈삭제〉</span>'];
 }
 
-function diffStack(d){
-  let h = '<div class="dreason"><b>변경 사유</b> · ' + esc(d.reason) + "</div>";
-  if (d.type === "MODIFIED"){
-    const [o, nw] = wordDiff(d.before, d.after);
-    h += '<div class="dtext"><span class="dlab">변경 전</span>' + o + "</div>" +
-         '<div class="dtext"><span class="dlab">변경 후</span>' + nw + "</div>";
-  } else if (d.type === "ADDED"){
-    h += '<div class="dtext"><span class="dlab">신설 내용</span><ins>' + esc(d.after) + "</ins></div>";
-  } else {
-    h += '<div class="dtext"><span class="dlab">삭제 내용</span><del>' + esc(d.before) + "</del></div>";
-  }
-  return h;
+/* 좌우 병렬 3열 — 비고는 ChangeSet 단위로 rowspan 병합 (토스증권 형식) */
+function renderSideTable(set){
+  const rows = set.map(g => g.changes.map((c, k) => {
+    const [L, R] = cellPair(c);
+    const title = '<span class="dst"><span class="dtg ' + c.type + '">' + TYPE_KO[c.type] + "</span>" + esc(c.title) + "</span>";
+    return "<tr" + (k === 0 ? ' class="gstart"' : "") + ">" +
+      "<td>" + title + L + "</td>" +
+      "<td>" + title + R + "</td>" +
+      (k === 0
+        ? '<td class="dnote" rowspan="' + g.changes.length + '"><span>비고 (변경 사유)</span>' + esc(g.reason) +
+          (g.changes.length > 1 ? '<br><br><span style="color:var(--ink-3);font-weight:400;letter-spacing:0">↑ ' + g.changes.length + "건의 변경을 하나의 사유로 묶어 셀을 병합했습니다.</span>" : "") + "</td>"
+        : "") +
+    "</tr>";
+  }).join("")).join("");
+
+  return '<div class="tscroll"><table class="dtable">' +
+    "<thead><tr><th>변경 전</th><th>변경 후</th><th>비고</th></tr></thead>" +
+    "<tbody>" + rows + "</tbody></table></div>";
+}
+
+/* 상하 대비 — 변경 그룹별 카드 */
+function renderStackCards(set){
+  return set.map(g =>
+    '<div class="card dsec">' +
+      '<div class="dsec-h"><span class="dtype MODIFIED">변경 그룹</span>' +
+        '<span class="dt">' + esc(g.reason) + "</span>" +
+        '<span class="dk">' + g.changes.length + "건</span></div>" +
+      '<div class="dbody">' + g.changes.map(c => {
+        const [L, R] = cellPair(c);
+        return '<div class="dtext" style="border-left:3px solid var(--sky)">' +
+          '<span class="dlab">' + TYPE_KO[c.type] + " · " + esc(c.title) + "</span>" +
+          '<div style="margin-bottom:8px"><span class="dlab">변경 전</span>' + L + "</div>" +
+          '<div><span class="dlab">변경 후</span>' + R + "</div></div>";
+      }).join("") + "</div>" +
+    "</div>"
+  ).join("");
 }
 
 function renderDiff(){
@@ -982,13 +1051,7 @@ function renderDiff(){
       '이 조합의 비교 데이터는 프로토타입에 포함되어 있지 않습니다. <b>v8 → v9</b> 또는 <b>v7 → v8</b>을 선택해 보세요.</div>';
     return;
   }
-  out.innerHTML = set.map(d =>
-    '<div class="card dsec"><div class="dsec-h">' +
-      '<span class="dtype ' + d.type + '">' + d.type + "</span>" +
-      '<span class="dt">' + esc(d.title) + "</span>" +
-      '<span class="dk">' + esc(d.sec) + "</span></div>" +
-      '<div class="dbody">' + (diffLayout === "side" ? diffSide(d) : diffStack(d)) + "</div></div>"
-  ).join("");
+  out.innerHTML = diffLayout === "side" ? renderSideTable(set) : renderStackCards(set);
 }
 
 /* 대고객 변경내역 — 감사 로그와 같은 데이터, 공개 필드만 */
@@ -1004,10 +1067,12 @@ function renderChanges(){
         '<span class="cv">' + esc(v.id) + "</span>" +
         '<span class="cd">' + v.from + (v.status === "DRAFT" ? " 시행 예정" : " 시행") + "</span>" +
         '<span class="chip ' + STATUS_CLS[v.status] + '"><span class="dot"></span>' + STATUS_KO[v.status] + "</span>" +
-        (set ? '<span class="cstats">' +
-          (set.filter(d => d.type === "ADDED").length ? '<span class="cstat add">신설 ' + set.filter(d => d.type === "ADDED").length + "개조</span>" : "") +
-          (set.filter(d => d.type === "MODIFIED").length ? '<span class="cstat mod">수정 ' + set.filter(d => d.type === "MODIFIED").length + "개조</span>" : "") +
-        "</span>" : "") +
+        (set ? (() => { const fl = flatChanges(set);
+          const na = fl.filter(c => c.type === "ADDED").length, nm = fl.filter(c => c.type === "MODIFIED").length;
+          return '<span class="cstats">' +
+            (na ? '<span class="cstat add">신설 ' + na + "건</span>" : "") +
+            (nm ? '<span class="cstat mod">수정 ' + nm + "건</span>" : "") +
+            '<span class="cstat mod">사유 ' + set.length + "건</span></span>"; })() : "") +
       "</div>";
 
     if (!set){
@@ -1016,11 +1081,13 @@ function renderChanges(){
         '당시에는 <b>신구비교표를 별도 문서로 수기 작성</b>했기 때문입니다 — 지금 개선하려는 바로 그 상태입니다.</div></div></div>';
     }
 
-    const items = set.map(d =>
+    const items = set.map(g =>
       '<div class="chgitem">' +
-        '<span class="ci-type ' + d.type + '">' + (d.type === "ADDED" ? "신설" : "수정") + "</span>" +
-        '<div><div class="ci-title">' + esc(d.title) + "</div>" +
-        '<div class="ci-reason">' + esc(d.reason) + "</div></div>" +
+        '<span class="ci-type ' + g.changes[0].type + '">' + TYPE_KO[g.changes[0].type] + "</span>" +
+        '<div><div class="ci-title">' + esc(g.reason) + "</div>" +
+        '<div class="ci-reason">' + g.changes.map(c => esc(c.title)).join(" · ") +
+        (g.changes.length > 1 ? ' <b style="color:var(--woori)">(' + g.changes.length + "건)</b>" : "") +
+        "</div></div>" +
       "</div>"
     ).join("");
 
