@@ -327,6 +327,52 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
 .toast.on{display:block}
 .toast b{font-weight:700}
 
+/* ── 조항 편집 ── */
+.editwrap{display:grid; grid-template-columns:238px minmax(0,1fr); gap:20px}
+.seclist{align-self:start; position:sticky; top:88px; max-height:calc(100vh - 120px); overflow:auto; padding:8px}
+.seclist button{display:block; width:100%; text-align:left; border:0; background:transparent; cursor:pointer; padding:8px 10px; border-radius:6px; font-size:12.5px; color:var(--ink-2); border-left:3px solid transparent}
+.seclist button:hover{background:var(--surface-2)}
+.seclist button[aria-current="true"]{background:var(--woori-soft); color:var(--woori); font-weight:700; border-left-color:var(--woori)}
+.seclist .sn{font-family:var(--mono); font-size:10px; color:var(--ink-3); display:block}
+.seclist button[aria-current="true"] .sn{color:var(--woori)}
+.seclist .chg{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--add); margin-left:5px; vertical-align:1px}
+.edithead{padding:15px 17px; margin-bottom:14px}
+.edithead h3{font-size:15px; margin-bottom:10px}
+.blk{margin-bottom:14px}
+.blk label{display:flex; gap:8px; align-items:center; font-size:11px; letter-spacing:.05em; color:var(--ink-3); margin-bottom:5px}
+.blk .bt{font-family:var(--mono); font-size:9.5px; padding:1px 6px; border-radius:3px; background:var(--surface-3); color:var(--ink-2)}
+textarea{font:inherit; font-size:13.4px; line-height:1.75; width:100%; padding:10px 12px; border-radius:7px; border:1px solid var(--rule-2); background:var(--paper); color:var(--ink); resize:vertical; min-height:64px; font-family:var(--sans)}
+textarea:focus{background:var(--surface); border-color:var(--sky-deep); outline:none}
+textarea.edited{border-color:var(--add); background:var(--add-soft)}
+.rdonly{padding:11px 13px; border:1px dashed var(--rule-2); border-radius:7px; font-size:12px; color:var(--ink-3); background:var(--surface-2)}
+.reasonbox{padding:15px 17px; margin-top:16px; border-top:2px solid var(--sky); border-radius:2px 2px 11px 11px}
+.reasonbox h4{font-size:13px; margin-bottom:4px}
+.reasonbox .rh{font-size:11.5px; color:var(--ink-3); margin-bottom:11px}
+.reasonrow{display:flex; gap:8px; flex-wrap:wrap}
+.reasonrow input{flex:1; min-width:220px}
+.editbar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:13px 16px; margin-top:16px}
+.pill{font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:100px; border:1px solid}
+.pill.on{background:var(--add-soft); color:var(--add); border-color:var(--add)}
+.pill.off{background:var(--surface-2); color:var(--ink-3); border-color:var(--rule-2)}
+
+/* ── 결재 · 데이터 ── */
+.flow{display:flex; gap:0; flex-wrap:wrap; margin-bottom:18px}
+.step{flex:1; min-width:132px; padding:13px 14px; border:1px solid var(--rule); background:var(--surface); position:relative}
+.step:first-child{border-radius:10px 0 0 10px}
+.step:last-child{border-radius:0 10px 10px 0}
+.step + .step{border-left:0}
+.step.done{background:var(--add-soft); border-color:var(--add)}
+.step.now{background:var(--woori); border-color:var(--woori)}
+.step.now .st,.step.now .sd{color:var(--woori-ink)}
+.step .st{font-size:12.5px; font-weight:700; color:var(--ink)}
+.step .sd{font-size:11px; color:var(--ink-3); margin-top:3px; font-family:var(--mono)}
+.step.done .st{color:var(--add)}
+.dataline{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:14px 17px; border-bottom:1px solid var(--rule)}
+.dataline:last-child{border-bottom:0}
+.dataline .dt{font-size:13px; font-weight:700}
+.dataline .dd{font-size:12px; color:var(--ink-3); margin-top:3px}
+.fileinput{display:none}
+
 /* ── 인계 파일 내보내기 ── */
 .optrow{display:flex; gap:22px; flex-wrap:wrap; margin-bottom:20px}
 .filecard{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:14px 17px; border-bottom:1px solid var(--rule)}
@@ -390,6 +436,15 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
   .sec .gutter{display:flex; gap:10px; align-items:center}
   .seckey{display:none}
   .astep{grid-template-columns:1fr; gap:2px; padding:8px 0; border-bottom:1px dotted var(--rule)}
+  .editwrap{grid-template-columns:1fr}
+  .seclist{position:static; max-height:220px; display:flex; gap:6px; overflow-x:auto; padding:6px}
+  .seclist button{width:auto; white-space:nowrap; border-left:0; border-bottom:3px solid transparent; border-radius:6px}
+  .seclist button[aria-current="true"]{border-left:0; border-bottom-color:var(--woori)}
+  .flow{flex-direction:column}
+  .step{border-radius:0 !important} .step:first-child{border-radius:10px 10px 0 0 !important}
+  .step:last-child{border-radius:0 0 10px 10px !important}
+  .step + .step{border-left:1px solid var(--rule); border-top:0}
+  .dataline{grid-template-columns:1fr}
   .vrow{grid-template-columns:1fr}
   .vacts{justify-content:flex-start}
 }
@@ -449,6 +504,8 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
       <button data-view="diff"><span class="n">04</span>신구대조</button>
       <button data-view="admin"><span class="n">05</span>관리 데이터</button>
       <button data-view="changes"><span class="n">06</span>변경내역 (대고객)</button>
+      <button data-view="edit"><span class="n">08</span>조항 편집</button>
+      <button data-view="approve"><span class="n">09</span>결재 · 데이터</button>
       <button data-view="export"><span class="n">07</span>인계 파일 내보내기</button>
       <div class="rail-note">이 콘솔은 홈페이지와 별도로 배포되며, 홈페이지는 게시 시점에 만들어진 정적 스냅샷만 읽습니다.</div>
     </nav>
@@ -575,6 +632,58 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
         </div>
       </section>
 
+      <!-- 08 조항 편집 -->
+      <section class="view" id="v-edit" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">08 · 실무 작업</div>
+          <h2>조항 편집</h2>
+          <p class="sub">현행본을 복사한 <b>작업본</b>을 편집합니다. 워드를 열어 한 줄씩 고칠 필요가 없고, 무엇이 어떻게 바뀌었는지는 저장하는 순간 자동으로 정리됩니다.</p>
+        </div>
+        <div class="proof"><span class="k">목표 1</span><div><b>수기 작업을 없애는 것이 첫 번째 목표입니다.</b> 여기서 문단을 고치면 <b>04 신구대조</b>와 <b>06 변경내역</b>이 자동으로 채워지고, 승인 후 <b>07 내보내기</b>에서 개발팀에 넘길 HTML이 생성됩니다. 사람이 신구비교표를 만들 일이 없습니다.</div></div>
+        <div id="editnotice"></div>
+        <div class="editwrap">
+          <nav class="card seclist" id="seclist" aria-label="조항 목록"></nav>
+          <div>
+            <div class="card edithead" id="edithead"></div>
+            <div id="editblocks"></div>
+            <div class="card reasonbox" id="reasonbox"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09 결재 · 데이터 -->
+      <section class="view" id="v-approve" hidden>
+        <div class="pagehead">
+          <div class="eyebrow">09 · 정보보호부 내부</div>
+          <h2>결재 · 데이터 관리</h2>
+          <p class="sub">작업본의 상태를 관리하고, 전체 데이터를 파일로 주고받습니다. 실제 결재는 사내 전자결재로 하시고, 여기서는 그 결과를 기록해 내보내기 시점을 통제합니다.</p>
+        </div>
+        <div class="proof"><span class="k">인수인계</span><div><b>담당자가 바뀌어도 상태가 그대로 넘어갑니다.</b> 지금은 워드 파일·PDF·개인 폴더가 흩어져 있어 인수인계가 곧 파일 뭉치 전달입니다. 여기서는 <b>데이터 파일 하나와 이 콘솔 하나</b>가 전부입니다 — 조항·버전·변경 사유·승인 상태가 모두 그 안에 있습니다.</div></div>
+
+        <div class="flow" id="flow"></div>
+        <div class="card" id="flowacts" style="padding:14px 16px; margin-bottom:20px"></div>
+
+        <div class="card">
+          <div class="dataline">
+            <div><div class="dt">데이터 파일 저장</div>
+              <div class="dd">문서 3종의 조항·버전·작업본·변경 사유·승인 상태·조직 마스터·현황 레지스트리를 하나의 JSON으로 내려받습니다. 부서 공유 폴더에 두시면 됩니다.</div></div>
+            <div class="facts"><button class="btn" id="dsave">policy-data.json 저장</button></div>
+          </div>
+          <div class="dataline">
+            <div><div class="dt">데이터 파일 불러오기</div>
+              <div class="dd">이어서 작업하거나 인수인계받은 파일을 엽니다. 현재 작업 내용은 덮어써집니다.</div></div>
+            <div class="facts"><button class="mini" id="dload">파일 선택</button>
+              <input type="file" id="dfile" class="fileinput" accept="application/json,.json"></div>
+          </div>
+          <div class="dataline">
+            <div><div class="dt">브라우저 자동 저장</div>
+              <div class="dd" id="lsinfo">작업 중 내용은 이 브라우저에 자동 저장됩니다. 다른 PC로 옮기려면 위 데이터 파일을 사용하세요.</div></div>
+            <div class="facts"><button class="mini" id="dclear">자동 저장 지우기</button></div>
+          </div>
+        </div>
+        <div class="toast" id="dtoast" style="margin-top:14px"></div>
+      </section>
+
       <!-- 07 인계 파일 내보내기 -->
       <section class="view" id="v-export" hidden>
         <div class="pagehead">
@@ -600,6 +709,7 @@ input[type=text]:focus{background:var(--surface); border-color:var(--sky-deep)}
         </div>
         <p class="dhint"><b>스타일을 파일에 포함</b>하면 홈페이지 CSS에 의존하지 않으므로, 재구축으로 클래스 체계가 바뀌어도 깨지지 않습니다. 모든 클래스에 <b>pp-</b> 접두사를 붙여 기존 스타일과 충돌하지 않습니다.</p>
 
+        <div id="expgate"></div>
         <div class="card" id="filelist"></div>
         <div class="codebox" id="codebox" hidden>
           <div class="codebox-h"><span class="cn" id="codename"></span>
@@ -1108,14 +1218,8 @@ function useDoc(code){
   SECTIONS = d.sections; VERSIONS = d.versions; LABELS = d.labels; DIFFS = d.diffs;
   const act = d.versions.find(v => v.status === "ACTIVE") || d.versions[0];
   currentVersion = act.id;
-  const pub = d.versions.filter(v => v.status !== "GAP");
-  $("#verpick").innerHTML = pub.map(v =>
-    '<option value="' + v.id + '"' + (v.id === currentVersion ? " selected" : "") + ">" +
-    v.id + " · " + spanOf(v) + " · " + STATUS_KO[v.status] + "</option>").join("");
-  const dOpts = pub.map(v => '<option value="' + v.id + '">' + v.id + " (" + v.from + ")</option>").join("");
-  $("#dfrom").innerHTML = dOpts; $("#dto").innerHTML = dOpts;
-  if (pub.length > 1){ $("#dfrom").value = pub[1].id; $("#dto").value = pub[0].id; }
-  renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); renderExport();
+  editSecKey = null;
+  refreshAll();
 }
 
 /* ═══════════ 렌더링 ═══════════ */
@@ -1130,11 +1234,12 @@ function orgFor(vid){
   return ORG_SNAPSHOT[vid] || ORG_SNAPSHOT.v7;
 }
 function versionsFor(vid){
+  if (vid === "W" && WORK[currentDocCode]) return WORK[currentDocCode].sections;
   const n = V_INDEX[vid] || 8;
   return SECTIONS.filter(s => !s.since || (V_INDEX[s.since] || 0) <= n);
 }
-function verObj(vid){ return VERSIONS.find(v => v.id === vid) || VERSIONS[1]; }
-function spanOf(v){ return v.from + " ~ " + (v.to || (v.status === "DRAFT" ? "(시행 예정)" : "현재")); }
+function verObj(vid){ return allVersions().find(v => v.id === vid) || VERSIONS.find(v => v.status === "ACTIVE") || VERSIONS[0]; }
+function spanOf(v){ if (v.isWork) return "작업 중 · 시행일 미정"; return v.from + " ~ " + (v.to || (v.status === "DRAFT" ? "(시행 예정)" : "현재")); }
 
 function tableHTML(head, rows){
   return '<div class="tscroll"><table><thead><tr>' +
@@ -1255,7 +1360,7 @@ function renderHistory(){
   $("#integrity").innerHTML = D().integrity.map(x =>
     '<div class="ichk"><span class="ibadge">' + esc(x[0]) + "</span><div>" + x[1] + "</div></div>").join("");
 
-  $("#vlist").innerHTML = VERSIONS.map(v => {
+  $("#vlist").innerHTML = allVersions().map(v => {
     const hasAudit = v.audit && v.audit.length;
     return '<div class="vrow' + (v.status === "GAP" ? " isgap" : "") + '">' +
       '<div><div class="vid">' + esc(v.id) + '</div><span class="chip ' + STATUS_CLS[v.status] +
@@ -1345,7 +1450,7 @@ function renderStackCards(set){
 
 function renderDiff(){
   const key = $("#dfrom").value + "|" + $("#dto").value;
-  const set = DIFFS[key];
+  const set = diffSetFor(key);
   const out = $("#diffout");
   if (!set){
     out.innerHTML = '<div class="card" style="padding:22px; color:var(--ink-3); font-size:13px">' +
@@ -1357,11 +1462,11 @@ function renderDiff(){
 
 /* 대고객 변경내역 — 감사 로그와 같은 데이터, 공개 필드만 */
 function renderChanges(){
-  const pub = VERSIONS.filter(v => v.status !== "GAP");
+  const pub = allVersions().filter(v => v.status !== "GAP");
   const html = pub.map((v, i) => {
     const prev = pub[i + 1];
     const key = prev ? prev.id + "|" + v.id : null;
-    const set = key ? DIFFS[key] : null;
+    const set = key ? diffSetFor(key) : null;
 
     const head =
       '<div class="chg-h">' +
@@ -1504,7 +1609,9 @@ function wrapDoc(inner, title, vid){
 }
 
 function buildPolicy(){
-  const vid = currentVersion, v = verObj(vid), secs = versionsFor(vid);
+  const w = WORK[currentDocCode];
+  const approved = w && w.status === "APPROVED" && changedKeys(currentDocCode).size;
+  const vid = approved ? "W" : currentVersion, v = verObj(vid), secs = versionsFor(vid);
   const byKey = {}; secs.forEach((x, i) => byKey[x.key] = i + 1);
   const labels = '<ul class="pp-labels">' + LABELS.filter(l => byKey[l.sec]).map(l =>
     '<li><a class="pp-lab" href="#pp-' + l.sec + '"><i>제' + byKey[l.sec] + "조</i>" + esc(l.n) + "</a></li>").join("") + "</ul>";
@@ -1524,7 +1631,7 @@ function buildPolicy(){
 }
 
 function buildHistory(){
-  const rows = VERSIONS.map(v => [v.id, v.from + " ~ " + (v.to || (v.status === "DRAFT" ? "(시행 예정)" : "현재")),
+  const rows = allVersions().map(v => [v.isWork ? "작업본" : v.id, v.from + " ~ " + (v.to || (v.status === "DRAFT" ? "(시행 예정)" : "현재")),
     STATUS_KO[v.status], v.reason]);
   return wrapDoc('<h1 class="pp-title">' + esc(D().name) + " 이력</h1>" +
     '<p class="pp-meta">버전별 시행기간 및 개정 사유</p>' +
@@ -1546,7 +1653,7 @@ function buildChanges(){
 }
 
 function diffPairForCurrent(){
-  const pub = VERSIONS.filter(v => v.status !== "GAP");
+  const pub = allVersions().filter(v => v.status !== "GAP");
   const i = pub.findIndex(v => v.id === currentVersion);
   const prev = pub[i + 1];
   return prev ? [prev.id, currentVersion] : null;
@@ -1555,7 +1662,7 @@ function diffPairForCurrent(){
 function buildDiffDoc(){
   const pair = diffPairForCurrent();
   if (!pair) return wrapDoc("<p>비교 대상 버전이 없습니다.</p>", "신구대조표", currentVersion);
-  const set = DIFFS[pair[0] + "|" + pair[1]];
+  const set = diffSetFor(pair[0] + "|" + pair[1]);
   if (!set) return wrapDoc('<h1 class="pp-title">개인정보처리방침 신구대조표</h1>' +
     '<p class="pp-meta">' + pair[0] + " → " + pair[1] + '</p><p class="pp-note">해당 구간의 비교 데이터가 없습니다.</p>',
     "신구대조표", currentVersion);
@@ -1605,6 +1712,15 @@ function fileSet(){
 function bytes(str){ return new Blob([str]).size; }
 
 function renderExport(){
+  const w = WORK[currentDocCode], n = changedKeys(currentDocCode).size;
+  const gate = $("#expgate");
+  if (gate) gate.innerHTML = !n ? ""
+    : w.status === "APPROVED"
+      ? '<div class="proof" style="background:var(--active-soft);border-color:var(--active-line);border-left-color:var(--active)">' +
+        '<span class="k" style="background:var(--active)">승인</span><div><b>작업본이 승인되었습니다.</b> 아래 파일에는 편집 내용이 반영되어 있습니다. ' +
+        '개발팀에 폴더째 전달하시면 됩니다.</div></div>'
+      : '<div class="groupbanner"><span class="gk">승인 전</span><div><b>작업본에 ' + n + '건의 변경이 있으나 아직 승인되지 않았습니다.</b> ' +
+        '아래 파일은 <b>현행 게시본</b> 기준으로 생성됩니다. 편집 내용을 반영하려면 <b>09 결재 · 데이터</b>에서 검토 요청 → 승인을 완료하세요.</div></div>';
   $("#filelist").innerHTML = fileSet().map((f, i) => {
     const src = f.fn();
     return '<div class="filecard"><div>' +
@@ -1634,6 +1750,209 @@ function downloadFile(i){
   document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+/* ═══════════ 작업본 · 편집 · 결재 · 데이터 ═══════════
+   현행본을 복사한 작업본(W)을 편집한다. 변경은 저장 시점에 자동 계산되며,
+   같은 사유를 입력한 조항끼리 하나의 ChangeSet으로 묶여 비고 셀이 병합된다.
+   ═══════════════════════════════════════════════════ */
+const LS_KEY = "wib-policy-console-v1";
+const WORK = {};
+let editSecKey = null;
+
+const STEPS = [["DRAFT","작성 중"],["REVIEW","검토 중"],["APPROVED","승인 완료"]];
+const clone = o => JSON.parse(JSON.stringify(o));
+const EDITABLE = b => b.t === "p" || b.t === "ul" || b.t === "note";
+
+function blockText(b){ return b.t === "ul" ? b.v.join("\n") : b.v; }
+function setBlockText(b, t){ b.v = b.t === "ul" ? t.split("\n").map(x => x.trim()).filter(Boolean) : t; }
+function plainOf(sec){ return sec.title + "" + sec.body.filter(EDITABLE).map(blockText).join(""); }
+function editableText(sec){ return sec.body.filter(EDITABLE).map(blockText).join(" ").replace(/\n/g, " "); }
+
+function workOf(code){
+  if (!WORK[code]){
+    const d = DOC_REG[code];
+    const act = d.versions.find(v => v.status === "ACTIVE") || d.versions[0];
+    WORK[code] = {base:act.id, sections:clone(d.sections), reasons:{}, status:"DRAFT", log:[]};
+  }
+  return WORK[code];
+}
+function baseSections(code){ return DOC_REG[code].sections; }
+
+function computeChangeSets(code){
+  const w = WORK[code]; if (!w) return [];
+  const base = baseSections(code), out = [];
+  w.sections.forEach(ns => {
+    const os = base.find(x => x.key === ns.key);
+    const reason = (w.reasons[ns.key] || "").trim() || "(변경 사유 미입력)";
+    if (!os){ out.push({sec:ns.key, type:"ADDED", title:ns.title, after:editableText(ns), reason}); return; }
+    if (plainOf(os) !== plainOf(ns))
+      out.push({sec:ns.key, type:"MODIFIED", title:ns.title, before:editableText(os), after:editableText(ns), reason});
+  });
+  base.forEach(os => { if (!w.sections.find(x => x.key === os.key))
+    out.push({sec:os.key, type:"REMOVED", title:os.title, before:editableText(os),
+              reason:(w.reasons[os.key] || "").trim() || "(변경 사유 미입력)"}); });
+  const g = new Map();
+  out.forEach(c => { if (!g.has(c.reason)) g.set(c.reason, []); g.get(c.reason).push(c); });
+  return [...g].map(([reason, changes]) => ({reason, changes}));
+}
+function changedKeys(code){
+  const w = WORK[code]; if (!w) return new Set();
+  const base = baseSections(code);
+  return new Set(w.sections.filter(ns => { const os = base.find(x => x.key === ns.key); return !os || plainOf(os) !== plainOf(ns); }).map(x => x.key));
+}
+
+/* 작업본을 버전 목록 맨 앞에 얹는다 */
+function allVersions(){
+  const d = D(), w = WORK[currentDocCode];
+  if (!w || !changedKeys(currentDocCode).size) return d.versions;
+  return [{id:"W", status:"DRAFT", from:"(시행일 미정)", to:null, hash:"—", isWork:true,
+           reason:"작업본 — " + (STEPS.find(x => x[0] === w.status) || ["","작성 중"])[1], audit:[]}].concat(d.versions);
+}
+function diffSetFor(key){
+  if (DIFFS[key]) return DIFFS[key];
+  const w = WORK[currentDocCode];
+  if (w && key === w.base + "|W") return computeChangeSets(currentDocCode);
+  return null;
+}
+
+/* ── 편집 화면 ── */
+function renderEdit(){
+  const code = currentDocCode, d = D();
+  if (d.own === "GROUP"){
+    $("#editnotice").innerHTML = '<div class="groupbanner"><span class="gk">편집 불가</span><div><b>' + esc(d.name) +
+      "은 " + esc(d.provider) + "가 제정하는 그룹 제공 문서입니다.</b> 당사는 게시 주체이므로 조항을 편집하지 않습니다. " +
+      "그룹에서 개정 원문을 수신하면 원문을 그대로 등록하고 게시 이력만 기록합니다.</div></div>";
+    ["#seclist","#edithead","#editblocks","#reasonbox"].forEach(k => { $(k).innerHTML = ""; });
+    return;
+  }
+  $("#editnotice").innerHTML = "";
+  const w = workOf(code), ch = changedKeys(code);
+  if (!editSecKey || !w.sections.find(x => x.key === editSecKey)) editSecKey = w.sections[0].key;
+
+  $("#seclist").innerHTML = w.sections.map((x, i) =>
+    '<button data-editsec="' + x.key + '" aria-current="' + (x.key === editSecKey) + '">' +
+      '<span class="sn">' + esc(x.noLabel || ("제" + (i + 1) + "조")) + "</span>" + esc(x.title) +
+      (ch.has(x.key) ? '<span class="chg" title="변경됨"></span>' : "") + "</button>").join("");
+
+  const idx = w.sections.findIndex(x => x.key === editSecKey), sec = w.sections[idx];
+  const locked = w.status === "APPROVED";
+  $("#edithead").innerHTML =
+    "<h3>" + esc(sec.noLabel || ("제" + (idx + 1) + "조")) + " · " + esc(sec.title) + "</h3>" +
+    '<div class="blk"><label>조항 제목</label>' +
+    '<textarea data-fld="title" rows="1"' + (locked ? " disabled" : "") + ">" + esc(sec.title) + "</textarea></div>" +
+    '<div style="font-size:11px;color:var(--ink-3)">불변키 ' + esc(sec.key + " · " + sec.uuid) +
+    " — 조항 번호가 밀려도 이력이 깨지지 않습니다.</div>";
+
+  $("#editblocks").innerHTML = '<div class="card" style="padding:15px 17px">' + sec.body.map((b, bi) => {
+    if (EDITABLE(b)) return '<div class="blk"><label><span class="bt">' +
+      (b.t === "ul" ? "목록 · 한 줄에 한 항목" : b.t === "note" ? "안내문" : "문단") + "</span></label>" +
+      '<textarea data-blk="' + bi + '" rows="' + (b.t === "ul" ? Math.min(10, b.v.length + 1) : 3) + '"' +
+      (locked ? " disabled" : "") + ">" + esc(blockText(b)) + "</textarea></div>";
+    const kind = b.t === "table" ? "표" : b.t === "org" ? "조직 마스터 자동 반영" : b.t === "vermeta" ? "시행일 자동 생성" : "참조 링크";
+    const why = b.t === "table" ? "표는 별도 관리 대상입니다(프로토타입 범위 밖)."
+      : b.t === "org" ? "05 관리 데이터에서 수정하면 모든 문서에 함께 반영됩니다." : "시스템이 자동 생성합니다.";
+    return '<div class="blk"><label><span class="bt">' + kind + '</span></label><div class="rdonly">이 블록은 여기서 편집하지 않습니다. ' + why + "</div></div>";
+  }).join("") + "</div>";
+
+  const isChanged = ch.has(sec.key);
+  const reasons = [...new Set(Object.values(w.reasons).map(r => (r || "").trim()).filter(Boolean))];
+  $("#reasonbox").innerHTML =
+    "<h4>변경 사유" + (isChanged ? ' <span class="pill on">입력 필요</span>' : ' <span class="pill off">변경 없음</span>') + "</h4>" +
+    '<div class="rh">같은 사유를 입력한 조항들은 신구대조표에서 <b>하나의 비고 셀로 병합</b>됩니다. 용어 일괄 치환처럼 여러 조항이 한 사안으로 바뀔 때 사유를 반복해 쓰지 않아도 됩니다.</div>' +
+    '<div class="reasonrow"><input type="text" id="reasoninput" placeholder="예: 타 업권 표현 정정" value="' +
+      esc(w.reasons[sec.key] || "") + '"' + (locked ? " disabled" : "") + ">" +
+      (reasons.length ? '<select id="reasonpick"><option value="">기존 사유에서 선택…</option>' +
+        reasons.map(r => '<option value="' + esc(r) + '">' + esc(r) + "</option>").join("") + "</select>" : "") +
+    "</div>" +
+    '<div class="editbar" style="padding:13px 0 0"><button class="btn" id="editsave"' + (locked ? " disabled" : "") + ">저장</button>" +
+      '<button class="mini" id="editrevert"' + (locked || !isChanged ? " disabled" : "") + ">이 조항 되돌리기</button>" +
+      '<span style="font-size:12px;color:var(--ink-3)">변경된 조항 <b style="color:var(--woori)">' + ch.size + "</b>건" +
+      (locked ? " · 승인 완료 상태에서는 편집할 수 없습니다" : "") + "</span></div>";
+}
+
+function saveEdit(){
+  const w = workOf(currentDocCode), sec = w.sections.find(x => x.key === editSecKey);
+  const t = $('[data-fld="title"]'); if (t) sec.title = t.value.trim() || sec.title;
+  $$("[data-blk]").forEach(el => setBlockText(sec.body[Number(el.dataset.blk)], el.value));
+  const r = $("#reasoninput"); if (r) w.reasons[sec.key] = r.value.trim();
+  persist(); refreshAll();
+  toast("dtoast", "저장했습니다. <b>04 신구대조</b>와 <b>06 변경내역</b>에 자동 반영되었습니다.");
+}
+function revertSec(){
+  const w = workOf(currentDocCode), i = w.sections.findIndex(x => x.key === editSecKey);
+  const os = baseSections(currentDocCode).find(x => x.key === editSecKey);
+  if (os){ w.sections[i] = clone(os); delete w.reasons[editSecKey]; }
+  persist(); refreshAll();
+}
+
+/* ── 결재 ── */
+function renderApprove(){
+  const w = workOf(currentDocCode), n = changedKeys(currentDocCode).size;
+  const cur = STEPS.findIndex(x => x[0] === w.status);
+  $("#flow").innerHTML = STEPS.map(([k, label], i) => {
+    const rec = w.log.find(l => l.to === k);
+    return '<div class="step ' + (i < cur ? "done" : i === cur ? "now" : "") + '"><div class="st">' + label + "</div>" +
+      '<div class="sd">' + (rec ? esc(rec.at + " · " + rec.by) : i === cur ? "진행 중" : "—") + "</div></div>";
+  }).join("");
+  const noReason = computeChangeSets(currentDocCode).some(g => g.reason === "(변경 사유 미입력)");
+  $("#flowacts").innerHTML =
+    '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">' +
+    (w.status === "DRAFT"
+      ? '<button class="btn" id="toreview"' + (!n || noReason ? " disabled" : "") + ">검토 요청</button>"
+      : w.status === "REVIEW"
+      ? '<button class="btn" id="toapprove">승인</button> <button class="mini" id="toback">작성 중으로 되돌리기</button>'
+      : '<button class="mini" id="toback">승인 취소</button>') +
+    '<span style="font-size:12.5px;color:var(--ink-3)">변경된 조항 <b style="color:var(--woori)">' + n + "</b>건" +
+    (noReason ? ' · <b style="color:var(--del)">사유가 입력되지 않은 조항이 있어 검토 요청할 수 없습니다</b>' : "") +
+    (w.status === "APPROVED" ? ' · <b style="color:var(--active)">07 인계 파일 내보내기가 활성화되었습니다</b>' : "") +
+    "</span></div>";
+  const li = $("#lsinfo");
+  if (li) li.textContent = localStorage.getItem(LS_KEY)
+    ? "이 브라우저에 자동 저장되어 있습니다. 다른 PC로 옮기려면 위 데이터 파일을 사용하세요."
+    : "아직 자동 저장된 내용이 없습니다.";
+}
+function setStatus(st){
+  const w = workOf(currentDocCode);
+  w.status = st;
+  w.log = w.log.filter(l => l.to !== st);
+  w.log.push({to:st, at:"2026-08-12", by:"정보보호부 담당자"});
+  persist(); refreshAll();
+}
+
+/* ── 데이터 저장 · 복원 (인수인계) ── */
+function snapshotState(){
+  return {v:1, savedAt:"2026-08-12", org:ORG, work:WORK,
+          docs:Object.fromEntries(Object.entries(DOC_REG).map(([k, d]) => [k, {sections:d.sections}]))};
+}
+function persist(){ try { localStorage.setItem(LS_KEY, JSON.stringify(snapshotState())); } catch (e) {} }
+function restoreState(o){
+  if (!o || !o.work) return false;
+  Object.assign(ORG, o.org || {});
+  Object.keys(WORK).forEach(k => delete WORK[k]);
+  Object.entries(o.work).forEach(([k, v]) => { WORK[k] = v; });
+  if (o.docs) Object.entries(o.docs).forEach(([k, v]) => { if (DOC_REG[k] && v && v.sections) DOC_REG[k].sections = v.sections; });
+  SECTIONS = D().sections;
+  return true;
+}
+function toast(id, msg){ const t = $("#" + id); if (!t) return; t.innerHTML = msg; t.classList.add("on"); }
+
+function refreshAll(){
+  const pub = allVersions().filter(v => v.status !== "GAP");
+  currentVersion = pub.find(v => v.id === currentVersion) ? currentVersion : pub[0].id;
+  $("#verpick").innerHTML = pub.map(v =>
+    '<option value="' + v.id + '"' + (v.id === currentVersion ? " selected" : "") + ">" +
+    (v.isWork ? "작업본" : v.id) + " · " + spanOf(v) + " · " + (v.isWork ? "초안" : STATUS_KO[v.status]) + "</option>").join("");
+  const dOpts = pub.map(v => '<option value="' + v.id + '">' + (v.isWork ? "작업본" : v.id) + " (" + v.from + ")</option>").join("");
+  const df = $("#dfrom").value, dt = $("#dto").value;
+  $("#dfrom").innerHTML = dOpts; $("#dto").innerHTML = dOpts;
+  const w = WORK[currentDocCode];
+  if (w && changedKeys(currentDocCode).size){ $("#dfrom").value = w.base; $("#dto").value = "W"; }
+  else {
+    if ([...$("#dfrom").options].some(o => o.value === df)) $("#dfrom").value = df;
+    if ([...$("#dto").options].some(o => o.value === dt)) $("#dto").value = dt;
+  }
+  renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); renderExport(); renderEdit(); renderApprove();
+}
+
 /* ═══════════ 이벤트 ═══════════ */
 function showView(name){
   $$(".view").forEach(v => { v.hidden = v.id !== "v-" + name; });
@@ -1653,6 +1972,44 @@ $("#verpick").innerHTML = VERSIONS.filter(v => v.status !== "GAP").map(v =>
   v.id + " · " + spanOf(v) + " · " + STATUS_KO[v.status] + "</option>"
 ).join("");
 $("#docpick").addEventListener("change", e => { useDoc(e.target.value); showView("policy"); });
+
+document.addEventListener("click", e => {
+  const es = e.target.closest("[data-editsec]");
+  if (es){ editSecKey = es.dataset.editsec; renderEdit(); return; }
+  if (e.target.id === "editsave"){ saveEdit(); return; }
+  if (e.target.id === "editrevert"){ revertSec(); return; }
+  if (e.target.id === "toreview"){ setStatus("REVIEW"); return; }
+  if (e.target.id === "toapprove"){ setStatus("APPROVED"); return; }
+  if (e.target.id === "toback"){ setStatus(WORK[currentDocCode].status === "APPROVED" ? "REVIEW" : "DRAFT"); return; }
+});
+document.addEventListener("change", e => {
+  if (e.target.id === "reasonpick" && e.target.value){ $("#reasoninput").value = e.target.value; }
+});
+$("#dsave").addEventListener("click", () => {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(snapshotState(), null, 2)], {type:"application/json"}));
+  const a = document.createElement("a"); a.href = url; a.download = "policy-data.json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast("dtoast", "policy-data.json 을 저장했습니다. 부서 공유 폴더에 두시면 인수인계 시 이 파일 하나만 넘기면 됩니다.");
+});
+$("#dload").addEventListener("click", () => $("#dfile").click());
+$("#dfile").addEventListener("change", ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      if (restoreState(JSON.parse(r.result))){ persist(); refreshAll(); toast("dtoast", "불러왔습니다."); }
+      else toast("dtoast", "형식을 인식하지 못했습니다. 이 콘솔에서 저장한 policy-data.json 인지 확인해 주세요.");
+    } catch (err){ toast("dtoast", "파일을 읽지 못했습니다: " + err.message); }
+  };
+  r.readAsText(f);
+  ev.target.value = "";
+});
+$("#dclear").addEventListener("click", () => {
+  localStorage.removeItem(LS_KEY);
+  Object.keys(WORK).forEach(k => delete WORK[k]);
+  refreshAll(); toast("dtoast", "자동 저장을 지우고 현행 게시본 상태로 되돌렸습니다.");
+});
 $("#verpick").addEventListener("change", e => { currentVersion = e.target.value; renderPolicy(); renderExport(); });
 
 const dOpts = VERSIONS.filter(v => v.status !== "GAP").map(v =>
@@ -1715,7 +2072,7 @@ document.addEventListener("click", e => {
 
 $("#orgsave").addEventListener("click", () => {
   $$("[data-org]").forEach(el => { ORG[el.dataset.org] = el.value.trim() || "—"; });
-  renderPolicy(); renderExport();
+  persist(); refreshAll();
   const t = $("#orgtoast");
   t.innerHTML = "저장했습니다. 제14·16조에 즉시 반영되었습니다 — <b>방침 버전은 v8 그대로이고 개정 절차는 발생하지 않았습니다.</b>";
   t.classList.add("on");
@@ -1728,5 +2085,6 @@ $("#orgreset").addEventListener("click", () => {
   t.classList.add("on");
 });
 
-renderPolicy(); renderRegistry(); renderHistory(); renderDiff(); renderChanges(); renderExport(); fillOrgForm();
+try { const raw = localStorage.getItem(LS_KEY); if (raw) restoreState(JSON.parse(raw)); } catch (e) {}
+refreshAll(); fillOrgForm();
 </script>
