@@ -90,6 +90,16 @@ button{font:inherit; color:inherit}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .topbar{background:#18224A; box-shadow:0 1px 0 #0C1120} }
 :root[data-theme="dark"] .topbar{background:#18224A; box-shadow:0 1px 0 #0C1120}
 .topbar-in{display:flex; align-items:center; gap:18px; min-height:62px; flex-wrap:wrap; padding:10px 22px}
+/* 보고서 링크 — 왜 이 체계가 필요한지 설명하는 별도 HTML 보고서를 연다 */
+.reportbtn{display:inline-flex; align-items:center; gap:7px; margin-left:auto; white-space:nowrap;
+  font-size:12.5px; font-weight:700; color:#fff; text-decoration:none;
+  background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.34);
+  border-radius:7px; padding:7px 13px}
+.reportbtn:hover{background:rgba(255,255,255,.28)}
+.reportbtn:focus-visible{outline:2px solid #fff; outline-offset:2px}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .reportbtn{color:#E9EEF9} }
+:root[data-theme="dark"] .reportbtn{color:#E9EEF9}
+@media (max-width:900px){ .reportbtn{margin-left:0} }
 .brand{display:flex; align-items:center; gap:11px; margin-right:auto; min-width:0}
 .mark{
   flex:none; width:26px; height:26px; border-radius:6px; background:#fff; position:relative; overflow:hidden;
@@ -503,6 +513,15 @@ textarea.edited{border-color:var(--add); background:var(--add-soft)}
       <button data-skin-btn="a" aria-pressed="false">현행 홈페이지</button>
       <button data-skin-btn="b" aria-pressed="false">재구축 홈페이지</button>
     </div>
+    <a class="reportbtn" id="reportbtn"
+       href="https://claude.ai/code/artifact/a957f949-ef20-4265-9cde-622ec0069ea6"
+       target="_blank" rel="noopener">
+      <svg viewBox="0 0 14 14" aria-hidden="true" width="13" height="13">
+        <path d="M3 1.6h5.2L11 4.4V12.4H3z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+        <path d="M5 6.6h4M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      보고서 열기
+    </a>
   </div>
 </div>
 
@@ -721,6 +740,7 @@ textarea.edited{border-color:var(--add); background:var(--add-soft)}
           <p class="sub">정보보호부가 조항을 수정하면 최종 HTML을 여기서 생성합니다. 개발팀은 <b>파일을 갈아끼우기만</b> 하면 되고, 텍스트를 직접 타이핑하지 않으므로 반영 과정의 오탈자가 발생하지 않습니다.</p>
         </div>
         <div class="proof"><span class="k">인계</span><div><b>별도 개발 발주 없이 시작할 수 있는 구간입니다.</b> 기존 홈페이지 프레임은 그대로 두고, 본문 영역만 파일로 분리해 교체합니다. 향후 홈페이지 재구축 시에도 이 파일들은 그대로 옮겨가면 됩니다.</div></div>
+        <div class="toast" id="etoast" style="margin-bottom:14px"></div>
 
         <div class="optrow">
           <div class="field"><label>파일 형태</label>
@@ -1760,12 +1780,54 @@ function showCode(i){
   $("#codebox").scrollIntoView({behavior:"smooth", block:"nearest"});
 }
 
-function downloadFile(i){
+/* 파일 저장.
+   로컬에서 파일을 직접 열었을 때는 브라우저 내려받기가 그대로 동작한다.
+   게시된 페이지(뷰어) 안에서는 브라우저 내려받기가 차단되므로
+   뷰어가 제공하는 저장 기능을 쓴다. 둘 다 안 되면 사유를 알린다. */
+async function saveFile(name, text, mime){
+  const dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
+  if (dl){
+    try {
+      await dl.save({filename:name, data:text});
+      return {ok:true, name:name};
+    } catch (err) {
+      const code = (err && err.code) || "unavailable";
+      if (code === "declined") return {ok:false, msg:"저장을 취소했습니다."};
+      if (code === "rate_limited") return {ok:false, msg:"저장 요청이 많습니다. 잠시 후 다시 시도해 주세요."};
+      if (code === "extension_not_enabled" || code === "rejected_extension"){
+        /* .html 저장이 허용되지 않는 뷰어에서는 .txt로 내보내고 확장자 변경을 안내한다 */
+        const alt = name.replace(/\.[^.]+$/, "") + ".txt";
+        try {
+          await dl.save({filename:alt, data:text});
+          return {ok:true, name:alt, renote:name};
+        } catch (e2) {
+          if ((e2 && e2.code) === "declined") return {ok:false, msg:"저장을 취소했습니다."};
+        }
+      }
+      if (code === "too_large") return {ok:false, msg:"파일이 너무 큽니다."};
+      return {ok:false, msg:"이 화면에서는 파일 저장이 지원되지 않습니다. <b>원본 HTML 파일을 내려받아 직접 열면</b> 저장됩니다."};
+    }
+  }
+  try {
+    const url = URL.createObjectURL(new Blob([text], {type:mime || "text/html;charset=utf-8"}));
+    const a = document.createElement("a");
+    a.href = url; a.download = name; document.body.appendChild(a); a.click();
+    document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return {ok:true, name:name};
+  } catch (e) {
+    return {ok:false, msg:"파일 저장에 실패했습니다."};
+  }
+}
+
+async function downloadFile(i){
   const f = fileSet()[i];
-  const url = URL.createObjectURL(new Blob([f.fn()], {type:"text/html;charset=utf-8"}));
-  const a = document.createElement("a");
-  a.href = url; a.download = f.name; document.body.appendChild(a); a.click();
-  document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const r = await saveFile(f.name, f.fn(), "text/html;charset=utf-8");
+  if (!r.ok){ toast("etoast", r.msg); return; }
+  logAudit("인계 파일 저장", r.name);
+  refreshAll();
+  toast("etoast", r.renote
+    ? "<b>" + esc(r.name) + "</b> 으로 저장했습니다. 이 화면에서는 .html 저장이 제한되어 있으니 <b>확장자를 .html로 바꿔</b> 사용하세요."
+    : "<b>" + esc(r.name) + "</b> 을 저장했습니다.");
 }
 
 /* ═══════════ 작업자 · 이력 · 무결성 ═══════════
@@ -2765,15 +2827,13 @@ document.addEventListener("click", e => {
 document.addEventListener("change", e => {
   if (e.target.id === "reasonpick" && e.target.value){ $("#reasoninput").value = e.target.value; }
 });
-$("#dsave").addEventListener("click", () => {
-  const url = URL.createObjectURL(new Blob([JSON.stringify(snapshotState(), null, 2)], {type:"application/json"}));
-  const a = document.createElement("a"); a.href = url; a.download = "policy-data.json";
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+$("#dsave").addEventListener("click", async () => {
+  const r = await saveFile("policy-data.json", JSON.stringify(snapshotState(), null, 2), "application/json");
+  if (!r.ok){ toast("dtoast", r.msg); return; }
   localStorage.setItem(LS_KEY + ":meta", JSON.stringify({at:nowStamp(), by:whoami()}));
-  logAudit("데이터 파일 저장", "policy-data.json");
+  logAudit("데이터 파일 저장", r.name);
   refreshAll();
-  toast("dtoast", "policy-data.json 을 저장했습니다. <b>접근권한이 통제된 부서 공유 폴더</b>에 두세요 — 개인 PC에 두면 지금 워드 파일과 같아집니다.");
+  toast("dtoast", esc(r.name) + " 을 저장했습니다. <b>접근권한이 통제된 부서 공유 폴더</b>에 두세요 — 개인 PC에 두면 지금 워드 파일과 같아집니다.");
 });
 document.addEventListener("click", e => {
   if (e.target.id !== "usave") return;
